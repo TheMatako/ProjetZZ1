@@ -1,14 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
-<<<<<<< HEAD
 #include <stdbool.h>
-<<<<<<< HEAD
-=======
->>>>>>> a6b55a8 (Le point H qui a été supprimé)
-=======
-#includes
->>>>>>> 46c480f (Implémentation Grille + Joueurs + Barrières + Déplacement joueurs)
 #include "structureQuoridor.h"
 // Définition des constantes
 
