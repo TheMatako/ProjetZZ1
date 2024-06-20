@@ -9,7 +9,7 @@
 =======
 #includes
 >>>>>>> 46c480f (Implémentation Grille + Joueurs + Barrières + Déplacement joueurs)
-
+#include "structureQuoridor.h"
 // Définition des constantes
 
 // Pour les Cases
