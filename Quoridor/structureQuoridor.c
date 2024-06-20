@@ -5,8 +5,6 @@
 #include "structureQuoridor.h"
 
 
-
-
 int main() 
 {
     SDL_Window *window = NULL;
