@@ -1,4 +1,4 @@
-#include"Premier.h"
+#include"structureQuoridor.h"
 
 #include<stdio.h>
 #include<stdlib.h>

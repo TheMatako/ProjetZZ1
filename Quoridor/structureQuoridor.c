@@ -1,7 +1,10 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
+<<<<<<< HEAD
 #include <stdbool.h>
+=======
+>>>>>>> a6b55a8 (Le point H qui a été supprimé)
 
 // Définition des constantes
 
