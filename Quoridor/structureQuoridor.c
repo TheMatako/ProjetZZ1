@@ -84,6 +84,7 @@ GameState initGame()
         .barrierCount = 0,
         .isGameRunning = true,
         .playerTurn = 0
+        .boxesPlayable = malloc()
     };
 
     for (int i = 0; i < BOX_NUMBER_LINE; i++) 
@@ -99,6 +100,153 @@ GameState initGame()
     return jeu;
 }
 
+int **getPositionPlayable(GameState game, int *positionX, int *positionY, int *numBoxesPlayable)
+{
+    int up = 1, down = 1, right = 1, left = 1;
+    int diagUpLeft = 0, diagUpRight = 0, diagDownLeft = 0, diagDownRight = 0;
+    Player otherPlayer = game.players[(game.PlayerTurn + 1)%2];
+    int otherPlayerPosX = otherPlayer.pos.x, otherPlayerPosY = otherPlayer.pos.y;
+    int **boxPlayables;
+    // Gestion des positions en bord de tableau
+    // Gestion des indices de lignes
+    if (*positionX == 0)
+    {
+        left = 0;
+    }
+    else if (*positionX == BOX_NUMBER_LINE)
+    {
+        right = 0;
+    }
+    // Gestion des indices de colonnes    
+    if (*positionY == 0)
+    {
+        up = 0;
+    }
+    else if (*positionY == BOX_NUMBER_COLUMN)
+    {
+        down = 0;
+    }
+    // Gestion des cas où le joueur nous bloque et qu'on doive sauter par dessus
+    // Déplacement à droite
+    if (right && otherPlayerPosX == *positionX + 1)
+    {
+        if (!game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY])
+        {
+            right = 2;
+        }
+        // Gestion des déplacements en diagonale
+        else
+        {
+            right = 0;
+            if (up && !game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY+1])
+            {
+                diagUpRight = 1;
+            }
+            else if (down && !game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY-1])
+            {
+                diagDownRight = 1;
+            }
+        }
+    }
+    // Déplacement à gauche
+    if (left && otherPlayerPosX == *positionX - 1)
+    {
+        if (!game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY])
+        {
+            left = 2;
+        }
+        // Gestion des déplacements en diagonale
+        else
+        {
+            left = 0;
+            if (up && !game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY+1])
+            {
+                diagUpLeft = 1;
+            }
+            else if (down && !game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY-1])
+            {
+                diagDownLeft = 1;
+            }
+        }
+    }
+    // Déplacement en haut
+    if (up && otherPlayerPosY == *positionY - 1)
+    {
+        if (!game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY])
+        {
+            up = 2;
+        }
+        // Gestion des déplacements en diagonale
+        up = 0
+        else
+        {
+            if (right && !game.matrixBarrierPosition[otherPlayerPosX+1][otherPlayerPosY])
+            {
+                diagUpRight = 1;
+            }
+            else if (left && !game.matrixBarrierPosition[otherPlayerPosX-1][otherPlayerPosY])
+            {
+                diagUpLeft = 1;
+            }
+        }
+    }
+    // Déplacement en bas
+    if (down && otherPlayerPosY == *positionY + 1)
+    {
+        if (!game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY])
+        {
+            down = 2;
+        }
+        // Gestion des déplacements en diagonale
+        else
+        {
+            down = 0;
+            if (left && !game.matrixBarrierPosition[otherPlayerPosX-1][otherPlayerPosY])
+            {
+                diagDownLeft = 1;
+            }
+            else if (right && !game.matrixBarrierPosition[otherPlayerPosX+1][otherPlayerPosY])
+            {
+                diagDownRight = 1;
+            }
+        }
+    }
+    // Remplissage de boxesPlayable
+    if (diagUpLeft)
+    {
+        appendArray(boxPlayables, *numBoxesPlayable, *positionX - 1, *positionY - 1);
+    }
+    if (diagUpRight)
+    {
+        appendArray(boxPlayables, *numBoxesPlayable, *positionX + 1, *positionY - 1);
+    }
+    if (diagDownLeft)
+    {
+        appendArray(boxPlayables, *numBoxesPlayable, *positionX - 1, *positionY + 1);
+    }
+    if (diagDownRight)
+    {
+        appendArray(boxPlayables, *numBoxesPlayable, *positionX + 1, *positionY + 1);
+    }
+    if (up)
+    {
+        appendArray(boxPlayables, *numBoxesPlayable, *positionX, *positionY - 1);
+    }
+    if (down)
+    {
+        appendArray(boxPlayables, *numBoxesPlayable, *positionX, *positionY + 1);
+    }
+    if (left)
+    {
+        appendArray(boxPlayables, *numBoxesPlayable, *positionX - 1, *positionY);
+    }
+    if (right)
+    {
+        appendArray(boxPlayables, *numBoxesPlayable, *positionX + 1, *positionY);
+    }
+    return boxPlayables;
+}
+
 void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvementEffectue)
 {
     // On récupère la position en pixels de la souris
@@ -107,38 +255,7 @@ void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvem
 
     int caseX, caseY;
     int startIndexLine, endIndexLine, startIndexColumn, endIndexColumn;
-    // Gestion des indices de lignes
-    if (*positionX == 0)
-    {
-        startIndexLine = 0;
-        endIndexLine = 1;
-    }
-    else if (*positionX == BOX_NUMBER_LINE)
-    {
-        startIndexLine = 0;
-        endIndexLine = BOX_NUMBER_LINE;
-    }
-    else
-    {
-        startIndexLine = *positionX - 1;
-        endIndexLine = *positionX + 1;
-    }
-    // Gestion des indices de colonnes    
-    if (*positionY == 0)
-    {
-        startIndexColumn = 0;
-        endIndexColumn = 1;
-    }
-    else if (*positionY == BOX_NUMBER_COLUMN)
-    {
-        startIndexColumn = 0;
-        endIndexColumn = BOX_NUMBER_COLUMN;
-    }
-    else
-    {
-        startIndexColumn = *positionY - 1;
-        endIndexColumn = *positionY + 1;
-    }
+    
     for (int i = startIndexLine - 1; i < endIndexLine + 1; i++)
     {
         for (int j = startIndexColumn - 1; j < endIndexColumn + 1; j++)
@@ -236,7 +353,6 @@ void loadTextures(SDL_Renderer *renderer, SDL_Texture ***allImages)
 
 void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu) 
 {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     // On dessine les cases
     for (int i = 0; i < BOX_NUMBER_LINE; i++) 
     {
@@ -246,6 +362,24 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu)
             SDL_RenderCopy(renderer, allImages[10], NULL, &dstRectGrid);
         }
     }
+    // On rajoute un render vert semi-transparent sur les cases jouables 
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0 , 125);
+    int *numBoxesPlayable;
+    int **boxPlayables = getPositionPlayable(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, &numBoxesPlayable);
+    for (int i = 0; i < *numBoxesPlayable; i++)
+    {
+        // On définit la position du rectangle 
+        int lineBox = boxPlayables[i][0], columnBox = boxesPlayable[i][1];
+        int rectX = lineBox*BOX_WIDTH + (lineBox + 1)*SPACE_LENGTH;
+        int rectY = columnBox*BOX_HEIGHT + (columnBox + 1)*SPACE_LENGTH;
+        SDL_Rect rectGreen = {rectX, rectY, BOX_WIDTH, BOX_HEIGHT};
+        SDL_RenderFillRect(renderer, &rect);
+    }
+    SDL_SetRenderDrawColor(renderer, 55, 55, 55, 0);
+
+
+
+
     // On dessine le haut du plateau 
     SDL_Rect dstRectHaut = {0, 0, WINDOW_WIDTH, TOP_LENGTH};
     SDL_RenderCopy(renderer, allImages[10], NULL, &dstRectHaut);
@@ -337,4 +471,24 @@ void initSDL(SDL_Window **window, SDL_Renderer **renderer)
         SDL_Quit();
         exit(1);
     }
+}
+
+// Fonction pour ajouter une ligne à un tableau bidimensionnel
+int** appendArray(int **array, int *numRows, int val1, int val2) 
+{
+    // Redimensionnement du tableau pour accueillir une nouvelle ligne
+    array = realloc(array, (*numRows + 1) * sizeof(int*));
+    if (array == NULL) 
+    {
+        perror("Realloc error");
+        exit(EXIT_FAILURE);
+    }
+    // Initialisation des valeurs de la nouvelle ligne
+    array[*num_rows][0] = val1;
+    array[*num_rows][1] = val2;
+
+    // Mise à jour du nombre de lignes
+    (*num_rows)++;
+
+    return array;
 }

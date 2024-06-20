@@ -3,7 +3,7 @@ HFILES = $(wildcard *.h)
 DFILES = $(wildcard *.d)
 OFILES = $(patsubst %.c,%.o,$(CFILES))
 GCC_FLAGS = -W -Wextra -Wshadow -Werror -Wall -g -Og -MMD
-LD_FLAGS = -lSDL2_image -lSDL2_ttf -lSDL2_gfx -lm -lSDL2 -fsanitize=address
+LD_FLAGS = -lSDL2_image -lSDL2_ttf -lSDL2_gfx -lm -lSDL2
 
 all: structureQuoridor
 
