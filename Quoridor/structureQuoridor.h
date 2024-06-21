@@ -61,6 +61,24 @@ typedef struct {
     
 } GameState;
 
+typedef struct Coup
+{   
+    Coup * Prec;
+    Coup * Suiv;
+
+    Position * NewPos;
+    Barrier * NewBar;
+
+} Coup_t;
+
+typedef struct Liste_Coups
+{   
+    Coup_t * Tete;
+    Coup_t * Queue;
+
+    int Longueur;
+
+} Liste_Coups_t;
 
 void initSDL(SDL_Window **window, SDL_Renderer **renderer);
 void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu);
@@ -69,5 +87,14 @@ GameState initGame();
 void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvementEffectue);
 int **getPositionPlayable(GameState game, Box *boxesPlayable, int *positionX, int *positionY);
 int** appendArray(int **array, int *numRows, int val1, int val2);
+
+int Compare_Place(Pos1,Pos2)
+int Is_Diagonal_or_Simple_Moove(GameState * jeu, Position * Previous, Position * Next)
+bool * Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
+Liste_Coups_t * Ajouter_Coup_Liste(Liste_Coups_t * L,int xp, int yp ,int xb ,int yb ,int H);
+void Initialiser_Liste(int T[8][8]);
+bool Present(int T[8][8],int x,int y);
+void Add(int T[8][8],x,y);
+Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur, Liste_Coups_t * L) 
 
 #endif
