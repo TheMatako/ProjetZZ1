@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "structureQuoridor.h"
 
-int main() 
+int main()
 {
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
