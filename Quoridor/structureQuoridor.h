@@ -53,7 +53,7 @@ typedef struct {
 typedef struct {
     Player players[2]; // Joueurs (0: humain, 1: IA)
     Barrier barriers[20]; // Toutes les barrières placées sur le plateau
-    Position matrixBarrierPosition[8][8];
+    int matrixBarrierPosition[8][8];
     Box boxes[BOX_NUMBER_LINE][BOX_NUMBER_COLUMN]; // Toutes les (positions des) cases sur le plateau
     int barrierCount;     // Nombre actuel de barrières placées
     bool isGameRunning;
@@ -85,7 +85,7 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu);
 void loadTextures(SDL_Renderer *renderer, SDL_Texture ***allImages);
 GameState initGame();
 void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvementEffectue);
-int **getPositionPlayable(GameState game, Box *boxesPlayable, int *positionX, int *positionY);
+int **getPositionPlayable(GameState game, int *boxesPlayable, int *positionX, int *positionY);
 int** appendArray(int **array, int *numRows, int val1, int val2);
 
 int Compare_Place(Pos1,Pos2)
