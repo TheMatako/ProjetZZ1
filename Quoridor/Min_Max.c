@@ -1,25 +1,8 @@
-# include <stdio.h>
-# include <stdlib.h>
-# include <stdbool.h>
-
-typedef struct Coup
-{   
-    Coup * Prec;
-    Coup * Suiv;
-
-    Position * NewPos;
-    Barrier * NewBar;
-
-} Coup_t;
-
-typedef struct Liste_Coups
-{   
-    Coup_t * Tete;
-    Coup_t * Queue;
-
-    int Longueur;
-
-} Liste_Coups_t;
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include "structureQuoridor.h"
 
 int Compare_Place(Pos1,Pos2)
 {
@@ -269,60 +252,3 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur, Liste_Coups_t * L)
 
     return L;
 }
-
-// int * Poser_Barriere(Plateau_t * P,int X,int Y)
-// {
-    
-// }
-
-// int Fin(Plateau_t * P,int /* Quel Joueur ?*/)
-// {
-//     if(P->PosX)
-//     // Si l'un des deux joueurs est au bout du plateau
-//     // renvoit 1,0 ou -1
-// }
-
-// int Score(Plateau_t * P,int S, int T)
-// {
-//     if(Fin(P) == 0)
-//     {
-//         // On commence par les changements de position
-//         // (Il faudra Rajouter les diagonales)
-
-//         if(/* Si il est possible d'aller en avant*/)
-//         {
-//             P->PosY = P->PosY + 1;
-//             S = S + Generer_Coup_Ordinateur(Plateau_t,S);
-//         }
-//         else if (/* Si il est possible d'aller en arrière*/)
-//         {
-//             P->PosY = P->PosY - 1;
-//             S = S + Generer_Coup_Ordinateur(Plateau_t,S);
-//         }
-//         else if (/* Si il est possible d'aller à gauche*/)
-//         {
-//             P->PosX = P->PosX - 1;
-//             S = S + Generer_Coup_Ordinateur(Plateau_t,S);
-//         }
-//         else if (/* Si il est possible d'aller à droite*/)
-//         {
-//             P->PosX = P->PosX + 1;
-//             S = S + Generer_Coup_Ordinateur(Plateau_t,S);
-//         }
-
-//         // On préfère poser une barrière
-
-//     }
-//     else // on a trouvé une fin de jeu
-//     {
-//         if(Fin() == 1)
-//         {
-//             return 1;
-//         }
-//     }
-// }
-
-// int main()
-// {
-
-// }
