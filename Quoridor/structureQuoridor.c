@@ -21,6 +21,11 @@ int main()
     bool mouvementEffectue = false;
     while (Jeu.isGameRunning) 
     {
+        int boxesPlayable[BOX_NUMBER_LINE][BOX_NUMBER_COLUMN] = {0};
+        SDL_SetRenderDrawColor(renderer, 55, 55, 55, 255);
+        SDL_RenderClear(renderer);
+
+        drawGame(renderer, allImages, Jeu, boxesPlayable);
         SDL_Event event;
         while (SDL_PollEvent(&event)) 
         {
@@ -46,7 +51,7 @@ int main()
             {
                 if (event.button.button == SDL_BUTTON_LEFT)
                 {
-                    getCursorIndex(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, &mouvementEffectue);
+                    getCursorIndex(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, &mouvementEffectue, boxesPlayable);
                     if (mouvementEffectue)
                     {
                         Jeu.playerTurn = (Jeu.playerTurn + 1) % 2;
@@ -56,10 +61,6 @@ int main()
             }
         }
 
-        SDL_SetRenderDrawColor(renderer, 55, 55, 55, 255);
-        SDL_RenderClear(renderer);
-
-        drawGame(renderer, allImages, Jeu);
 
         SDL_RenderPresent(renderer);
         SDL_Delay(100);
@@ -95,57 +96,19 @@ GameState initGame()
     return jeu;
 }
 
-void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvementEffectue)
+void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvementEffectue, int boxesPlayable[BOX_NUMBER_LINE][BOX_NUMBER_LINE])
 {
     // On récupère la position en pixels de la souris
     int positionCursorX, positionCursorY;
     SDL_GetMouseState(&positionCursorX, &positionCursorY);
-
-    int caseX, caseY;
-    int startIndexLine, endIndexLine, startIndexColumn, endIndexColumn;
-    // Gestion des indices de lignes
-    if (*positionX == 0)
+    for (int i = 0; i < BOX_NUMBER_LINE; i++)
     {
-        startIndexLine = 0;
-        endIndexLine = 1;
-    }
-    else if (*positionX == BOX_NUMBER_LINE)
-    {
-        startIndexLine = 0;
-        endIndexLine = BOX_NUMBER_LINE;
-    }
-    else
-    {
-        startIndexLine = *positionX - 1;
-        endIndexLine = *positionX + 1;
-    }
-    // Gestion des indices de colonnes    
-    if (*positionY == 0)
-    {
-        startIndexColumn = 0;
-        endIndexColumn = 1;
-    }
-    else if (*positionY == BOX_NUMBER_COLUMN)
-    {
-        startIndexColumn = 0;
-        endIndexColumn = BOX_NUMBER_COLUMN;
-    }
-    else
-    {
-        startIndexColumn = *positionY - 1;
-        endIndexColumn = *positionY + 1;
-    }
-    for (int i = startIndexLine - 1; i < endIndexLine + 1; i++)
-    {
-        for (int j = startIndexColumn - 1; j < endIndexColumn + 1; j++)
-        {
-            // On zappe le cas où on cliquerait sur la même case que là où le joueur se situe déjà
-            // On zappe aussi les diagonales
-            if ((i == *positionX -1 && j == *positionY) || (i == *positionX && j == *positionY - 1) || (i == *positionX + 1 && j == *positionY) || (i == *positionX && j == *positionY + 1))
+        for (int j = 0; j < BOX_NUMBER_COLUMN; j++)
+        {   
+            if (boxesPlayable[i][j] == 1)
             {
-                // On transforme la position en pixel de la souris en position de case 
-                caseX = game.boxes[i][j].posPixel.x;
-                caseY = game.boxes[i][j].posPixel.y;
+                int caseX = game.boxes[i][j].posPixel.x;
+                int caseY = game.boxes[i][j].posPixel.y;
                 if ((caseX - SPACE_LENGTH/2 <= positionCursorX && positionCursorX < caseX + BOX_WIDTH + SPACE_LENGTH/2) && (caseY - SPACE_LENGTH/2 <= positionCursorY && positionCursorY < caseY + BOX_HEIGHT + SPACE_LENGTH/2))
                 {
                     *positionX = i;
@@ -159,78 +122,31 @@ void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvem
 }
 void loadTextures(SDL_Renderer *renderer, SDL_Texture ***allImages)
 {
-    // On load l'image des joueurs
-    SDL_Surface * imagePlayer1 = IMG_Load("images/player1.png");
-    SDL_Texture * imgPlayer1 = SDL_CreateTextureFromSurface(renderer, imagePlayer1);
-    (*allImages)[11] = imgPlayer1;
-    SDL_FreeSurface(imagePlayer1);
-    SDL_Surface * imagePlayer2 = IMG_Load("images/player2.png");
-    SDL_Texture * imgPlayer2 = SDL_CreateTextureFromSurface(renderer, imagePlayer2);
-    (*allImages)[12] = imgPlayer2;
-    SDL_FreeSurface(imagePlayer2);
-    // On load les images du plateau
-    SDL_Surface * imageGridBoxes = IMG_Load("images/grid1.png");
-    SDL_Texture * gridBoxes = SDL_CreateTextureFromSurface(renderer, imageGridBoxes);
-    (*allImages)[10] = gridBoxes;
-    SDL_FreeSurface(imageGridBoxes);
-    // On load les images des barrières 
-    SDL_Surface * imageBarrierHorizontal = IMG_Load("images/barrierHorizontal.png");
-    SDL_Texture * barrierHorizontal = SDL_CreateTextureFromSurface(renderer, imageBarrierHorizontal);
-    (*allImages)[13] = barrierHorizontal;
-    SDL_FreeSurface(imageBarrierHorizontal);
-    SDL_Surface * imageBarrierVertical = IMG_Load("images/barrierVertical.png");
-    SDL_Texture * barrierVertical = SDL_CreateTextureFromSurface(renderer, imageBarrierVertical);
-    (*allImages)[14] = barrierVertical;
-    SDL_FreeSurface(imageBarrierVertical);
-    // On load les images du nombre de barrières restantes
-    SDL_Surface * image0 = IMG_Load("images/0.png");
-    SDL_Texture * img0 = SDL_CreateTextureFromSurface(renderer, image0);
-    (*allImages)[0] = img0;
-    SDL_FreeSurface(image0);
-    SDL_Surface * image1 = IMG_Load("images/1.png");
-    SDL_Texture * img1 = SDL_CreateTextureFromSurface(renderer, image1);
-    (*allImages)[1] = img1;
-    SDL_FreeSurface(image1);
-    SDL_Surface * image2 = IMG_Load("images/2.png");
-    SDL_Texture * img2 = SDL_CreateTextureFromSurface(renderer, image2);
-    (*allImages)[2] = img2;
-    SDL_FreeSurface(image2);
-    SDL_Surface * image3 = IMG_Load("images/3.png");
-    SDL_Texture * img3 = SDL_CreateTextureFromSurface(renderer, image3);
-    (*allImages)[3] = img3;
-    SDL_FreeSurface(image3);
-    SDL_Surface * image4 = IMG_Load("images/4.png");
-    SDL_Texture * img4 = SDL_CreateTextureFromSurface(renderer, image4);
-    (*allImages)[4] = img4;
-    SDL_FreeSurface(image4);
-    SDL_Surface * image5 = IMG_Load("images/5.png");
-    SDL_Texture * img5 = SDL_CreateTextureFromSurface(renderer, image5);
-    (*allImages)[5] = img5;
-    SDL_FreeSurface(image5);
-    SDL_Surface * image6 = IMG_Load("images/6.png");
-    SDL_Texture * img6 = SDL_CreateTextureFromSurface(renderer, image6);
-    (*allImages)[6] = img6;
-    SDL_FreeSurface(image6);
-    SDL_Surface * image7 = IMG_Load("images/7.png");
-    SDL_Texture * img7 = SDL_CreateTextureFromSurface(renderer, image7);
-    (*allImages)[7] = img7;
-    SDL_FreeSurface(image7);
-    SDL_Surface * image8 = IMG_Load("images/8.png");
-    SDL_Texture * img8 = SDL_CreateTextureFromSurface(renderer, image8);
-    (*allImages)[8] = img8;
-    SDL_FreeSurface(image8);
-    SDL_Surface * image9 = IMG_Load("images/9.png");
-    SDL_Texture * img9 = SDL_CreateTextureFromSurface(renderer, image9);
-    (*allImages)[9] = img9;
-    SDL_FreeSurface(image9);
-    // On load l'image du curseur
-    SDL_Surface * imageCursor = IMG_Load("images/cursor.png");
-    SDL_Texture * Cursor = SDL_CreateTextureFromSurface(renderer, imageCursor);
-    (*allImages)[15] = Cursor;
-    SDL_FreeSurface(imageCursor);
+
+    char *filesName[] = {"./images/0.png", "./images/1.png", "./images/2.png", "./images/3.png", "./images/4.png",
+                             "./images/5.png", "./images/6.png", "./images/7.png", "./images/8.png", "./images/9.png",
+                             "./images/grid1.png", "./images/player1.png", "./images/player2.png", "./images/barrierHorizontal.png",
+                             "./images/barrierVertical.png", "./images/cursor.png"};
+    for (int i = 0; i < 16; i++)
+    {
+        SDL_Surface *imageSurface = IMG_Load(filesName[i]);
+        if (!imageSurface)
+        {
+            printf("Impossible to load image %s ! SDL_image Error: %s\n", filesName[i], IMG_GetError());
+        }
+        else
+        {
+            (*allImages)[i] = SDL_CreateTextureFromSurface(renderer, imageSurface);
+            if (!(*allImages)[i])
+            {
+                printf("Impossible to create texture from image %s ! SDL Error: %s\n", filesName[i], SDL_GetError());
+            }
+            SDL_FreeSurface(imageSurface);
+        }
+    }
 }
 
-void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu) 
+void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, int boxesPlayable[BOX_NUMBER_LINE][BOX_NUMBER_COLUMN]) 
 {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     // On dessine les cases
@@ -242,6 +158,25 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu)
             SDL_RenderCopy(renderer, allImages[10], NULL, &dstRectGrid);
         }
     }
+    
+    // Dessiner les cases jouables en vert
+    getPositionPlayable(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, boxesPlayable);
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 125);
+    for (int i = 0; i < 9; i++) 
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            if (boxesPlayable[i][j] == 1)
+            {
+                int posX = Jeu.boxes[i][j].posPixel.x;
+                int posY = Jeu.boxes[i][j].posPixel.y;
+                SDL_Rect dstRectPlayable = { posX, posY, BOX_WIDTH, BOX_HEIGHT};
+                SDL_RenderFillRect(renderer, &dstRectPlayable);
+            }
+        }
+    }
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     // On dessine le haut du plateau 
     SDL_Rect dstRectHaut = {0, 0, WINDOW_WIDTH, TOP_LENGTH};
     SDL_RenderCopy(renderer, allImages[10], NULL, &dstRectHaut);
@@ -333,4 +268,102 @@ void initSDL(SDL_Window **window, SDL_Renderer **renderer)
         SDL_Quit();
         exit(1);
     }
+}
+
+
+void getPositionPlayable(GameState game, int *positionX, int *positionY, int boxesPlayable[BOX_NUMBER_LINE][BOX_NUMBER_COLUMN])
+{
+    int up = 1, down = 1, right = 1, left = 1;
+    int diagUpLeft = 0, diagUpRight = 0, diagDownLeft = 0, diagDownRight = 0;
+    Player otherPlayer = game.players[(game.playerTurn + 1)%2];
+    int otherPlayerPosX = otherPlayer.pos.x, otherPlayerPosY = otherPlayer.pos.y;
+    // Gestion des positions en bord de tableau
+    // Gestion des indices de lignes
+    if (*positionX == 0) left = 0;
+    else if (*positionX == BOX_NUMBER_LINE) right = 0;
+    // Gestion des indices de colonnes    
+    if (*positionY == 0) up = 0;
+    else if (*positionY == BOX_NUMBER_COLUMN) down = 0;
+    // Gestion des cas où le joueur nous bloque et qu'on doive sauter par dessus
+    // Déplacement à droite
+    if (right && otherPlayerPosX == *positionX + 1 && otherPlayerPosY == *positionY)
+    {
+        if (!game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY] && *positionX + 2 < BOX_NUMBER_LINE) right = 2;
+        // Gestion des déplacements en diagonale
+        else
+        {
+            right = 0;
+            if (up && !game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY+1]) diagUpRight = 1;
+            else if (down && !game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY-1]) diagDownRight = 1;
+        }
+    }
+    // Déplacement à gauche
+    if (left && otherPlayerPosX == *positionX - 1 && otherPlayerPosY == *positionY)
+    {
+        if (!game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY] && *positionX - 2 >= 0) left = 2;
+        // Gestion des déplacements en diagonale
+        else
+        {
+            left = 0;
+            if (up && !game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY+1]) diagUpLeft = 1;
+            else if (down && !game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY-1]) diagDownLeft = 1;
+        }
+    }
+    // Déplacement en haut
+    if (up && otherPlayerPosY == *positionY - 1 && otherPlayerPosX == *positionX )
+    {
+        if (!game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY] && *positionX - 2 >= 0) up = 2;
+        // Gestion des déplacements en diagonale
+        else
+        {
+            up = 0;
+            if (right && !game.matrixBarrierPosition[otherPlayerPosX+1][otherPlayerPosY]) diagUpRight = 1;
+            else if (left && !game.matrixBarrierPosition[otherPlayerPosX-1][otherPlayerPosY]) diagUpLeft = 1;
+        }
+    }
+    // Déplacement en bas
+    if (down && otherPlayerPosX == *positionX + 1 && otherPlayerPosY == *positionY)
+    {
+        if (!game.matrixBarrierPosition[otherPlayerPosX][otherPlayerPosY] && *positionY + 2 < BOX_NUMBER_COLUMN) down = 2;
+        // Gestion des déplacements en diagonale
+        else
+        {
+            down = 0;
+            if (left && !game.matrixBarrierPosition[otherPlayerPosX-1][otherPlayerPosY]) diagDownLeft = 1;
+            else if (right && !game.matrixBarrierPosition[otherPlayerPosX+1][otherPlayerPosY]) diagDownRight = 1;
+        }
+    }
+    // Remplissage de boxesPlayable
+    if (diagUpLeft)
+    {
+        if (*positionX > 0 && *positionY > 0) boxesPlayable[*positionX-1][*positionY-1] = 1;
+    } 
+    if (diagUpRight)
+    {
+        if (*positionX < BOX_NUMBER_LINE -1  && *positionY > 0) boxesPlayable[*positionX+1][*positionY-1] = 1;        
+    }
+    if (diagDownLeft)
+    {
+        if (*positionX > 0 && *positionY < BOX_NUMBER_COLUMN -1) boxesPlayable[*positionX-1][*positionY+1] = 1;
+    }
+    if (diagDownRight)
+    {
+        if (*positionX < BOX_NUMBER_LINE - 1 && *positionY < BOX_NUMBER_LINE - 1) boxesPlayable[*positionX+1][*positionY+1] = 1;
+    }
+    if (up)
+    {
+        if (*positionY > 0) boxesPlayable[*positionX][*positionY-up] = 1;
+    }
+    if (down)
+    {
+        if (*positionY < BOX_NUMBER_COLUMN - 1) boxesPlayable[*positionX][*positionY+down] = 1;
+    }     
+    if (left)
+    {
+        if (*positionX > 0) boxesPlayable[*positionX-left][*positionY] = 1;
+    }     
+    if (right)
+    {
+        if (*positionX < BOX_NUMBER_LINE - 1) boxesPlayable[*positionX+right][*positionY] = 1;
+    }     
 }

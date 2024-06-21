@@ -42,7 +42,6 @@ typedef struct {
 typedef struct {
     Position pos;      // Position actuelle du pion
     int barriersLeft;  // Nombre de barrières restantes
-    SDL_Texture *sprite;
 } Player;
 
 typedef struct {
@@ -60,7 +59,7 @@ typedef struct {
     int playerTurn;
     
 } GameState;
-
+/*
 typedef struct Coup
 {   
     Coup * Prec;
@@ -79,15 +78,14 @@ typedef struct Liste_Coups
     int Longueur;
 
 } Liste_Coups_t;
-
+*/
 void initSDL(SDL_Window **window, SDL_Renderer **renderer);
-void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu);
+void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, int boxesPlayable[BOX_NUMBER_LINE][BOX_NUMBER_LINE]);
 void loadTextures(SDL_Renderer *renderer, SDL_Texture ***allImages);
 GameState initGame();
-void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvementEffectue);
-int **getPositionPlayable(GameState game, int *boxesPlayable, int *positionX, int *positionY);
-int** appendArray(int **array, int *numRows, int val1, int val2);
-
+void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvementEffectue, int boxesPlayable[BOX_NUMBER_LINE][BOX_NUMBER_LINE]);
+void getPositionPlayable(GameState game, int *positionX, int *positionY, int boxesPlayable[BOX_NUMBER_LINE][BOX_NUMBER_LINE]);
+/*
 int Compare_Place(Pos1,Pos2)
 int Is_Diagonal_or_Simple_Moove(GameState * jeu, Position * Previous, Position * Next)
 bool * Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
@@ -96,5 +94,5 @@ void Initialiser_Liste(int T[8][8]);
 bool Present(int T[8][8],int x,int y);
 void Add(int T[8][8],x,y);
 Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur, Liste_Coups_t * L) 
-
+*/
 #endif

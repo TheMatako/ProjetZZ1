@@ -160,75 +160,28 @@ void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvem
 }
 void loadTextures(SDL_Renderer *renderer, SDL_Texture ***allImages)
 {
-    // On load l'image des joueurs
-    SDL_Surface * imagePlayer1 = IMG_Load("images/player1.png");
-    SDL_Texture * imgPlayer1 = SDL_CreateTextureFromSurface(renderer, imagePlayer1);
-    (*allImages)[11] = imgPlayer1;
-    SDL_FreeSurface(imagePlayer1);
-    SDL_Surface * imagePlayer2 = IMG_Load("images/player2.png");
-    SDL_Texture * imgPlayer2 = SDL_CreateTextureFromSurface(renderer, imagePlayer2);
-    (*allImages)[12] = imgPlayer2;
-    SDL_FreeSurface(imagePlayer2);
-    // On load les images du plateau
-    SDL_Surface * imageGridBoxes = IMG_Load("images/grid1.png");
-    SDL_Texture * gridBoxes = SDL_CreateTextureFromSurface(renderer, imageGridBoxes);
-    (*allImages)[10] = gridBoxes;
-    SDL_FreeSurface(imageGridBoxes);
-    // On load les images des barrières 
-    SDL_Surface * imageBarrierHorizontal = IMG_Load("images/barrierHorizontal.png");
-    SDL_Texture * barrierHorizontal = SDL_CreateTextureFromSurface(renderer, imageBarrierHorizontal);
-    (*allImages)[13] = barrierHorizontal;
-    SDL_FreeSurface(imageBarrierHorizontal);
-    SDL_Surface * imageBarrierVertical = IMG_Load("images/barrierVertical.png");
-    SDL_Texture * barrierVertical = SDL_CreateTextureFromSurface(renderer, imageBarrierVertical);
-    (*allImages)[14] = barrierVertical;
-    SDL_FreeSurface(imageBarrierVertical);
-    // On load les images du nombre de barrières restantes
-    SDL_Surface * image0 = IMG_Load("images/0.png");
-    SDL_Texture * img0 = SDL_CreateTextureFromSurface(renderer, image0);
-    (*allImages)[0] = img0;
-    SDL_FreeSurface(image0);
-    SDL_Surface * image1 = IMG_Load("images/1.png");
-    SDL_Texture * img1 = SDL_CreateTextureFromSurface(renderer, image1);
-    (*allImages)[1] = img1;
-    SDL_FreeSurface(image1);
-    SDL_Surface * image2 = IMG_Load("images/2.png");
-    SDL_Texture * img2 = SDL_CreateTextureFromSurface(renderer, image2);
-    (*allImages)[2] = img2;
-    SDL_FreeSurface(image2);
-    SDL_Surface * image3 = IMG_Load("images/3.png");
-    SDL_Texture * img3 = SDL_CreateTextureFromSurface(renderer, image3);
-    (*allImages)[3] = img3;
-    SDL_FreeSurface(image3);
-    SDL_Surface * image4 = IMG_Load("images/4.png");
-    SDL_Texture * img4 = SDL_CreateTextureFromSurface(renderer, image4);
-    (*allImages)[4] = img4;
-    SDL_FreeSurface(image4);
-    SDL_Surface * image5 = IMG_Load("images/5.png");
-    SDL_Texture * img5 = SDL_CreateTextureFromSurface(renderer, image5);
-    (*allImages)[5] = img5;
-    SDL_FreeSurface(image5);
-    SDL_Surface * image6 = IMG_Load("images/6.png");
-    SDL_Texture * img6 = SDL_CreateTextureFromSurface(renderer, image6);
-    (*allImages)[6] = img6;
-    SDL_FreeSurface(image6);
-    SDL_Surface * image7 = IMG_Load("images/7.png");
-    SDL_Texture * img7 = SDL_CreateTextureFromSurface(renderer, image7);
-    (*allImages)[7] = img7;
-    SDL_FreeSurface(image7);
-    SDL_Surface * image8 = IMG_Load("images/8.png");
-    SDL_Texture * img8 = SDL_CreateTextureFromSurface(renderer, image8);
-    (*allImages)[8] = img8;
-    SDL_FreeSurface(image8);
-    SDL_Surface * image9 = IMG_Load("images/9.png");
-    SDL_Texture * img9 = SDL_CreateTextureFromSurface(renderer, image9);
-    (*allImages)[9] = img9;
-    SDL_FreeSurface(image9);
-    // On load l'image du curseur
-    SDL_Surface * imageCursor = IMG_Load("images/cursor.png");
-    SDL_Texture * Cursor = SDL_CreateTextureFromSurface(renderer, imageCursor);
-    (*allImages)[15] = Cursor;
-    SDL_FreeSurface(imageCursor);
+
+    char *filesName[] = {"./img/0.png", "./img/1.png", "./img/2.png", "./img/3.png", "./img/4.png",
+                             "./img/5.png", "./img/6.png", "./img/7.png", "./img/8.png", "./img/9.png",
+                             "./img/grid1.png", "./img/player1.png", "./img/player2.png", "./img/barrierHorizontal.png",
+                             "./img/barrierVertical.png", "./img/cursor.png"};
+    for (int i = 0; i < 16; i++)
+    {
+        SDL_Surface *imageSurface = IMG_Load(filesName[i]);
+        if (!imageSurface)
+        {
+            printf("Impossible to load image %s ! SDL_image Error: %s\n", allImages[i], IMG_GetError());
+        }
+        else
+        {
+            (*allImages)[i] = SDL_CreateTextureFromSurface(renderer, imageSurface);
+            if (!(*allImages)[i])
+            {
+                printf("Impossible to create texture from image %s ! SDL Error: %s\n", filesName[i], SDL_GetError());
+            }
+            SDL_FreeSurface(imageSurface);
+        }
+    }
 }
 
 void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu) 
@@ -245,9 +198,9 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu)
     }
     // On rajoute un render vert semi-transparent sur les cases jouables 
     SDL_SetRenderDrawColor(renderer, 0, 255, 0 , 125);
-    int *numBoxesPlayable = 0;
-    int **boxesPlayable = getPositionPlayable(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, numBoxesPlayable);
-    for (int i = 0; i < *numBoxesPlayable; i++)
+    int numBoxesPlayable = 0;
+    int **boxesPlayable = getPositionPlayable(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, &numBoxesPlayable);
+    for (int i = 0; i < numBoxesPlayable; i++)
     {
         // On définit la position du rectangle 
         int lineBox = boxesPlayable[i][0], columnBox = boxesPlayable[i][1];
