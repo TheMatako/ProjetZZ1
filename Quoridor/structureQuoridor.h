@@ -93,9 +93,6 @@ int Compare_Place(Pos1,Pos2)
 int Is_Diagonal_or_Simple_Moove(GameState * jeu, Position * Previous, Position * Next)
 bool * Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
 Liste_Coups_t * Ajouter_Coup_Liste(Liste_Coups_t * L,int xp, int yp ,int xb ,int yb ,int H);
-void Initialiser_Liste(int T[8][8]);
-bool Present(int T[8][8],int x,int y);
-void Add(int T[8][8],x,y);
 Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur, Liste_Coups_t * L) 
 */
 #endif

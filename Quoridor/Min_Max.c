@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <stdbool.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "structureQuoridor.h"
@@ -116,9 +116,9 @@ void FreeListe(Liste_Coups_t * L)
     Coup_t * Courant = L->Tete;
     Coup_t * NextCoup ;
 
-    while (Courant != NULL) 
+    while(Courant) 
     {
-        NextCoup  = Courant->Suiv;
+        NextCoup = Courant->Suiv;
         free(Courant);
         Courant = NextCoup ;
     }
@@ -136,7 +136,6 @@ void Initialiser_Liste(int T[8][8])
         for(j=0;j<=8;j++)
         {
             T[i][j] = 0;
-            printf("%d",T[i][j]);
         }
     }
 }
@@ -324,39 +323,42 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
     if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) /* Si il est possible d'aller à droite*/
         L = Ajouter_Coup_Liste(L,Place.x + 1,Place.y,0,0,0);
     
-        
     // On préfère poser une barrière
 
-   if(jeu->players[Joueur].barriersLeft)
-    {
-        int Occupees[8][8];
-        Initialiser_Liste(Occupees);
-
-        for(i=0;i<=19;i++)
+    if(jeu->players[Joueur].barriersLeft)
         {
-            if(jeu->barriers[i].isHorizontal)
+            int Occupees[8][8];
+
+            for(i=0;i<=7;i++)
             {
-                Add(Occupees,jeu->barriers[i].pos1.x,jeu->barriers[i].pos1.y);
-                Add(Occupees,jeu->barriers[i].pos1.x,jeu->barriers[i].pos1.y);
+                for(j=0;i<=7;i++)
+                    Occupees[i][j] = 0;
             }
-            else
+
+            for(i=0;i<=19;i++)
             {
-                Add(Occupees,jeu->barriers[i].pos1.x,jeu->barriers[i].pos1.y);
-                Add(Occupees,jeu->barriers[i].pos1.x,jeu->barriers[i].pos1.y);
+                if(jeu->barriers[i].isPlaced)
+                {
+                    Occupees[jeu->barriers[i].pos1.x][jeu->barriers[i].pos1.y] = 1;
+                    Occupees[jeu->barriers[i].pos2.x][jeu->barriers[i].pos2.y] = 1;
+                }
+            }
+
+            for(i=0;i<=7;i++)
+            {
+                for(j=0;j<=7;j++)
+                {
+                    if((i+1) < 8 && (j-1) >= 0)
+                    {
+                        if(Occupees[i][j] != 1 && Occupees[i][j-1] != 1)
+                            L = Ajouter_Coup_Liste(L,0,0,i,j,0);
+                        if(Occupees[i][j] != 1 && Occupees[i+1][j] != 1)
+                            L = Ajouter_Coup_Liste(L,0,0,i,j,1);
+                    }
+                }
+                   
             }
         }
-
-        for(i=0;i<=7;i++)
-        {
-            for(j=0;j<=7;j++)
-            {
-                if(!Present(Occupees,i,j) && !Present(Occupees,i+1,j))
-                    L = Ajouter_Coup_Liste(L,0,0,i,j,1);
-                else if(!Present(Occupees,i,j) && !Present(Occupees,i,j-1))
-                    L = Ajouter_Coup_Liste(L,0,0,i,j,0);
-            }
-        }
-    }
 
     return L;
 }
@@ -384,58 +386,30 @@ GameState initGame()
     return jeu;
 }
 
+GameState * Appliquer_Coup(GameState)
+{
+
+}
+
+int EndGame(GameState * jeu, int joueur)
+{
+    if(joueur == 1)
+    {
+        if(jeu->players[joueur].pos.y == 0)
+            return 1;
+    }
+    else if(jeu->players[joueur].pos.y == 8)
+        return -1;
+    return 0;
+}
+
 int main()
 {
     GameState jeu = initGame();
-    /* Player * J0 = malloc(sizeof(Player));
-    Player * J1 = malloc(sizeof(Player));
-    Position * P0 = malloc(sizeof(Position));
-    Position * P1 = malloc(sizeof(Position)); */
-
-    /* P0->x = 4; P0->y = 9;
-    P1->x = 4; P1->y = 0;
-
-    J0->pos = *P0; J1->pos = *P1;
-    J0->barriersLeft = 10; J1->barriersLeft = 10;
-
-    jeu->players[0] = *J0;
-    jeu->players[1] = *J1; */
-
-    // Liste_Coups_t * L = Creer_Liste_Coups();
-    /* L = Ajouter_Coup_Liste(L,4,8,0,0,0);
-    L = Ajouter_Coup_Liste(L,5,8,0,0,0);
-    L = Ajouter_Coup_Liste(L,5,7,0,0,0);
-    L = Ajouter_Coup_Liste(L,4,8,8,8,1);
-    L = Ajouter_Coup_Liste(L,4,8,4,8,1); */
-
-    /* int T[8][8];
-
-    Initialiser_Liste(T);
-    Add(T,4,7);
-    printf("%d %d",T[4][7],T[7][4]);*/
-
-    // Position * P0 = malloc(sizeof(Position));
-    // Position * P1 = malloc(sizeof(Position)); 
-
-    // P0->x = jeu.players[0].pos.x; 
-    // P0->y = jeu.players[0].pos.y;
-
-    // P0->x = 4;
-    // P0->y = 8;
-    // P1->x = P0->x;
-    // P1->y = P0->y;
-
-    // jeu.barriers[0].pos1.x = P0->x-1;
-    // jeu.barriers[0].pos1.y = P0->y;
-    // jeu.barriers[0].isHorizontal = 0;
-
-    // printf("%d",Is_Diagonal_or_Simple_Moove(P0,P1));
-
-    // printf("%d",Is_There_An_Obstacle(&jeu,P0,P1));
 
     Liste_Coups_t * L = Generer_Coup(&jeu,0);
 
-    Affichage(L);
+    // Affichage(L);
 
     FreeListe(L);
 }
