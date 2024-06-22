@@ -61,11 +61,10 @@ typedef struct {
     
 } GameState;
 
-/*
-typedef struct Coup
+/* typedef struct Coup
 {   
-    Coup * Prec;
-    Coup * Suiv;
+    struct Coup * Prec;
+    struct Coup * Suiv;
 
     Position * NewPos;
     Barrier * NewBar;
@@ -79,8 +78,8 @@ typedef struct Liste_Coups
 
     int Longueur;
 
-} Liste_Coups_t;
-*/
+} Liste_Coups_t; */
+
 void initSDL(SDL_Window **window, SDL_Renderer **renderer);
 void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, int boxesPlayable[BOX_NUMBER_COLUMN][BOX_NUMBER_LINE]);
 void loadTextures(SDL_Renderer *renderer, SDL_Texture ***allImages);

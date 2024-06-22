@@ -111,6 +111,24 @@ void Affichage (Liste_Coups_t * L)
     printf("FIN\n");
 }
 
+Liste_Coups_t * Suppression_Tete(Liste_Coups_t * L)
+{
+    if (L->Tete) 
+    {      
+        Coup_t * Temp = L->Tete;
+        L->Tete = L->Tete->Suiv;
+
+        if (L->Tete != NULL)
+            L->Tete->Prec = NULL;
+        else
+            L->Queue = NULL;
+
+        free(Temp);
+    }
+
+    return L;
+}
+
 void FreeListe(Liste_Coups_t * L) 
 {
     Coup_t * Courant = L->Tete;
@@ -124,28 +142,6 @@ void FreeListe(Liste_Coups_t * L)
     }
 
     L->Tete= NULL;
-}
-
-
-void Initialiser_Liste(int T[8][8])
-{
-    int i; int j;
-
-    for(i=0;i<=8;i++)
-    {
-        for(j=0;j<=8;j++)
-        {
-            T[i][j] = 0;
-        }
-    }
-}
-
-void Add(int T[8][8],int x,int y) { T[x][y] = T[y][x] = 1;}
-
-bool Present(int T[8][8],int x,int y)
-{   
-    if(T[x][y] && T[y][x]) {return true;}
-    return false;
 }
 
 int Compare_Place(Position * Pos1,Position * Pos2)
@@ -367,7 +363,7 @@ GameState initGame()
 {
     GameState jeu = 
     {
-        .players = {{.pos = {4, 8}, .barriersLeft = 10}, {.pos = {4, 0}, .barriersLeft = 10}},
+        .players = {{.pos = {4, 0}, .barriersLeft = 10}, {.pos = {4, 8}, .barriersLeft = 10}},
         .barrierCount = 0,
         .isGameRunning = true,
         .playerTurn = 0
@@ -386,9 +382,24 @@ GameState initGame()
     return jeu;
 }
 
-GameState * Appliquer_Coup(GameState)
+GameState * Appliquer_Coup(GameState * jeu, Coup_t * Coup, int joueur)
 {
+    jeu->players[joueur].pos.x = Coup->NewPos->x;
+    jeu->players[joueur].pos.y = Coup->NewPos->y;
 
+    int i = 0;
+
+    while(jeu->barriers[i].pos1.x)
+    {
+        if(i == 0 && !jeu->barriers[i].isPlaced)
+        {
+            jeu->barriers[i].pos1 = Coup->NewBar->pos1;
+            jeu->barriers[i].pos2 = Coup->NewBar->pos2;
+            jeu->barriers[i].isHorizontal = Coup->NewBar->isHorizontal;  
+        }
+    }
+
+    return jeu;
 }
 
 int EndGame(GameState * jeu, int joueur)
@@ -403,13 +414,46 @@ int EndGame(GameState * jeu, int joueur)
     return 0;
 }
 
+int Score(GameState * jeu, int joueur, int S, Liste_Coups_t * L)
+{   
+    if(L->Tete)
+    {
+        GameState * Intermediaire = Appliquer_Coup(jeu,L->Tete,joueur);
+
+        if(EndGame(Intermediaire,joueur) == 1)
+            return 1;
+        else if(EndGame(Intermediaire,joueur) == 0)
+        {
+            if(joueur == 0)
+                S = S + Score(Intermediaire,1,S,Suppression_Tete(L));
+            else
+                S = S + Score(Intermediaire,0,S,Suppression_Tete(L));
+        }   
+    }
+
+    return S;
+}
+
+/* Coup_t * Choisir_Coup(GameState * jeu, int joueur, Liste_Coups_t * L)
+{   
+    Coup_t * Courant = L->Tete;
+    Coup_t * Dernier = Courant;
+
+    while (Courant && Courant != Dernier)
+    {
+        if(Score(Appliquer_Coup(jeu,Courant)))
+    }
+} */
+
 int main()
 {
     GameState jeu = initGame();
 
-    Liste_Coups_t * L = Generer_Coup(&jeu,0);
+    Liste_Coups_t * L = Generer_Coup(&jeu,1);
 
-    // Affichage(L);
+    Affichage(L);
+
+    printf("%d",Score(&jeu,0,1,Generer_Coup(&jeu,1)));
 
     FreeListe(L);
 }
