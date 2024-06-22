@@ -41,17 +41,24 @@ Liste_Coups_t * Ajouter_Coup_Liste(Liste_Coups_t * L, int xp, int yp ,int xb ,in
     Coup_t * NewC = malloc(sizeof(Coup_t));
     Position * NewP = malloc(sizeof(Position));
     Barrier * NewB = malloc(sizeof(Barrier));
-    Position * NewPB = malloc(sizeof(Position));
+    Position * NewPB1 = malloc(sizeof(Position));
+    Position * NewPB2 = malloc(sizeof(Position));
 
-    if(NewC && NewP && NewB && NewPB)
+    if(NewC && NewP && NewB && NewPB1 && NewPB2)
     {
         NewP->x = xp; NewP->y = yp;
 
         NewC->NewPos = NewP;
 
-        NewPB->x = xb; NewPB->x = yb;
+        NewPB1->x = xb; NewPB1->y = yb;
 
-        NewB->pos = *NewPB;
+        if(H) { NewPB2->x = xb+1; NewPB2->y = yb; }
+        else { NewPB2->x = xb; NewPB2->y = yb-1; }
+            
+
+        NewB->pos1 = *NewPB1;
+        NewB->pos2 = *NewPB2;
+
         NewB->isHorizontal = H;
 
         NewC->NewPos = NewP;
@@ -84,7 +91,7 @@ void Affichage (Coup_t * Tete)
     while (Courant != NULL)
     {
         printf("| %d %d %d %d %d | -> "/* Courant->Prec*/,Courant->NewPos->x,Courant->NewPos->y,
-                                    Courant->NewBar->pos.x,Courant->NewBar->pos.y,
+                                    Courant->NewBar->pos1.x,Courant->NewBar->pos1.y,
                                     Courant->NewBar->isHorizontal/*Courant->Suiv*/);
 
         // Mise à jour du dernier noeud visité
@@ -165,9 +172,9 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
                 {   
                     if(jeu->barriers[i].isHorizontal == 1)
                     {
-                        if(Previous->y + 1 == Next->y && (jeu->barriers[i].pos.x == Next->x || jeu->barriers[i].pos.x == Next->x - 1) && jeu->barriers[i].pos.y == Next->y)
+                        if(Previous->y + 1 == Next->y && (jeu->barriers[i].pos1.x == Next->x || jeu->barriers[i].pos1.x == Next->x - 1) && jeu->barriers[i].pos1.y == Next->y)
                             O = true;
-                        else if(Previous->y - 1 == Next->y && (jeu->barriers[i].pos.x == Next->x || jeu->barriers[i].pos.x == Next->x - 1) && jeu->barriers[i].pos.y == Previous->y)
+                        else if(Previous->y - 1 == Next->y && (jeu->barriers[i].pos1.x == Next->x || jeu->barriers[i].pos1.x == Next->x - 1) && jeu->barriers[i].pos1.y == Previous->y)
                             O = true;
                     }
                 }
@@ -179,9 +186,9 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
                 {
                     if(jeu->barriers[i].isHorizontal == 0)
                     {
-                        if(Previous->x + 1 == Next->x && (jeu->barriers[i].pos.y == Previous->y || jeu->barriers[i].pos.y == Previous->y + 1) && jeu->barriers[i].pos.x == Previous->x)
+                        if(Previous->x + 1 == Next->x && (jeu->barriers[i].pos1.y == Previous->y || jeu->barriers[i].pos1.y == Previous->y + 1) && jeu->barriers[i].pos1.x == Previous->x)
                             O = true;
-                        else if(Previous->x - 1 == Next->x && (jeu->barriers[i].pos.y == Next->y || jeu->barriers[i].pos.y == Next->y + 1) && jeu->barriers[i].pos.x == Next->x)
+                        else if(Previous->x - 1 == Next->x && (jeu->barriers[i].pos1.y == Next->y || jeu->barriers[i].pos1.y == Next->y + 1) && jeu->barriers[i].pos1.x == Next->x)
                             O = true;
                     }
                 }
@@ -195,12 +202,12 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
                     {
                         if(jeu->barriers[i].isHorizontal)
                         {
-                            if((jeu->barriers[i].pos.x == Previous->x || jeu->barriers[i].pos.x == Previous->x-1) && jeu->barriers[i].pos.y == Next->y)
+                            if((jeu->barriers[i].pos1.x == Previous->x || jeu->barriers[i].pos1.x == Previous->x-1) && jeu->barriers[i].pos1.y == Next->y)
                                 O = true;
                         }
                         else
                         {
-                            if((jeu->barriers[i].pos.y == Previous->y|| jeu->barriers[i].pos.x == Previous->y+1) && jeu->barriers[i].pos.x == Next->x)
+                            if((jeu->barriers[i].pos1.y == Previous->y|| jeu->barriers[i].pos1.x == Previous->y+1) && jeu->barriers[i].pos1.x == Next->x)
                                 O = true;
                         }
                     }
@@ -211,12 +218,12 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
                     {
                         if(jeu->barriers[i].isHorizontal)
                         {
-                            if((jeu->barriers[i].pos.x == Previous->x || jeu->barriers[i].pos.x == Previous->x+1) && jeu->barriers[i].pos.y == Previous->y)
+                            if((jeu->barriers[i].pos1.x == Previous->x || jeu->barriers[i].pos1.x == Previous->x+1) && jeu->barriers[i].pos1.y == Previous->y)
                                 O = true;
                         }
                         else
                         {
-                            if((jeu->barriers[i].pos.y == Previous->y|| jeu->barriers[i].pos.y == Previous->y-1) && jeu->barriers[i].pos.x == Previous->x)
+                            if((jeu->barriers[i].pos1.y == Previous->y|| jeu->barriers[i].pos1.y == Previous->y-1) && jeu->barriers[i].pos1.x == Previous->x)
                                 O = true;
                         }
                     }
@@ -227,12 +234,12 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
                     {
                         if(jeu->barriers[i].isHorizontal)
                         {
-                            if((jeu->barriers[i].pos.x == Next->x || jeu->barriers[i].pos.x == Next->x-1) && jeu->barriers[i].pos.y == Next->y)
+                            if((jeu->barriers[i].pos1.x == Next->x || jeu->barriers[i].pos1.x == Next->x-1) && jeu->barriers[i].pos1.y == Next->y)
                                 O = true;
                         }
                         else
                         {
-                            if((jeu->barriers[i].pos.y == Previous->y|| jeu->barriers[i].pos.y == Previous->y+1) && jeu->barriers[i].pos.x == Next->x)
+                            if((jeu->barriers[i].pos1.y == Previous->y|| jeu->barriers[i].pos1.y == Previous->y+1) && jeu->barriers[i].pos1.x == Next->x)
                                 O = true;
                         }
                     }
@@ -243,12 +250,12 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
                     {
                         if(jeu->barriers[i].isHorizontal)
                         {
-                            if((jeu->barriers[i].pos.x == Previous->x || jeu->barriers[i].pos.x == Previous->x-1) && jeu->barriers[i].pos.y == Previous->y)
+                            if((jeu->barriers[i].pos1.x == Previous->x || jeu->barriers[i].pos1.x == Previous->x-1) && jeu->barriers[i].pos1.y == Previous->y)
                                 O = true;
                         }
                         else
                         {
-                            if((jeu->barriers[i].pos.y == Previous->y|| jeu->barriers[i].pos.y == Previous->y-1) && jeu->barriers[i].pos.x == Next->x)
+                            if((jeu->barriers[i].pos1.y == Previous->y|| jeu->barriers[i].pos1.y == Previous->y-1) && jeu->barriers[i].pos1.x == Next->x)
                                 O = true;
                         }
                     }
@@ -308,13 +315,13 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
         {
             if(jeu->barriers[i].isHorizontal)
             {
-                Add(Occupees,jeu->barriers[i].pos.x,jeu->barriers[i].pos.y);
-                Add(Occupees,jeu->barriers[i].pos.x+1,jeu->barriers[i].pos.y);
+                Add(Occupees,jeu->barriers[i].pos1.x,jeu->barriers[i].pos1.y);
+                Add(Occupees,jeu->barriers[i].pos1.x+1,jeu->barriers[i].pos1.y);
             }
             else
             {
-                Add(Occupees,jeu->barriers[i].pos.x,jeu->barriers[i].pos.y);
-                Add(Occupees,jeu->barriers[i].pos.x,jeu->barriers[i].pos.y-1);
+                Add(Occupees,jeu->barriers[i].pos1.x,jeu->barriers[i].pos1.y);
+                Add(Occupees,jeu->barriers[i].pos1.x,jeu->barriers[i].pos1.y-1);
             }
 
             for(i=0;i<=8;i++)
@@ -396,8 +403,8 @@ int main()
     P1->x = P0->x;
     P1->y = P0->y;
 
-    jeu.barriers[0].pos.x = P0->x-1;
-    jeu.barriers[0].pos.y = P0->y;
+    jeu.barriers[0].pos1.x = P0->x-1;
+    jeu.barriers[0].pos1.y = P0->y;
     jeu.barriers[0].isHorizontal = 0;
 
     // printf("%d",Is_Diagonal_or_Simple_Moove(P0,P1));
