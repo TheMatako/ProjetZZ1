@@ -35,8 +35,10 @@ typedef struct {
 } Position;
 
 typedef struct {
-    Position pos;    // Position de la barrière
+    Position pos1;    // Position de la barrière (Ne pas oublier que la barrière fait 2 case)
+    Position pos2;
     int isHorizontal; // 1 pour horizontal, 0 pour vertical
+    bool isPlaced;
 } Barrier;
 
 typedef struct {
@@ -52,8 +54,7 @@ typedef struct {
 typedef struct {
     Player players[2]; // Joueurs (0: humain, 1: IA)
     Barrier barriers[20]; // Toutes les barrières placées sur le plateau
-    int matrixBarrierPosition[8][8];
-    Box boxes[BOX_NUMBER_LINE][BOX_NUMBER_COLUMN]; // Toutes les (positions des) cases sur le plateau
+    Box boxes[BOX_NUMBER_COLUMN][BOX_NUMBER_LINE]; // Toutes les (positions des) cases sur le plateau
     int barrierCount;     // Nombre actuel de barrières placées
     bool isGameRunning;
     int playerTurn;
@@ -80,11 +81,12 @@ typedef struct Liste_Coups
 } Liste_Coups_t;
 */
 void initSDL(SDL_Window **window, SDL_Renderer **renderer);
-void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, int boxesPlayable[BOX_NUMBER_LINE][BOX_NUMBER_LINE]);
+void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, int boxesPlayable[BOX_NUMBER_COLUMN][BOX_NUMBER_LINE]);
 void loadTextures(SDL_Renderer *renderer, SDL_Texture ***allImages);
 GameState initGame();
-void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvementEffectue, int boxesPlayable[BOX_NUMBER_LINE][BOX_NUMBER_LINE]);
-void getPositionPlayable(GameState game, int *positionX, int *positionY, int boxesPlayable[BOX_NUMBER_LINE][BOX_NUMBER_LINE]);
+void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvementEffectue, int boxesPlayable[BOX_NUMBER_COLUMN][BOX_NUMBER_LINE]);
+void getPositionPlayable(GameState game, int *positionX, int *positionY, int boxesPlayable[BOX_NUMBER_COLUMN][BOX_NUMBER_LINE]);
+int isThereBarrier(GameState game, int otherPlayerPosX, int otherPlayerPosY, int direction);
 /*
 int Compare_Place(Pos1,Pos2)
 int Is_Diagonal_or_Simple_Moove(GameState * jeu, Position * Previous, Position * Next)
