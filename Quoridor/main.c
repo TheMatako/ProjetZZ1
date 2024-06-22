@@ -4,16 +4,16 @@
 #include <stdbool.h>
 #include "structureQuoridor.h"
 
-int main()
+int main() 
 {
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
     SDL_Texture **allImages = malloc(16 * sizeof(SDL_Texture *));
     initSDL(&window, &renderer);
 
-    // On load toutes les images nécessaires au jeu
-    // Actuellement de manière pas propre
-    // Images 0 à 9 de 0 à 9, Box = 10, Player 1 = 11, Player 2 = 12, BarrièreHorizon = 13, BarrièreVerti = 14, Curseur = 15
+    // On load toutes les images n�cessaires au jeu
+    // Actuellement de mani�re pas propre
+    // Images 0 � 9 de 0 � 9, Box = 10, Player 1 = 11, Player 2 = 12, Barri�reHorizon = 13, Barri�reVerti = 14, Curseur = 15
     loadTextures(renderer, &allImages);
 
     // On initialise le jeu et ses composantes
@@ -21,6 +21,11 @@ int main()
     bool mouvementEffectue = false;
     while (Jeu.isGameRunning) 
     {
+        int boxesPlayable[BOX_NUMBER_COLUMN][BOX_NUMBER_LINE] = {0};
+        SDL_SetRenderDrawColor(renderer, 55, 55, 55, 255);
+        SDL_RenderClear(renderer);
+
+        drawGame(renderer, allImages, Jeu, boxesPlayable);
         SDL_Event event;
         while (SDL_PollEvent(&event)) 
         {
@@ -30,8 +35,8 @@ int main()
             }
             else if (event.type == SDL_KEYDOWN)
             {
-                switch (event.key.keysym.scancode)  // On gère les déplacements en fonction des flèches directionnelles pressées
-                {                                   // On évite de permettre au serpent de faire un demi tour d'un coup
+                switch (event.key.keysym.scancode)  // On g�re les d�placements en fonction des fl�ches directionnelles press�es
+                {                                   // On �vite de permettre au serpent de faire un demi tour d'un coup
                     case SDL_SCANCODE_ESCAPE:
                         Jeu.isGameRunning = false;
                         break;
@@ -46,7 +51,7 @@ int main()
             {
                 if (event.button.button == SDL_BUTTON_LEFT)
                 {
-                    getCursorIndex(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, &mouvementEffectue);
+                    getCursorIndex(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, &mouvementEffectue, boxesPlayable);
                     if (mouvementEffectue)
                     {
                         Jeu.playerTurn = (Jeu.playerTurn + 1) % 2;
@@ -56,10 +61,6 @@ int main()
             }
         }
 
-        SDL_SetRenderDrawColor(renderer, 55, 55, 55, 255);
-        SDL_RenderClear(renderer);
-
-        drawGame(renderer, allImages, Jeu);
 
         SDL_RenderPresent(renderer);
         SDL_Delay(100);

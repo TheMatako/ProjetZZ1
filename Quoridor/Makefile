@@ -1,24 +1,23 @@
-SRC=pave.c
-SRC=$(wildcard *.c)  # en commentaire, je ne suis pas un grand amateur
-EXE=pave.out
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -std=c11 -MMD -Og -g
+SDL2_CFLAGS = $(shell sdl2-config --cflags)
+SDL2_LIBS = $(shell sdl2-config --libs) -lSDL2_image
 
-CC=gcc
-CFLAGS:=-Wall -Wextra -MMD -Og -g $(sdl2-config --cflags)
-CFLAGS:=-Wall -Wextra -MMD -O2 $(sdl2-config --cflags)  # pour la version release
-LDFLAGS:=-lSDL2_image -lSDL2_ttf -lSDL2_gfx -lm -lSDL2
+SRCS = main.c structureQuoridor.c
+OBJS = $(SRCS:%.c=build/%.o)
+DEP = $(OBJS:.o=.d)
+EXEC = main
 
-OBJ=$(addprefix build/,$(SRC:.c=.o))
-DEP=$(addprefix build/,$(SRC:.c=.d))
+all: $(EXEC)
 
-all: $(OBJ)
-	$(CC) -o $(EXE) $^ $(LDFLAGS)
+$(EXEC): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $@ $(SDL2_LIBS)
 
 build/%.o: %.c
 	@mkdir -p build
-	$(CC) $(CFLAGS) -o $@ -c $<
+	$(CC) $(CFLAGS) $(SDL2_CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf build core *.o
+	rm -rf build core *.o $(EXEC)
 
 -include $(DEP)
-
