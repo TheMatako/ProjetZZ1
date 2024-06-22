@@ -102,13 +102,13 @@ void Affichage (Coup_t * Tete)
     printf("FIN\n");
 }
 
-void Initialiser_Liste(int T[8][8])
+void Initialiser_Liste(int T[9][9])
 {
     int i; int j;
 
-    for(i=0;i<=7;i++)
+    for(i=0;i<=8;i++)
     {
-        for(j=0;j<=7;j++)
+        for(j=0;j<=8;j++)
         {
             T[i][j] = 0;
             printf("%d",T[i][j]);
@@ -116,9 +116,9 @@ void Initialiser_Liste(int T[8][8])
     }
 }
 
-void Add(int T[8][8],int x,int y)  { T[x][y] = T[y][x] = 1;}
+void Add(int T[9][9],int x,int y)  { T[x][y] = T[y][x] = 1;}
 
-bool Present(int T[8][8],int x,int y)
+bool Present(int T[9][9],int x,int y)
 {   
     if(T[x][y] && T[y][x]) {return true;}
     return false;
@@ -299,9 +299,9 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
         
     // On préfère poser une barrière
 
-    /* if(jeu->players[Joueur].barriersLeft)
+    if(jeu->players[Joueur].barriersLeft)
     {    
-        int Occupees[8][8];
+        int Occupees[9][9];
         Initialiser_Liste(Occupees);
 
         for(i=0;i<=19;i++)
@@ -314,12 +314,12 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
             else
             {
                 Add(Occupees,jeu->barriers[i].pos.x,jeu->barriers[i].pos.y);
-                Add(Occupees,jeu->barriers[i].pos.x+1,jeu->barriers[i].pos.y-1);
+                Add(Occupees,jeu->barriers[i].pos.x,jeu->barriers[i].pos.y-1);
             }
 
-            for(i=0;i<=80;i++)
+            for(i=0;i<=8;i++)
             {
-                for(j=0;j<=80;j++)
+                for(j=0;j<=8;j++)
                 {
                     if(!Present(Occupees,i,j) && !Present(Occupees,i+1,j))
                         L = Ajouter_Coup_Liste(L,0,0,i,j,1);
@@ -328,7 +328,7 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
                 }
             }
         }    
-    }*/
+    }
 
     return L;
 }

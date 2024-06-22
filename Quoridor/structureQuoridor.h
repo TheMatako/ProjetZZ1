@@ -60,6 +60,7 @@ typedef struct {
     int playerTurn;
     
 } GameState;
+
 /*
 typedef struct Coup
 {   
