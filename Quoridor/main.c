@@ -9,6 +9,12 @@ int main()
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
     SDL_Texture **allImages = malloc(16 * sizeof(SDL_Texture *));
+
+    if (!allImages) {
+        fprintf(stderr, "Failed to allocate memory for images\n");
+        return 1;
+    }
+
     initSDL(&window, &renderer);
 
     // On load toutes les images n�cessaires au jeu
