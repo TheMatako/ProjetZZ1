@@ -10,8 +10,8 @@ typedef struct Coup
     struct Coup * Prec;
     struct Coup * Suiv;
 
-    Position * NewPos;
-    Barrier * NewBar;
+    Position * NewPos; // Nouvelle Position engendré par le coup
+    Barrier * NewBar; // Nouvelle Barrière
 
 } Coup_t;
 
@@ -25,7 +25,7 @@ typedef struct Liste_Coups
 } Liste_Coups_t;
 
 Liste_Coups_t * Creer_Liste_Coups()
-{
+{ // Initialise une Liste de Coups (Liste Chaînée)
     Liste_Coups_t * NewL = malloc(sizeof(Liste_Coups_t));
 
     if(NewL)
@@ -39,7 +39,8 @@ Liste_Coups_t * Creer_Liste_Coups()
 }
 
 Liste_Coups_t * Ajouter_Coup_Liste(Liste_Coups_t * L, int xp, int yp ,int xb ,int yb ,int H)
-{
+{ // Ajoute un coup à une liste de Coups, il faut définir 
+  // la nouvelle position (xp;yp) et la nouvelle barrière (xb;yb)
     Coup_t * NewC = malloc(sizeof(Coup_t));
     Position * NewP = malloc(sizeof(Position));
     Barrier * NewB = malloc(sizeof(Barrier));
@@ -87,7 +88,7 @@ Liste_Coups_t * Ajouter_Coup_Liste(Liste_Coups_t * L, int xp, int yp ,int xb ,in
 }
 
 void Affichage_Liste_Coups(Liste_Coups_t * L) 
-{
+{ // Affiche une liste de Coups
     if(L->Tete)
     {
         Coup_t * Courant = L->Tete;
@@ -113,7 +114,7 @@ void Affichage_Liste_Coups(Liste_Coups_t * L)
 }
 
 Liste_Coups_t * Suppression_Tete(Liste_Coups_t * L)
-{
+{ // Supprime le premier élément d'une Liste de Coups
     if (L->Tete) 
     {
         Coup_t * Temp = L->Tete;
@@ -131,7 +132,7 @@ Liste_Coups_t * Suppression_Tete(Liste_Coups_t * L)
 }
 
 void Free_Liste(Liste_Coups_t * L) 
-{
+{ // Libère entièrement une Liste de Coups
     Coup_t * Courant = L->Tete;
     Coup_t * NextCoup ;
 
@@ -146,7 +147,8 @@ void Free_Liste(Liste_Coups_t * L)
 }
 
 int Compare_Place(Position * Pos1,Position * Pos2)
-{
+{ // Observe simplement si deux positions sont les mêmes. 
+  // 0 : Non , 1 : Oui
     if(Pos1->x == Pos2->x && Pos1->y == Pos2->y)
         return 1;
     return 0;
@@ -171,12 +173,13 @@ int Is_Diagonal_or_Simple_Moove(Position * Previous, Position * Next)
 }
 
 bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
-{ // True : Il y a un obstacle , False : Aucun Obstacle
+{ // Observe si un déplacement entre la position Previous et la position Next est possible
+  // True : Il y a un obstacle , False : Aucun Obstacle
     int i; bool O = false;
 
     if((Next->y >= 0) && ((Next->x >= 0)) && (Next->y < BOX_NUMBER_LINE) && (Next->x < BOX_NUMBER_COLUMN) 
     && !Compare_Place(Next,&jeu->players[0].pos) && !Compare_Place(Next,&jeu->players[1].pos))
-    {
+    { // Nous ne sortons pas du plateau, et ne rentrons pas en colision avec l'autre joueur
         int Direction = Is_Diagonal_or_Simple_Moove(Previous,Next);
 
         switch(Direction)
@@ -288,7 +291,9 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
 }
 
 int EndGame(GameState * jeu, int joueur)
-{
+{ // Désigne si le jeu actuel est Terminé, 
+  // et détermine l'issu selon le point de vue du joueur entré.
+  // 0 : Jeu non Terminé , 1 : l'IA a gagné , -1 : Humain a gagné
     if(joueur == 1)
     {
         if(jeu->players[joueur].pos.y == 0)
@@ -300,7 +305,8 @@ int EndGame(GameState * jeu, int joueur)
 }
 
 Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
-{   
+{   // Renvoit la liste des coups possibles à partir d'une position de jeu, en fonction du joueur
+    //  La fameuse fonction, ma plus grande fierté.
     if(!EndGame(jeu,Joueur))
     {   
         int i; int j;
@@ -378,7 +384,7 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
 }
 
 GameState initGame_2()
-{
+{ // Initialise un début de partie
     GameState jeu = 
     {
         .players = {{.pos = {4, 0}, .barriersLeft = 10}, {.pos = {4, 8}, .barriersLeft = 10}},
@@ -401,7 +407,7 @@ GameState initGame_2()
 }
 
 GameState * Appliquer_Coup(GameState * jeu, Coup_t * Coup, int joueur) 
-{ //  Ne fonctionne pas
+{ // Pour compter le nombre de victoires à partir d'une position de jeu
     if(Coup)
     {
         jeu->players[joueur].pos.x = Coup->NewPos->x;
@@ -424,13 +430,15 @@ GameState * Appliquer_Coup(GameState * jeu, Coup_t * Coup, int joueur)
 }
 
 int Score(GameState * jeu, int joueur, Liste_Coups_t * Possibilites, int S, int C)
-{ // Ne fonctionne pas
-
+{ // NE FONCTIONNE PAS
+  // Pour compter le nombre de victoires jusqu'à profondeur 5
+  // à partir d'une position de jeu. 
+  // La liste entrée doit être produite par Generer_Coup, S et C doivent être nules
     Coup_t * Intermediaire = Possibilites->Tete;
 
     Affichage_Liste_Coups(Possibilites);
 
-    if(C < 2 && Possibilites->Tete)
+    if(C < 5 && Possibilites->Tete)
     {
         if(joueur == 1)
         {
