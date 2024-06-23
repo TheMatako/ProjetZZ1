@@ -86,26 +86,27 @@ Liste_Coups_t * Ajouter_Coup_Liste(Liste_Coups_t * L, int xp, int yp ,int xb ,in
     return L;
 }
 
-void Affichage (Liste_Coups_t * L) 
+void Affichage_Liste_Coups(Liste_Coups_t * L) 
 {
-    Coup_t * Courant = L->Tete;
-    Coup_t * Dernier = Courant;
-
-    printf("XP YP XB YB Sens \n\n");
-
-    printf("| %d %d %d %d %d | -> "/* Courant->Prec*/,Courant->NewPos->x,Courant->NewPos->y,
-                                    Courant->NewBar->pos1.x,Courant->NewBar->pos1.y,
-                                    Courant->NewBar->isHorizontal/*Courant->Suiv*/);
-
-    Dernier = Courant;
-    Courant = Courant->Suiv;
-
-    while (Courant && Courant != Dernier)
+    if(L->Tete)
     {
+        Coup_t * Courant = L->Tete;
+        Coup_t * Dernier = Courant;
+
         printf("| %d %d %d %d %d | -> "/* Courant->Prec*/,Courant->NewPos->x,Courant->NewPos->y,
-                                    Courant->NewBar->pos1.x,Courant->NewBar->pos1.y,
-                                    Courant->NewBar->isHorizontal/*Courant->Suiv*/);
+                                        Courant->NewBar->pos1.x,Courant->NewBar->pos1.y,
+                                        Courant->NewBar->isHorizontal/*Courant->Suiv*/);
+
+        Dernier = Courant;
         Courant = Courant->Suiv;
+
+        while (Courant && Courant != Dernier)
+        {
+            printf("| %d %d %d %d %d | -> "/* Courant->Prec*/,Courant->NewPos->x,Courant->NewPos->y,
+                                        Courant->NewBar->pos1.x,Courant->NewBar->pos1.y,
+                                        Courant->NewBar->isHorizontal/*Courant->Suiv*/);
+            Courant = Courant->Suiv;
+        } 
     }
 
     printf("FIN\n");
@@ -114,7 +115,7 @@ void Affichage (Liste_Coups_t * L)
 Liste_Coups_t * Suppression_Tete(Liste_Coups_t * L)
 {
     if (L->Tete) 
-    {      
+    {
         Coup_t * Temp = L->Tete;
         L->Tete = L->Tete->Suiv;
 
@@ -129,7 +130,7 @@ Liste_Coups_t * Suppression_Tete(Liste_Coups_t * L)
     return L;
 }
 
-void FreeListe(Liste_Coups_t * L) 
+void Free_Liste(Liste_Coups_t * L) 
 {
     Coup_t * Courant = L->Tete;
     Coup_t * NextCoup ;
@@ -166,7 +167,6 @@ int Is_Diagonal_or_Simple_Moove(Position * Previous, Position * Next)
         return 0;
     else if(Previous->x + 1 == Next->x || Previous->x - 1 == Next->x)
         return 1;
-
     return 2;
 }
 
@@ -287,76 +287,94 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
     return O;
 }
 
+int EndGame(GameState * jeu, int joueur)
+{
+    if(joueur == 1)
+    {
+        if(jeu->players[joueur].pos.y == 0)
+            return 1;
+    }
+    else if(jeu->players[joueur].pos.y == 8)
+        return -1;
+    return 0;
+}
+
 Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
-{ // Il vaut mieux que L soit vide
-    int i; int j;
+{   
+    if(!EndGame(jeu,Joueur))
+    {   
+        // int i; int j;
 
-    Liste_Coups_t * L = Creer_Liste_Coups();
+        Liste_Coups_t * L = Creer_Liste_Coups();
 
-    // On change de position
+        // On change de position
 
-    Position Place = jeu->players[Joueur].pos;
-    Position Nouvelle_Position = Place;
+        Position Place = jeu->players[Joueur].pos;
+        Position Nouvelle_Position = Place;
 
-    Nouvelle_Position.y = Nouvelle_Position.y + 1;
+        Nouvelle_Position.y = Nouvelle_Position.y + 1;
 
-    if(!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) /* Si il est possible d'aller en avant */
-        L = Ajouter_Coup_Liste(L,Place.x,Place.y + 1,0,0,0);
-    
-    Nouvelle_Position.y = Nouvelle_Position.y - 2;
+        if(!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) /* Si il est possible d'aller en avant */
+            L = Ajouter_Coup_Liste(L,Place.x,Place.y + 1,0,0,0);
+        
+        Nouvelle_Position.y = Nouvelle_Position.y - 2;
 
-    if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) /* Si il est possible d'aller en arrière*/
-        L = Ajouter_Coup_Liste(L,Place.x,Place.y - 1,0,0,0);
+        if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) /* Si il est possible d'aller en arrière*/
+            L = Ajouter_Coup_Liste(L,Place.x,Place.y - 1,0,0,0);
 
-    Nouvelle_Position.y = Nouvelle_Position.y + 1;
-    Nouvelle_Position.x = Nouvelle_Position.x - 1;
-    
-    if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) /* Si il est possible d'aller à Gauche */
-        L = Ajouter_Coup_Liste(L,Place.x - 1,Place.y,0,0,0);
-    
-    Nouvelle_Position.x = Nouvelle_Position.x + 2;
+        Nouvelle_Position.y = Nouvelle_Position.y + 1;
+        Nouvelle_Position.x = Nouvelle_Position.x - 1;
+        
+        if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) /* Si il est possible d'aller à Gauche */
+            L = Ajouter_Coup_Liste(L,Place.x - 1,Place.y,0,0,0);
+        
+        Nouvelle_Position.x = Nouvelle_Position.x + 2;
 
-    if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) /* Si il est possible d'aller à droite*/
-        L = Ajouter_Coup_Liste(L,Place.x + 1,Place.y,0,0,0);
-    
-    // On préfère poser une barrière
+        if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) /* Si il est possible d'aller à droite*/
+            L = Ajouter_Coup_Liste(L,Place.x + 1,Place.y,0,0,0);
+        
+        // On préfère poser une barrière
 
-    if(jeu->players[Joueur].barriersLeft)
-        {
-            int Occupees[8][8];
-
-            for(i=0;i<=7;i++)
+        /* if(jeu->players[Joueur].barriersLeft)
             {
-                for(j=0;i<=7;i++)
-                    Occupees[i][j] = 0;
-            }
+                int Occupees[8][8];
 
-            for(i=0;i<=19;i++)
-            {
-                if(jeu->barriers[i].isPlaced)
+                for(i=0;i<=7;i++)
                 {
-                    Occupees[jeu->barriers[i].pos1.x][jeu->barriers[i].pos1.y] = 1;
-                    Occupees[jeu->barriers[i].pos2.x][jeu->barriers[i].pos2.y] = 1;
+                    for(j=0;i<=7;i++)
+                        Occupees[i][j] = 0;
                 }
-            }
 
-            for(i=0;i<=7;i++)
-            {
-                for(j=0;j<=7;j++)
+                for(i=0;i<=19;i++)
                 {
-                    if((i+1) < 8 && (j-1) >= 0)
+                    if(jeu->barriers[i].isPlaced)
                     {
-                        if(Occupees[i][j] != 1 && Occupees[i][j-1] != 1)
-                            L = Ajouter_Coup_Liste(L,0,0,i,j,0);
-                        if(Occupees[i][j] != 1 && Occupees[i+1][j] != 1)
-                            L = Ajouter_Coup_Liste(L,0,0,i,j,1);
+                        Occupees[jeu->barriers[i].pos1.x][jeu->barriers[i].pos1.y] = 1;
+                        Occupees[jeu->barriers[i].pos2.x][jeu->barriers[i].pos2.y] = 1;
                     }
                 }
-                   
-            }
-        }
 
-    return L;
+                for(i=0;i<=7;i++)
+                {
+                    for(j=0;j<=7;j++)
+                    {
+                        if((i+1) < 8 && (j-1) >= 0)
+                        {
+                            if(Occupees[i][j] != 1 && Occupees[i][j-1] != 1)
+                                L = Ajouter_Coup_Liste(L,0,0,i,j,0);
+                            if(Occupees[i][j] != 1 && Occupees[i+1][j] != 1)
+                                L = Ajouter_Coup_Liste(L,0,0,i,j,1);
+                        }
+                    }
+                    
+                }
+            }*/
+
+        return L;
+    }
+    else
+        return NULL;  
+
 }
 
 GameState initGame()
@@ -382,12 +400,15 @@ GameState initGame()
     return jeu;
 }
 
-GameState * Appliquer_Coup(GameState * jeu, Coup_t * Coup, int joueur)
-{
-    jeu->players[joueur].pos.x = Coup->NewPos->x;
-    jeu->players[joueur].pos.y = Coup->NewPos->y;
+GameState * Appliquer_Coup(GameState * jeu, Coup_t * Coup, int joueur) 
+{ //  Ne fonctionne pas
+    if(Coup)
+    {
+        jeu->players[joueur].pos.x = Coup->NewPos->x;
+        jeu->players[joueur].pos.y = Coup->NewPos->y;
+    }
 
-    int i = 0;
+    /* int i = 0;
 
     while(jeu->barriers[i].pos1.x)
     {
@@ -397,53 +418,33 @@ GameState * Appliquer_Coup(GameState * jeu, Coup_t * Coup, int joueur)
             jeu->barriers[i].pos2 = Coup->NewBar->pos2;
             jeu->barriers[i].isHorizontal = Coup->NewBar->isHorizontal;  
         }
-    }
+    }*/
 
     return jeu;
 }
 
-int EndGame(GameState * jeu, int joueur)
-{
-    if(joueur == 1)
-    {
-        if(jeu->players[joueur].pos.y == 0)
-            return 1;
-    }
-    else if(jeu->players[joueur].pos.y == 8)
-        return -1;
-    return 0;
-}
+int Score(GameState * jeu, int joueur, Liste_Coups_t * Possibilites, int S, int C)
+{ // Ne fonctionne pas
 
-int Score(GameState * jeu, int joueur, int S, Liste_Coups_t * L)
-{   
-    if(L->Tete)
-    {
-        GameState * Intermediaire = Appliquer_Coup(jeu,L->Tete,joueur);
+    Coup_t * Intermediaire = Possibilites->Tete;
 
-        if(EndGame(Intermediaire,joueur) == 1)
-            return 1;
-        else if(EndGame(Intermediaire,joueur) == 0)
+    Affichage_Liste_Coups(Possibilites);
+
+    if(C < 2 && Possibilites->Tete)
+    {
+        if(joueur == 1)
         {
-            if(joueur == 0)
-                S = S + Score(Intermediaire,1,S,Suppression_Tete(L));
-            else
-                S = S + Score(Intermediaire,0,S,Suppression_Tete(L));
-        }   
-    }
+            if(EndGame(Appliquer_Coup(jeu,Intermediaire,joueur),joueur) == 1)
+                return 1;
 
+            else if(EndGame(Appliquer_Coup(jeu,Intermediaire,joueur),joueur) == 0)
+                S = S + Score(Appliquer_Coup(jeu,Intermediaire,joueur),0,Generer_Coup(Appliquer_Coup(jeu,Intermediaire,joueur),0),S,C++);
+        }
+        else if(EndGame(Appliquer_Coup(jeu,Intermediaire,joueur),joueur) == 0)
+                S = S + Score(Appliquer_Coup(jeu,Intermediaire,joueur),1,Generer_Coup(Appliquer_Coup(jeu,Intermediaire,joueur),1),S,C++);
+    }
     return S;
 }
-
-/* Coup_t * Choisir_Coup(GameState * jeu, int joueur, Liste_Coups_t * L)
-{   
-    Coup_t * Courant = L->Tete;
-    Coup_t * Dernier = Courant;
-
-    while (Courant && Courant != Dernier)
-    {
-        if(Score(Appliquer_Coup(jeu,Courant)))
-    }
-} */
 
 int main()
 {
@@ -451,9 +452,7 @@ int main()
 
     Liste_Coups_t * L = Generer_Coup(&jeu,1);
 
-    Affichage(L);
+    // printf("%d",Score(&jeu,1,L,0,1));
 
-    printf("%d",Score(&jeu,0,1,Generer_Coup(&jeu,1)));
-
-    FreeListe(L);
+    Free_Liste(L);
 }
