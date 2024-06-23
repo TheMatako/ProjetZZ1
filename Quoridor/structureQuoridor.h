@@ -39,6 +39,8 @@ typedef struct {
     Position pos2;
     int isHorizontal; // 1 pour horizontal, 0 pour vertical
     bool isPlaced;
+    SDL_Rect rect;  
+
 } Barrier;
 
 typedef struct {
@@ -58,6 +60,9 @@ typedef struct {
     int barrierCount;     // Nombre actuel de barrières placées
     bool isGameRunning;
     int playerTurn;
+    bool isDragging;   // Indique si un drag est en cours
+    Barrier *draggedBarrier; // Pointeur vers la barrière actuellement déplacée
+    SDL_Rect dragRect; // Rectangle de rendu pour la barrière en cours de drag
     
 } GameState;
 /*
@@ -83,7 +88,7 @@ typedef struct Liste_Coups
 void initSDL(SDL_Window **window, SDL_Renderer **renderer);
 void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, int boxesPlayable[BOX_NUMBER_COLUMN][BOX_NUMBER_LINE]);
 void loadTextures(SDL_Renderer *renderer, SDL_Texture ***allImages);
-GameState initGame();
+GameState initGame(SDL_Texture* image_barreir);
 void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvementEffectue, int boxesPlayable[BOX_NUMBER_COLUMN][BOX_NUMBER_LINE]);
 void getPositionPlayable(GameState game, int *positionX, int *positionY, int boxesPlayable[BOX_NUMBER_COLUMN][BOX_NUMBER_LINE]);
 int isThereBarrier(GameState game, int otherPlayerPosX, int otherPlayerPosY, int direction);

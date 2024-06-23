@@ -6,21 +6,40 @@
 
 
 
-GameState initGame()
+GameState initGame(SDL_Texture* image_barrier)
 {
     GameState jeu = 
     {
         .players = {{.pos = {4, 8}, .barriersLeft = 10}, {.pos = {4, 0}, .barriersLeft = 10}},
         .barrierCount = 0,
         .isGameRunning = true,
-        .playerTurn = 0
+        .playerTurn = 0,
+        .isDragging = false,
+        .draggedBarrier = NULL
     };
 
     memset(jeu.barriers, 0, sizeof(jeu.barriers)); // Initialise toutes les barrières à 0
-    for (int i = 0; i < 20; i++)
-    {
-        jeu.barriers[i].isPlaced = false; 
+    for (int i = 0; i < 20; i++) {
+    if (i % 2 == 0) {  // Supposons une alternance pour l'exemple
+        // Initialisation de la barrière verticale
+        int barrierVerticalWidth, barrierVerticalHeight;
+        SDL_QueryTexture(image_barrier, NULL, NULL, &barrierVerticalWidth, &barrierVerticalHeight);
+        float barrierVerticalX = WINDOW_WIDTH - (3*SPACE_LENGTH+BOX_WIDTH)+ barrierVerticalWidth/2;
+        int barrierVerticalY = WINDOW_HEIGHT - 125;
+        jeu.barriers[i].rect.x = barrierVerticalX;
+        jeu.barriers[i].rect.y = barrierVerticalY;
+        jeu.barriers[i].rect.w = SPACE_LENGTH;  // Supposons que SPACE_LENGTH est la largeur
+        jeu.barriers[i].rect.h = 100;           // Hauteur arbitraire
+    } else {
+        // Initialisation de la barrière horizontale
+        float barrierHorizontalX = SPACE_LENGTH + BOX_WIDTH/2;
+        int barrierHorizontalY = WINDOW_HEIGHT - 85;
+        jeu.barriers[i].rect.x = barrierHorizontalX;
+        jeu.barriers[i].rect.y = barrierHorizontalY;
+        jeu.barriers[i].rect.w = 2 * (BOX_WIDTH + SPACE_LENGTH);  // Largeur calculée
+        jeu.barriers[i].rect.h = 20;                              // Hauteur arbitraire
     }
+}
 
 
     for (int i = 0; i < BOX_NUMBER_COLUMN; i++) 
@@ -181,6 +200,9 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, in
         int numberY = WINDOW_HEIGHT - 125;
         SDL_Rect dstRectNumber = {numberX, numberY, 4*numberWidth, 100};
         SDL_RenderCopy(renderer, allImages[Jeu.players[0].barriersLeft], NULL, &dstRectNumber);
+    }
+    if (Jeu.isDragging && Jeu.draggedBarrier != NULL) {
+        SDL_RenderCopy(renderer, allImages[13], NULL, &Jeu.dragRect); // Utilisez 13 ou 14 selon l'orientation de la barrière----------------
     }
 
 }
