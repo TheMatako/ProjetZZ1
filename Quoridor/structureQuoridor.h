@@ -39,7 +39,7 @@ typedef struct {
     Position pos2;
     int isHorizontal; // 1 pour horizontal, 0 pour vertical
     bool isPlaced;
-    SDL_Rect rect;  
+    SDL_Rect rect;  //
 
 } Barrier;
 

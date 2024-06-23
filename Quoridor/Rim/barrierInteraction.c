@@ -4,8 +4,6 @@
 
 
 
-
-
 void handleMouseDown(SDL_MouseButtonEvent *event, GameState *gameState) {
     if (event->button == SDL_BUTTON_LEFT) {
         SDL_Point mousePos = {event->x, event->y};
@@ -13,15 +11,19 @@ void handleMouseDown(SDL_MouseButtonEvent *event, GameState *gameState) {
             if (!gameState->barriers[i].isPlaced && isPointInsideRect(mousePos, gameState->barriers[i].rect)) {
                 gameState->isDragging = true;
                 gameState->draggedBarrier = &gameState->barriers[i];
-                bool isHorizontal = gameState->barriers[i].isHorizontal; // Variable locale pour l'orientation
+                bool isHorizontal = gameState->barriers[i].isHorizontal;
+
+                printf("Dragging a %s barrier\n", isHorizontal ? "horizontal" : "vertical");
 
                 int dragWidth = isHorizontal ? BARRIER_WIDTH : BARRIER_HEIGHT;
                 int dragHeight = isHorizontal ? BARRIER_HEIGHT : BARRIER_WIDTH;
-                
+
+                printf("Initial dimensions: %d x %d\n", dragWidth, dragHeight);
+
                 gameState->dragRect = (SDL_Rect){
-                    mousePos.x - (dragWidth / 2), 
-                    mousePos.y - (dragHeight / 2), 
-                    dragWidth, 
+                    mousePos.x - (dragWidth / 2),
+                    mousePos.y - (dragHeight / 2),
+                    dragWidth,
                     dragHeight
                 };
                 break;
@@ -31,9 +33,7 @@ void handleMouseDown(SDL_MouseButtonEvent *event, GameState *gameState) {
 }
 
 
-
-
-void handleMouseMotion(SDL_MouseMotionEvent *motion, GameState *gameState) {
+/* void handleMouseMotion(SDL_MouseMotionEvent *motion, GameState *gameState) {
     if (gameState->isDragging && gameState->draggedBarrier!=NULL) {
         bool isHorizontal = gameState->draggedBarrier->isHorizontal; // Utilisation de la propriété stockée
         int dragWidth = isHorizontal ? BARRIER_WIDTH : BARRIER_HEIGHT;
@@ -41,8 +41,27 @@ void handleMouseMotion(SDL_MouseMotionEvent *motion, GameState *gameState) {
 
         gameState->dragRect.x = motion->x - (dragWidth / 2);
         gameState->dragRect.y = motion->y - (dragHeight / 2);
+
     }
 }
+
+*/
+void handleMouseMotion(SDL_MouseMotionEvent *motion, GameState *gameState) {
+    if (gameState->isDragging && gameState->draggedBarrier != NULL) {
+        bool isHorizontal = gameState->draggedBarrier->isHorizontal;
+        int dragWidth = isHorizontal ? BARRIER_WIDTH : BARRIER_HEIGHT;
+        int dragHeight = isHorizontal ? BARRIER_HEIGHT : BARRIER_WIDTH;
+
+        gameState->dragRect.x = motion->x - (dragWidth / 2);
+        gameState->dragRect.y = motion->y - (dragHeight / 2);
+        gameState->dragRect.w = dragWidth;  // Gardez les dimensions originales
+        gameState->dragRect.h = dragHeight; // Gardez les dimensions originales
+
+        
+    }
+}
+
+
 
 void handleMouseUp(SDL_MouseButtonEvent *event, GameState *gameState) {
     if (event->button == SDL_BUTTON_LEFT && gameState->isDragging) {

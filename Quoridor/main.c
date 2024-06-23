@@ -54,15 +54,13 @@ int main()
                     }
                     break;
                 case SDL_MOUSEBUTTONDOWN:
-                    if (event.button.button == SDL_BUTTON_LEFT) {
-                        getCursorIndex(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, &mouvementEffectue, boxesPlayable);
-                        if (mouvementEffectue) {
-                            Jeu.playerTurn = (Jeu.playerTurn + 1) % 2;
-                            mouvementEffectue = false;
+                        if (event.button.button == SDL_BUTTON_LEFT) {
+                            getCursorIndex(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, &mouvementEffectue, boxesPlayable);
+                            if (mouvementEffectue) {
+                                Jeu.playerTurn = (Jeu.playerTurn + 1) % 2;
+                                mouvementEffectue = false;
                         }
-                        /*if (event.button.button == SDL_BUTTON_LEFT) {
-                            ;
-                            */
+                        
                         bool onBarrier = false;
                         for (int i = 0; i < BARRIER_NUMBER && !onBarrier; i++) {
                             SDL_Point mousePos = {event.button.x, event.button.y};
@@ -74,11 +72,11 @@ int main()
                         }
 
                         if (onBarrier) {
-                        handleMouseDown(&event.button, &Jeu); // Handle drag start only if the cursor is on a barrier
+                        handleMouseDown(&event.button, &Jeu); // le drag commence que si le curseur est sur un barrière 
                         }
     
                         }
-                         break;
+                        break;
                         case SDL_MOUSEMOTION:
                         handleMouseMotion(&event.motion, &Jeu); // Gérer le mouvement du drag
                         break;

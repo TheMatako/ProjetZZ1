@@ -6,6 +6,7 @@
 
 
 
+
 GameState initGame(SDL_Texture* image_barrier)
 {
     GameState jeu = 
@@ -28,16 +29,18 @@ GameState initGame(SDL_Texture* image_barrier)
         int barrierVerticalY = WINDOW_HEIGHT - 125;
         jeu.barriers[i].rect.x = barrierVerticalX;
         jeu.barriers[i].rect.y = barrierVerticalY;
-        jeu.barriers[i].rect.w = SPACE_LENGTH;  // Supposons que SPACE_LENGTH est la largeur
-        jeu.barriers[i].rect.h = 100;           // Hauteur arbitraire
+        jeu.barriers[i].rect.w = BARRIER_HEIGHT;  
+        jeu.barriers[i].rect.h = BARRIER_WIDTH;          
+        jeu.barriers[i].isHorizontal=false;
     } else {
         // Initialisation de la barrière horizontale
         float barrierHorizontalX = SPACE_LENGTH + BOX_WIDTH/2;
         int barrierHorizontalY = WINDOW_HEIGHT - 85;
         jeu.barriers[i].rect.x = barrierHorizontalX;
         jeu.barriers[i].rect.y = barrierHorizontalY;
-        jeu.barriers[i].rect.w = 2 * (BOX_WIDTH + SPACE_LENGTH);  // Largeur calculée
-        jeu.barriers[i].rect.h = 20;                              // Hauteur arbitraire
+        jeu.barriers[i].rect.w = BARRIER_WIDTH ;  
+        jeu.barriers[i].rect.h = BARRIER_HEIGHT;       
+        jeu.barriers[i].isHorizontal=true;                      
     }
 }
 
@@ -204,6 +207,7 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, in
     if (Jeu.isDragging && Jeu.draggedBarrier != NULL) {
         SDL_RenderCopy(renderer, allImages[13], NULL, &Jeu.dragRect); // Utilisez 13 ou 14 selon l'orientation de la barrière----------------
     }
+
 
 }
 
