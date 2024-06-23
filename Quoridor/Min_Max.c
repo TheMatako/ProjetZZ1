@@ -303,7 +303,7 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
 {   
     if(!EndGame(jeu,Joueur))
     {   
-        // int i; int j;
+        int i; int j;
 
         Liste_Coups_t * L = Creer_Liste_Coups();
 
@@ -335,7 +335,7 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
         
         // On préfère poser une barrière
 
-        /* if(jeu->players[Joueur].barriersLeft)
+        if(jeu->players[Joueur].barriersLeft)
             {
                 int Occupees[8][8];
 
@@ -368,7 +368,7 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
                     }
                     
                 }
-            }*/
+            }
 
         return L;
     }
@@ -377,7 +377,7 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
 
 }
 
-GameState initGame()
+GameState initGame_2()
 {
     GameState jeu = 
     {
@@ -448,11 +448,11 @@ int Score(GameState * jeu, int joueur, Liste_Coups_t * Possibilites, int S, int 
 
 int main()
 {
-    GameState jeu = initGame();
+    GameState jeu = initGame_2();
 
     Liste_Coups_t * L = Generer_Coup(&jeu,1);
 
-    // printf("%d",Score(&jeu,1,L,0,1));
+    Affichage_Liste_Coups(L);
 
     Free_Liste(L);
 }
