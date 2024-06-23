@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <stdbool.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "structureQuoridor.h"
@@ -30,10 +30,12 @@ Liste_Coups_t * Creer_Liste_Coups()
 
     if(NewL)
     {
-        NewL->Tete =  NULL; NewL->Queue =  NULL; 
+        NewL->Tete = NULL; NewL->Queue = NULL; 
         NewL->Longueur =  0; 
         return NewL;
     }
+
+    return NULL;
 }
 
 Liste_Coups_t * Ajouter_Coup_Liste(Liste_Coups_t * L, int xp, int yp ,int xb ,int yb ,int H)
@@ -41,87 +43,105 @@ Liste_Coups_t * Ajouter_Coup_Liste(Liste_Coups_t * L, int xp, int yp ,int xb ,in
     Coup_t * NewC = malloc(sizeof(Coup_t));
     Position * NewP = malloc(sizeof(Position));
     Barrier * NewB = malloc(sizeof(Barrier));
-    Position * NewPB = malloc(sizeof(Position));
+    Position * NewPB1 = malloc(sizeof(Position));
+    Position * NewPB2 = malloc(sizeof(Position));
 
-    if(NewC && NewP && NewB && NewPB)
+    if(NewC && NewP && NewB && NewPB1 && NewPB2)
     {
         NewP->x = xp; NewP->y = yp;
-
         NewC->NewPos = NewP;
 
-        NewPB->x = xb; NewPB->x = yb;
+        NewPB1->x = xb; NewPB1->y = yb;
 
-        NewB->pos = *NewPB;
+        if(H) 
+        { 
+            NewPB2->x = xb+1; 
+            NewPB2->y = yb;
+        }
+        else 
+        {
+            NewPB2->x = xb; 
+            NewPB2->y = yb-1;
+        }
+            
+        NewB->pos1 = *NewPB1;
+        NewB->pos2 = *NewPB2;
         NewB->isHorizontal = H;
 
-        NewC->NewPos = NewP;
         NewC->NewBar = NewB;
 
-        // Cas 1: La liste est vide
-        if (L->Tete == NULL) 
-        {
+        if (L->Tete == NULL)
+        {  // Cas où la liste est vide
             L->Tete = NewC;
             L->Queue = NewC;
         }
-        // Cas 2: La liste contient une seule cellule ou plus
         else 
-        {
-            // Insérer la nouvelle cellule à la fin de la liste
+        {  // Cas où la Le n'est pas vide
             L->Queue->Suiv = NewC;
             NewC->Prec = L->Queue;
             L->Queue = NewC;
         }
     }
+
+    return L;
 }
 
-void Affichage (Coup_t * Tete) 
+void Affichage (Liste_Coups_t * L) 
 {
-    Coup_t * Courant = Tete;
-    Coup_t * Dernier = NULL;
+    Coup_t * Courant = L->Tete;
+    Coup_t * Dernier = Courant;
 
     printf("XP YP XB YB Sens \n\n");
 
-    while (Courant != NULL)
-    {
-        printf("| %d %d %d %d %d | -> "/* Courant->Prec*/,Courant->NewPos->x,Courant->NewPos->y,
-                                    Courant->NewBar->pos.x,Courant->NewBar->pos.y,
+    printf("| %d %d %d %d %d | -> "/* Courant->Prec*/,Courant->NewPos->x,Courant->NewPos->y,
+                                    Courant->NewBar->pos1.x,Courant->NewBar->pos1.y,
                                     Courant->NewBar->isHorizontal/*Courant->Suiv*/);
 
-        // Mise à jour du dernier noeud visité
-        Dernier = Courant;
-        Courant = Courant->Suiv;
+    Dernier = Courant;
+    Courant = Courant->Suiv;
 
-        // Vérifier si le noeud courant boucle vers un noeud précédent
-        if (Courant != NULL && Courant->Prec != Dernier) 
-        {
-            printf("\nLoop detected. Stopping the display to prevent infinite loop.\n");
-            break;
-        }
+    while (Courant && Courant != Dernier)
+    {
+        printf("| %d %d %d %d %d | -> "/* Courant->Prec*/,Courant->NewPos->x,Courant->NewPos->y,
+                                    Courant->NewBar->pos1.x,Courant->NewBar->pos1.y,
+                                    Courant->NewBar->isHorizontal/*Courant->Suiv*/);
+        Courant = Courant->Suiv;
     }
 
     printf("FIN\n");
 }
 
-void Initialiser_Liste(int T[8][8])
+Liste_Coups_t * Suppression_Tete(Liste_Coups_t * L)
 {
-    int i; int j;
+    if (L->Tete) 
+    {      
+        Coup_t * Temp = L->Tete;
+        L->Tete = L->Tete->Suiv;
 
-    for(i=0;i<=7;i++)
-    {
-        for(j=0;j<=7;j++)
-        {
-            T[i][j] = 0;
-            printf("%d",T[i][j]);
-        }
+        if (L->Tete != NULL)
+            L->Tete->Prec = NULL;
+        else
+            L->Queue = NULL;
+
+        free(Temp);
     }
+
+    return L;
 }
 
-void Add(int T[8][8],int x,int y)  { T[x][y] = T[y][x] = 1;}
+void FreeListe(Liste_Coups_t * L) 
+{
+    Coup_t * Courant = L->Tete;
+    Coup_t * NextCoup ;
 
-bool Present(int T[8][8],int x,int y)
-{   
-    if(T[x][y] && T[y][x]) {return true;}
-    return false;
+    while(Courant) 
+    {
+        NextCoup = Courant->Suiv;
+        free(Courant);
+        Courant = NextCoup ;
+    }
+
+    L->Tete= NULL;
 }
 
 int Compare_Place(Position * Pos1,Position * Pos2)
@@ -146,6 +166,8 @@ int Is_Diagonal_or_Simple_Moove(Position * Previous, Position * Next)
         return 0;
     else if(Previous->x + 1 == Next->x || Previous->x - 1 == Next->x)
         return 1;
+
+    return 2;
 }
 
 bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
@@ -165,9 +187,9 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
                 {   
                     if(jeu->barriers[i].isHorizontal == 1)
                     {
-                        if(Previous->y + 1 == Next->y && (jeu->barriers[i].pos.x == Next->x || jeu->barriers[i].pos.x == Next->x - 1) && jeu->barriers[i].pos.y == Next->y)
+                        if(Previous->y + 1 == Next->y && (jeu->barriers[i].pos1.x == Next->x || jeu->barriers[i].pos1.x == Next->x - 1) && jeu->barriers[i].pos1.y == Next->y)
                             O = true;
-                        else if(Previous->y - 1 == Next->y && (jeu->barriers[i].pos.x == Next->x || jeu->barriers[i].pos.x == Next->x - 1) && jeu->barriers[i].pos.y == Previous->y)
+                        else if(Previous->y - 1 == Next->y && (jeu->barriers[i].pos1.x == Next->x || jeu->barriers[i].pos1.x == Next->x - 1) && jeu->barriers[i].pos1.y == Previous->y)
                             O = true;
                     }
                 }
@@ -179,9 +201,9 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
                 {
                     if(jeu->barriers[i].isHorizontal == 0)
                     {
-                        if(Previous->x + 1 == Next->x && (jeu->barriers[i].pos.y == Previous->y || jeu->barriers[i].pos.y == Previous->y + 1) && jeu->barriers[i].pos.x == Previous->x)
+                        if(Previous->x + 1 == Next->x && (jeu->barriers[i].pos1.y == Previous->y || jeu->barriers[i].pos1.y == Previous->y + 1) && jeu->barriers[i].pos1.x == Previous->x)
                             O = true;
-                        else if(Previous->x - 1 == Next->x && (jeu->barriers[i].pos.y == Next->y || jeu->barriers[i].pos.y == Next->y + 1) && jeu->barriers[i].pos.x == Next->x)
+                        else if(Previous->x - 1 == Next->x && (jeu->barriers[i].pos1.y == Next->y || jeu->barriers[i].pos1.y == Next->y + 1) && jeu->barriers[i].pos1.x == Next->x)
                             O = true;
                     }
                 }
@@ -195,12 +217,12 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
                     {
                         if(jeu->barriers[i].isHorizontal)
                         {
-                            if((jeu->barriers[i].pos.x == Previous->x || jeu->barriers[i].pos.x == Previous->x-1) && jeu->barriers[i].pos.y == Next->y)
+                            if((jeu->barriers[i].pos1.x == Previous->x || jeu->barriers[i].pos1.x == Previous->x-1) && jeu->barriers[i].pos1.y == Next->y)
                                 O = true;
                         }
                         else
                         {
-                            if((jeu->barriers[i].pos.y == Previous->y|| jeu->barriers[i].pos.x == Previous->y+1) && jeu->barriers[i].pos.x == Next->x)
+                            if((jeu->barriers[i].pos1.y == Previous->y|| jeu->barriers[i].pos1.x == Previous->y+1) && jeu->barriers[i].pos1.x == Next->x)
                                 O = true;
                         }
                     }
@@ -211,12 +233,12 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
                     {
                         if(jeu->barriers[i].isHorizontal)
                         {
-                            if((jeu->barriers[i].pos.x == Previous->x || jeu->barriers[i].pos.x == Previous->x+1) && jeu->barriers[i].pos.y == Previous->y)
+                            if((jeu->barriers[i].pos1.x == Previous->x || jeu->barriers[i].pos1.x == Previous->x+1) && jeu->barriers[i].pos1.y == Previous->y)
                                 O = true;
                         }
                         else
                         {
-                            if((jeu->barriers[i].pos.y == Previous->y|| jeu->barriers[i].pos.y == Previous->y-1) && jeu->barriers[i].pos.x == Previous->x)
+                            if((jeu->barriers[i].pos1.y == Previous->y|| jeu->barriers[i].pos1.y == Previous->y-1) && jeu->barriers[i].pos1.x == Previous->x)
                                 O = true;
                         }
                     }
@@ -227,12 +249,12 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
                     {
                         if(jeu->barriers[i].isHorizontal)
                         {
-                            if((jeu->barriers[i].pos.x == Next->x || jeu->barriers[i].pos.x == Next->x-1) && jeu->barriers[i].pos.y == Next->y)
+                            if((jeu->barriers[i].pos1.x == Next->x || jeu->barriers[i].pos1.x == Next->x-1) && jeu->barriers[i].pos1.y == Next->y)
                                 O = true;
                         }
                         else
                         {
-                            if((jeu->barriers[i].pos.y == Previous->y|| jeu->barriers[i].pos.y == Previous->y+1) && jeu->barriers[i].pos.x == Next->x)
+                            if((jeu->barriers[i].pos1.y == Previous->y|| jeu->barriers[i].pos1.y == Previous->y+1) && jeu->barriers[i].pos1.x == Next->x)
                                 O = true;
                         }
                     }
@@ -243,12 +265,12 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
                     {
                         if(jeu->barriers[i].isHorizontal)
                         {
-                            if((jeu->barriers[i].pos.x == Previous->x || jeu->barriers[i].pos.x == Previous->x-1) && jeu->barriers[i].pos.y == Previous->y)
+                            if((jeu->barriers[i].pos1.x == Previous->x || jeu->barriers[i].pos1.x == Previous->x-1) && jeu->barriers[i].pos1.y == Previous->y)
                                 O = true;
                         }
                         else
                         {
-                            if((jeu->barriers[i].pos.y == Previous->y|| jeu->barriers[i].pos.y == Previous->y-1) && jeu->barriers[i].pos.x == Next->x)
+                            if((jeu->barriers[i].pos1.y == Previous->y|| jeu->barriers[i].pos1.y == Previous->y-1) && jeu->barriers[i].pos1.x == Next->x)
                                 O = true;
                         }
                     }
@@ -296,39 +318,43 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
 
     if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) /* Si il est possible d'aller à droite*/
         L = Ajouter_Coup_Liste(L,Place.x + 1,Place.y,0,0,0);
-        
+    
     // On préfère poser une barrière
 
-    /* if(jeu->players[Joueur].barriersLeft)
-    {    
-        int Occupees[8][8];
-        Initialiser_Liste(Occupees);
-
-        for(i=0;i<=19;i++)
+    if(jeu->players[Joueur].barriersLeft)
         {
-            if(jeu->barriers[i].isHorizontal)
+            int Occupees[8][8];
+
+            for(i=0;i<=7;i++)
             {
-                Add(Occupees,jeu->barriers[i].pos.x,jeu->barriers[i].pos.y);
-                Add(Occupees,jeu->barriers[i].pos.x+1,jeu->barriers[i].pos.y);
-            }
-            else
-            {
-                Add(Occupees,jeu->barriers[i].pos.x,jeu->barriers[i].pos.y);
-                Add(Occupees,jeu->barriers[i].pos.x+1,jeu->barriers[i].pos.y-1);
+                for(j=0;i<=7;i++)
+                    Occupees[i][j] = 0;
             }
 
-            for(i=0;i<=80;i++)
+            for(i=0;i<=19;i++)
             {
-                for(j=0;j<=80;j++)
+                if(jeu->barriers[i].isPlaced)
                 {
-                    if(!Present(Occupees,i,j) && !Present(Occupees,i+1,j))
-                        L = Ajouter_Coup_Liste(L,0,0,i,j,1);
-                    else if(!Present(Occupees,i,j) && !Present(Occupees,i,j-1))
-                        L = Ajouter_Coup_Liste(L,0,0,i,j,0);
+                    Occupees[jeu->barriers[i].pos1.x][jeu->barriers[i].pos1.y] = 1;
+                    Occupees[jeu->barriers[i].pos2.x][jeu->barriers[i].pos2.y] = 1;
                 }
             }
-        }    
-    }*/
+
+            for(i=0;i<=7;i++)
+            {
+                for(j=0;j<=7;j++)
+                {
+                    if((i+1) < 8 && (j-1) >= 0)
+                    {
+                        if(Occupees[i][j] != 1 && Occupees[i][j-1] != 1)
+                            L = Ajouter_Coup_Liste(L,0,0,i,j,0);
+                        if(Occupees[i][j] != 1 && Occupees[i+1][j] != 1)
+                            L = Ajouter_Coup_Liste(L,0,0,i,j,1);
+                    }
+                }
+                   
+            }
+        }
 
     return L;
 }
@@ -337,7 +363,7 @@ GameState initGame()
 {
     GameState jeu = 
     {
-        .players = {{.pos = {4, 8}, .barriersLeft = 10}, {.pos = {4, 0}, .barriersLeft = 10}},
+        .players = {{.pos = {4, 0}, .barriersLeft = 10}, {.pos = {4, 8}, .barriersLeft = 10}},
         .barrierCount = 0,
         .isGameRunning = true,
         .playerTurn = 0
@@ -356,55 +382,78 @@ GameState initGame()
     return jeu;
 }
 
+GameState * Appliquer_Coup(GameState * jeu, Coup_t * Coup, int joueur)
+{
+    jeu->players[joueur].pos.x = Coup->NewPos->x;
+    jeu->players[joueur].pos.y = Coup->NewPos->y;
+
+    int i = 0;
+
+    while(jeu->barriers[i].pos1.x)
+    {
+        if(i == 0 && !jeu->barriers[i].isPlaced)
+        {
+            jeu->barriers[i].pos1 = Coup->NewBar->pos1;
+            jeu->barriers[i].pos2 = Coup->NewBar->pos2;
+            jeu->barriers[i].isHorizontal = Coup->NewBar->isHorizontal;  
+        }
+    }
+
+    return jeu;
+}
+
+int EndGame(GameState * jeu, int joueur)
+{
+    if(joueur == 1)
+    {
+        if(jeu->players[joueur].pos.y == 0)
+            return 1;
+    }
+    else if(jeu->players[joueur].pos.y == 8)
+        return -1;
+    return 0;
+}
+
+int Score(GameState * jeu, int joueur, int S, Liste_Coups_t * L)
+{   
+    if(L->Tete)
+    {
+        GameState * Intermediaire = Appliquer_Coup(jeu,L->Tete,joueur);
+
+        if(EndGame(Intermediaire,joueur) == 1)
+            return 1;
+        else if(EndGame(Intermediaire,joueur) == 0)
+        {
+            if(joueur == 0)
+                S = S + Score(Intermediaire,1,S,Suppression_Tete(L));
+            else
+                S = S + Score(Intermediaire,0,S,Suppression_Tete(L));
+        }   
+    }
+
+    return S;
+}
+
+/* Coup_t * Choisir_Coup(GameState * jeu, int joueur, Liste_Coups_t * L)
+{   
+    Coup_t * Courant = L->Tete;
+    Coup_t * Dernier = Courant;
+
+    while (Courant && Courant != Dernier)
+    {
+        if(Score(Appliquer_Coup(jeu,Courant)))
+    }
+} */
+
 int main()
 {
     GameState jeu = initGame();
-    /* Player * J0 = malloc(sizeof(Player));
-    Player * J1 = malloc(sizeof(Player));
-    Position * P0 = malloc(sizeof(Position));
-    Position * P1 = malloc(sizeof(Position)); */
 
-    /* P0->x = 4; P0->y = 9;
-    P1->x = 4; P1->y = 0;
+    Liste_Coups_t * L = Generer_Coup(&jeu,1);
 
-    J0->pos = *P0; J1->pos = *P1;
-    J0->barriersLeft = 10; J1->barriersLeft = 10;
+    Affichage(L);
 
-    jeu->players[0] = *J0;
-    jeu->players[1] = *J1; */
+    printf("%d",Score(&jeu,0,1,Generer_Coup(&jeu,1)));
 
-    /* Liste_Coups_t * L = Creer_Liste_Coups();
-    L = Ajouter_Coup_Liste(L,4,8,0,0,0);
-    L = Ajouter_Coup_Liste(L,5,8,0,0,0);
-    L = Ajouter_Coup_Liste(L,5,7,0,0,0);
-    L = Ajouter_Coup_Liste(L,4,8,1,2,1); */
-
-    /* int T[8][8];
-
-    Initialiser_Liste(T);
-    Add(T,4,7);
-    printf("%d %d",T[4][7],T[7][4]);*/
-
-    Position * P0 = malloc(sizeof(Position));
-    Position * P1 = malloc(sizeof(Position)); 
-
-    P0->x = jeu.players[0].pos.x; 
-    P0->y = jeu.players[0].pos.y;
-
-    P0->x = 4;
-    P0->y = 8;
-    P1->x = P0->x;
-    P1->y = P0->y;
-
-    jeu.barriers[0].pos.x = P0->x-1;
-    jeu.barriers[0].pos.y = P0->y;
-    jeu.barriers[0].isHorizontal = 0;
-
-    // printf("%d",Is_Diagonal_or_Simple_Moove(P0,P1));
-
-    // printf("%d",Is_There_An_Obstacle(&jeu,P0,P1));
-
-    Liste_Coups_t * L = Generer_Coup(&jeu,0);
-
-    Affichage(L->Tete);
+    FreeListe(L);
 }
