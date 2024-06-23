@@ -20,29 +20,33 @@ GameState initGame(SDL_Texture* image_barrier)
     };
 
     memset(jeu.barriers, 0, sizeof(jeu.barriers)); // Initialise toutes les barrières à 0
-    for (int i = 0; i < 20; i++) {
-    if (i % 2 == 0) {  // Supposons une alternance pour l'exemple
-        // Initialisation de la barrière verticale
-        int barrierVerticalWidth, barrierVerticalHeight;
-        SDL_QueryTexture(image_barrier, NULL, NULL, &barrierVerticalWidth, &barrierVerticalHeight);
-        float barrierVerticalX = WINDOW_WIDTH - (3*SPACE_LENGTH+BOX_WIDTH)+ barrierVerticalWidth/2;
-        int barrierVerticalY = WINDOW_HEIGHT - 125;
-        jeu.barriers[i].rect.x = barrierVerticalX;
-        jeu.barriers[i].rect.y = barrierVerticalY;
-        jeu.barriers[i].rect.w = BARRIER_HEIGHT;  
-        jeu.barriers[i].rect.h = BARRIER_WIDTH;          
-        jeu.barriers[i].isHorizontal=false;
-    } else {
-        // Initialisation de la barrière horizontale
-        float barrierHorizontalX = SPACE_LENGTH + BOX_WIDTH/2;
-        int barrierHorizontalY = WINDOW_HEIGHT - 85;
-        jeu.barriers[i].rect.x = barrierHorizontalX;
-        jeu.barriers[i].rect.y = barrierHorizontalY;
-        jeu.barriers[i].rect.w = BARRIER_WIDTH ;  
-        jeu.barriers[i].rect.h = BARRIER_HEIGHT;       
-        jeu.barriers[i].isHorizontal=true;                      
+    for (int i = 0; i < 20; i++) 
+    {
+        if (i % 2 == 0) // Supposons une alternance pour l'exemple
+        {  
+            // Initialisation de la barrière verticale
+            int barrierVerticalWidth, barrierVerticalHeight;
+            SDL_QueryTexture(image_barrier, NULL, NULL, &barrierVerticalWidth, &barrierVerticalHeight);
+            float barrierVerticalX = WINDOW_WIDTH - (3*SPACE_LENGTH+BOX_WIDTH)+ barrierVerticalWidth/2;
+            int barrierVerticalY = WINDOW_HEIGHT - 125;
+            jeu.barriers[i].rect.x = barrierVerticalX;
+            jeu.barriers[i].rect.y = barrierVerticalY;
+            jeu.barriers[i].rect.w = BARRIER_HEIGHT;  
+            jeu.barriers[i].rect.h = BARRIER_WIDTH;          
+            jeu.barriers[i].isHorizontal=false;
+        } 
+        else 
+        {
+            // Initialisation de la barrière horizontale
+            float barrierHorizontalX = SPACE_LENGTH + BOX_WIDTH/2;
+            int barrierHorizontalY = WINDOW_HEIGHT - 85;
+            jeu.barriers[i].rect.x = barrierHorizontalX;
+            jeu.barriers[i].rect.y = barrierHorizontalY;
+            jeu.barriers[i].rect.w = BARRIER_WIDTH ;  
+            jeu.barriers[i].rect.h = BARRIER_HEIGHT;       
+            jeu.barriers[i].isHorizontal=true;                      
+        }
     }
-}
 
 
     for (int i = 0; i < BOX_NUMBER_COLUMN; i++) 

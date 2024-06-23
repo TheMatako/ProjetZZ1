@@ -1,6 +1,6 @@
-# include <stdio.h>
-# include <stdlib.h>
-# include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "structureQuoridor.h"
@@ -172,6 +172,17 @@ int Is_Diagonal_or_Simple_Moove(Position * Previous, Position * Next)
     return 2;
 }
 
+// Fonction d'évaluation
+int evaluate(GameState game)
+{
+    // Distance pion joueur à la ligne du haut 
+    int player1Distance = game.players[0].pos.y;
+    int player2Distance = BOX_NUMBER_LINE - game.players[1].pos.y;
+    // On retourne la différence entre les deux pour avoir une estimation de qui est le plus proche de gagner et donc une évaluation de l'état de la partie
+    // Il faudra prendre en compte le fait qu'on calcule la différence de distance du joueur 1 à celle du joueur 2 et jamais l'inverse
+    return player1Distance - player2Distance;
+}
+
 bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
 { // Observe si un déplacement entre la position Previous et la position Next est possible
   // True : Il y a un obstacle , False : Aucun Obstacle
@@ -290,6 +301,7 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
     return O;
 }
 
+<<<<<<< HEAD
 int EndGame(GameState * jeu, int joueur)
 { // Désigne si le jeu actuel est Terminé, 
   // et détermine l'issu selon le point de vue du joueur entré.
@@ -302,6 +314,99 @@ int EndGame(GameState * jeu, int joueur)
     else if(jeu->players[joueur].pos.y == 8)
         return -1;
     return 0;
+=======
+
+
+
+Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
+{
+    
+    // Il vaut mieux que L soit vide
+    int i; int j;
+
+    Liste_Coups_t * L = Creer_Liste_Coups();
+
+    int boxesPlayable[BOX_NUMBER_COLUMN][BOX_NUMBER_LINE];
+    getPositionPlayable(jeu, *jeu.players[Joueur].pos.x, *jeu.player[Joueur].pos.y, boxesPlayable);
+    for (int i = 0; i < BOX_NUMBER_COLUMN; i++)
+    {
+        for (int j = 0; j < BOX_NUMBER_LINE; j++)
+        {
+            
+            if (boxesPlayable[i][j] == 1)
+            {
+                L = Ajouter_Coup_Liste(L, i, j, 0, 0, 0);
+            }
+        }
+    }
+
+
+    /*
+    // On change de position
+
+    Position Place = jeu->players[Joueur].pos;
+    Position Nouvelle_Position = Place;
+
+    Nouvelle_Position.y = Nouvelle_Position.y + 1;
+
+    if(!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) // Si il est possible d'aller en avant 
+        L = Ajouter_Coup_Liste(L,Place.x,Place.y + 1,0,0,0);
+    
+    Nouvelle_Position.y = Nouvelle_Position.y - 2;
+
+    if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) // Si il est possible d'aller en arrière
+        L = Ajouter_Coup_Liste(L,Place.x,Place.y - 1,0,0,0);
+
+    Nouvelle_Position.y = Nouvelle_Position.y + 1;
+    Nouvelle_Position.x = Nouvelle_Position.x - 1;
+    
+    if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) // Si il est possible d'aller à Gauche 
+        L = Ajouter_Coup_Liste(L,Place.x - 1,Place.y,0,0,0);
+    
+    Nouvelle_Position.x = Nouvelle_Position.x + 2;
+
+    if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) // Si il est possible d'aller à droite
+        L = Ajouter_Coup_Liste(L,Place.x + 1,Place.y,0,0,0);
+    */
+    // On préfère poser une barrière
+    /*
+    if(jeu->players[Joueur].barriersLeft)
+        {
+            int Occupees[8][8];
+
+            for(i=0;i<=7;i++)
+            {
+                for(j=0;i<=7;i++)
+                    Occupees[i][j] = 0;
+            }
+
+            for(i=0;i<=19;i++)
+            {
+                if(jeu->barriers[i].isPlaced)
+                {
+                    Occupees[jeu->barriers[i].pos1.x][jeu->barriers[i].pos1.y] = 1;
+                    Occupees[jeu->barriers[i].pos2.x][jeu->barriers[i].pos2.y] = 1;
+                }
+            }
+
+            for(i=0;i<=7;i++)
+            {
+                for(j=0;j<=7;j++)
+                {
+                    if((i+1) < 8 && (j-1) >= 0)
+                    {
+                        if(Occupees[i][j] != 1 && Occupees[i][j-1] != 1)
+                            L = Ajouter_Coup_Liste(L,0,0,i,j,0);
+                        if(Occupees[i][j] != 1 && Occupees[i+1][j] != 1)
+                            L = Ajouter_Coup_Liste(L,0,0,i,j,1);
+                    }
+                }
+                   
+            }
+        }*/
+
+    return L;
+>>>>>>> db9b467 (1ere step minmax)
 }
 
 Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
@@ -436,6 +541,7 @@ int Score(GameState * jeu, int joueur, Liste_Coups_t * Possibilites, int S, int 
   // La liste entrée doit être produite par Generer_Coup, S et C doivent être nules
     Coup_t * Intermediaire = Possibilites->Tete;
 
+<<<<<<< HEAD
     Affichage_Liste_Coups(Possibilites);
 
     if(C < 5 && Possibilites->Tete)
@@ -453,6 +559,8 @@ int Score(GameState * jeu, int joueur, Liste_Coups_t * Possibilites, int S, int 
     }
     return S;
 }
+=======
+>>>>>>> db9b467 (1ere step minmax)
 
 int main()
 {
