@@ -177,10 +177,19 @@ int evaluate(GameState game)
 {
     // Distance pion joueur à la ligne du haut 
     int player1Distance = game.players[0].pos.y;
+    // Distance pion ordi à la ligne du bas
     int player2Distance = BOX_NUMBER_LINE - game.players[1].pos.y;
-    // On retourne la différence entre les deux pour avoir une estimation de qui est le plus proche de gagner et donc une évaluation de l'état de la partie
-    // Il faudra prendre en compte le fait qu'on calcule la différence de distance du joueur 1 à celle du joueur 2 et jamais l'inverse
-    return player1Distance - player2Distance;
+
+    if (game.playerTurn == 0)
+    {
+        if (player1Distance == 0) return -1000 // On retourne une valeur très petite car le joueur à gagné
+        else return player1Distance - player2Distance; // On retourne la différence de proximité entre les deux joueurs à leur case victorieuse
+    }
+    else 
+    {
+        if (player2Distance == 0) return 1000 // Là c'est l'ordi qui gagne
+        else return player2Distance - player1Distance;
+    }
 }
 
 bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
@@ -301,20 +310,7 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
     return O;
 }
 
-<<<<<<< HEAD
-int EndGame(GameState * jeu, int joueur)
-{ // Désigne si le jeu actuel est Terminé, 
-  // et détermine l'issu selon le point de vue du joueur entré.
-  // 0 : Jeu non Terminé , 1 : l'IA a gagné , -1 : Humain a gagné
-    if(joueur == 1)
-    {
-        if(jeu->players[joueur].pos.y == 0)
-            return 1;
-    }
-    else if(jeu->players[joueur].pos.y == 8)
-        return -1;
-    return 0;
-=======
+
 
 
 
@@ -339,76 +335,12 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
             }
         }
     }
-
-
-    /*
-    // On change de position
-
-    Position Place = jeu->players[Joueur].pos;
-    Position Nouvelle_Position = Place;
-
-    Nouvelle_Position.y = Nouvelle_Position.y + 1;
-
-    if(!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) // Si il est possible d'aller en avant 
-        L = Ajouter_Coup_Liste(L,Place.x,Place.y + 1,0,0,0);
     
-    Nouvelle_Position.y = Nouvelle_Position.y - 2;
-
-    if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) // Si il est possible d'aller en arrière
-        L = Ajouter_Coup_Liste(L,Place.x,Place.y - 1,0,0,0);
-
-    Nouvelle_Position.y = Nouvelle_Position.y + 1;
-    Nouvelle_Position.x = Nouvelle_Position.x - 1;
-    
-    if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) // Si il est possible d'aller à Gauche 
-        L = Ajouter_Coup_Liste(L,Place.x - 1,Place.y,0,0,0);
-    
-    Nouvelle_Position.x = Nouvelle_Position.x + 2;
-
-    if (!Is_There_An_Obstacle(jeu,&Place,&Nouvelle_Position)) // Si il est possible d'aller à droite
-        L = Ajouter_Coup_Liste(L,Place.x + 1,Place.y,0,0,0);
-    */
-    // On préfère poser une barrière
-    /*
-    if(jeu->players[Joueur].barriersLeft)
-        {
-            int Occupees[8][8];
-
-            for(i=0;i<=7;i++)
-            {
-                for(j=0;i<=7;i++)
-                    Occupees[i][j] = 0;
-            }
-
-            for(i=0;i<=19;i++)
-            {
-                if(jeu->barriers[i].isPlaced)
-                {
-                    Occupees[jeu->barriers[i].pos1.x][jeu->barriers[i].pos1.y] = 1;
-                    Occupees[jeu->barriers[i].pos2.x][jeu->barriers[i].pos2.y] = 1;
-                }
-            }
-
-            for(i=0;i<=7;i++)
-            {
-                for(j=0;j<=7;j++)
-                {
-                    if((i+1) < 8 && (j-1) >= 0)
-                    {
-                        if(Occupees[i][j] != 1 && Occupees[i][j-1] != 1)
-                            L = Ajouter_Coup_Liste(L,0,0,i,j,0);
-                        if(Occupees[i][j] != 1 && Occupees[i+1][j] != 1)
-                            L = Ajouter_Coup_Liste(L,0,0,i,j,1);
-                    }
-                }
-                   
-            }
-        }*/
-
     return L;
->>>>>>> db9b467 (1ere step minmax)
 }
 
+/*
+Deuxième version avec déplacement non concluant mais idées poru les barrières
 Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
 {   // Renvoit la liste des coups possibles à partir d'une position de jeu, en fonction du joueur
     //  La fameuse fonction, ma plus grande fierté.
@@ -487,88 +419,65 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
         return NULL;  
 
 }
+*/
 
-GameState initGame_2()
-{ // Initialise un début de partie
-    GameState jeu = 
-    {
-        .players = {{.pos = {4, 0}, .barriersLeft = 10}, {.pos = {4, 8}, .barriersLeft = 10}},
-        .barrierCount = 0,
-        .isGameRunning = true,
-        .playerTurn = 0
-    };
-
-    for (int i = 0; i < BOX_NUMBER_LINE; i++) 
-    {
-        for (int j = 0; j < BOX_NUMBER_COLUMN; j++)
-        {
-            // On initialise dans le tableau jeu.boxes les positions en pixel des cases
-            jeu.boxes[i][j].posPixel.x = SPACE_LENGTH + i*(BOX_WIDTH+SPACE_LENGTH);
-            jeu.boxes[i][j].posPixel.y = TOP_LENGTH + SPACE_LENGTH + j*(BOX_HEIGHT+SPACE_LENGTH);
-        }
-    }
-
-    return jeu;
-}
-
-GameState * Appliquer_Coup(GameState * jeu, Coup_t * Coup, int joueur) 
-{ // Pour compter le nombre de victoires à partir d'une position de jeu
-    if(Coup)
-    {
-        jeu->players[joueur].pos.x = Coup->NewPos->x;
-        jeu->players[joueur].pos.y = Coup->NewPos->y;
-    }
-
-    /* int i = 0;
-
-    while(jeu->barriers[i].pos1.x)
-    {
-        if(i == 0 && !jeu->barriers[i].isPlaced)
-        {
-            jeu->barriers[i].pos1 = Coup->NewBar->pos1;
-            jeu->barriers[i].pos2 = Coup->NewBar->pos2;
-            jeu->barriers[i].isHorizontal = Coup->NewBar->isHorizontal;  
-        }
-    }*/
-
-    return jeu;
-}
-
-int Score(GameState * jeu, int joueur, Liste_Coups_t * Possibilites, int S, int C)
-{ // NE FONCTIONNE PAS
-  // Pour compter le nombre de victoires jusqu'à profondeur 5
-  // à partir d'une position de jeu. 
-  // La liste entrée doit être produite par Generer_Coup, S et C doivent être nules
-    Coup_t * Intermediaire = Possibilites->Tete;
-
-<<<<<<< HEAD
-    Affichage_Liste_Coups(Possibilites);
-
-    if(C < 5 && Possibilites->Tete)
-    {
-        if(joueur == 1)
-        {
-            if(EndGame(Appliquer_Coup(jeu,Intermediaire,joueur),joueur) == 1)
-                return 1;
-
-            else if(EndGame(Appliquer_Coup(jeu,Intermediaire,joueur),joueur) == 0)
-                S = S + Score(Appliquer_Coup(jeu,Intermediaire,joueur),0,Generer_Coup(Appliquer_Coup(jeu,Intermediaire,joueur),0),S,C++);
-        }
-        else if(EndGame(Appliquer_Coup(jeu,Intermediaire,joueur),joueur) == 0)
-                S = S + Score(Appliquer_Coup(jeu,Intermediaire,joueur),1,Generer_Coup(Appliquer_Coup(jeu,Intermediaire,joueur),1),S,C++);
-    }
-    return S;
-}
-=======
->>>>>>> db9b467 (1ere step minmax)
-
-int main()
+// int minOrMax : min = 0 max = 1
+int minMax(GameState game, int depth, int minOrMax)
 {
-    GameState jeu = initGame_2();
+    if (depth == || game.isGameRunning == 0)
+    {
+        return evaluate(game);
+    }
+    Liste_Coups_t L = Generer_Coup(game, minOrMax);
+    int moveCount = L.longueur;
+    GameState moves[moveCount];
 
-    Liste_Coups_t * L = Generer_Coup(&jeu,1);
+    if (minOrMax == 1)
+    {  
+        maxEval = -10000;
+        for (int i = 0; i < moveCount; i++)
+        {
+            int eval = minimax(moves[i], depth - 1, 1 - minOrMax);
+            if (eval > maxEval)
+            {
+                maxEval = eval;
+            }
+        }
+        return maxEval;
+    }
+    else if (minOrMax == 0)
+    {
+        minEval = 10000;
+        for (int i = 0; i < moveCount; i++)
+        {
+            int eval = minimax(moves[i], depth - 1, 1 - minOrMax);
+            if (eval < minEval)
+            {
+                minEval = eval;   
+            }
+        }
+        return minEval
+    }
 
-    Affichage_Liste_Coups(L);
-
-    Free_Liste(L);
 }
+
+GameState generateBestMove(GameState game)
+{
+    GameState bestMove;
+    int bestValue = -10000;
+
+    Liste_Coups_t L = Generer_Coup(game, game.players[game.playerTurn]);
+    int moveCount = L.longueur;
+    GaameState moves[moveCount];
+
+    for (int i = 0; i < moveCount; i++)
+    {
+        int moreValue = minMax(moves[i], 5, game.playerTurn);
+        if (moreValue > bestValue)
+        {
+            bestValue = moreValue;
+            bestMove = moves[i];
+        }
+    }
+}
+
