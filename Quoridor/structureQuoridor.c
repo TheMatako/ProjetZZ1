@@ -131,10 +131,45 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, in
     {
         if (Jeu.barriers[k].isPlaced) 
         {
-            printf("barriere numéro : %d, position x = %d, position y = %d\n", k, Jeu.barriers[k].pos1.x , Jeu.barriers[k].pos1.y);
-            SDL_Rect dstRectBarrier = { Jeu.boxes[Jeu.barriers[k].pos1.x][Jeu.barriers[k].pos1.y].posPixel.x,Jeu.boxes[Jeu.barriers[k].pos1.x][Jeu.barriers[k].pos1.y].posPixel.y-Jeu.barriers[k].rect.h, Jeu.barriers[k].rect.w, Jeu.barriers[k].rect.h };
+            /*
+            for (int i = 0; i < BOX_NUMBER_COLUMN; i++)
+            {
+                for (int j = 0; j < BOX_NUMBER_LINE; j++)
+                {
+                    if ((Jeu.barriers[k].rect.x > Jeu.boxes[i][j].posPixel.x - SPACE_LENGTH && Jeu.barriers[k].rect.x < Jeu.boxes[i][j].posPixel.x + BOX_WIDTH + SPACE_LENGTH) && (Jeu.barriers[k].rect.y > Jeu.boxes[i][j].posPixel.y - 2*SPACE_LENGTH && Jeu.barriers[k].rect.y < Jeu.boxes[i][j].posPixel.y + SPACE_LENGTH))
+                    {
+                        printf("ici\n");
+                        if (Jeu.barriers[k].isHorizontal)
+                        {
+                            Jeu.barriers[k].pos1.x = i;
+                            Jeu.barriers[k].pos1.y = j;
+                            Jeu.barriers[k].pos2.x = i+1;
+                            Jeu.barriers[k].pos2.y = j;
+                            SDL_Rect dstRectBarrier = { Jeu.boxes[Jeu.barriers[k].pos1.x][Jeu.barriers[k].pos1.y].posPixel.x,Jeu.boxes[Jeu.barriers[k].pos1.x][Jeu.barriers[k].pos1.y].posPixel.y-Jeu.barriers[k].rect.h, Jeu.barriers[k].rect.w, Jeu.barriers[k].rect.h };
+
+                            if (Jeu.barriers[k].isHorizontal) SDL_RenderCopy(renderer, allImages[13], NULL, &dstRectBarrier);
+
+                            else SDL_RenderCopy(renderer, allImages[14], NULL, &dstRectBarrier);    
+                        }
+                        else
+                        {
+                            Jeu.barriers[k].pos1.x = i+1;
+                            Jeu.barriers[k].pos1.y = j+1;
+                            Jeu.barriers[k].pos2.x = i+1;
+                            Jeu.barriers[k].pos2.y = j+2;
+                            SDL_Rect dstRectBarrier = { Jeu.boxes[Jeu.barriers[k].pos1.x][Jeu.barriers[k].pos1.y].posPixel.x-Jeu.barriers[k].rect.w,Jeu.boxes[Jeu.barriers[k].pos1.x][Jeu.barriers[k].pos1.y].posPixel.y-Jeu.barriers[k].rect.h, Jeu.barriers[k].rect.w, Jeu.barriers[k].rect.h };
+
+                            if (Jeu.barriers[k].isHorizontal) SDL_RenderCopy(renderer, allImages[13], NULL, &dstRectBarrier);
+
+                            else SDL_RenderCopy(renderer, allImages[14], NULL, &dstRectBarrier);
+                        }
+                        
+                    }
+                }
+            }*/
             if (Jeu.barriers[k].isHorizontal) SDL_RenderCopy(renderer, allImages[13], NULL, &dstRectBarrier);
-            else SDL_RenderCopy(renderer, allImages[14], NULL, &dstRectBarrier);
+
+            else SDL_RenderCopy(renderer, allImages[14], NULL, &dstRectBarrier);  
         }
     }
     
