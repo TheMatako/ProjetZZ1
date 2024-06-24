@@ -32,7 +32,10 @@ void handleMouseDown(SDL_MouseButtonEvent *event, GameState *gameState) {
     }
 }
 
-
+bool isPointInsideRect(SDL_Point point, SDL_Rect rect) {
+    return (point.x >= rect.x && point.x <= rect.x + rect.w &&
+            point.y >= rect.y && point.y <= rect.y + rect.h);
+}
 
 void handleMouseMotion(SDL_MouseMotionEvent *motion, GameState *gameState) {
     if (gameState->isDragging && gameState->draggedBarrier != NULL) {
@@ -54,20 +57,13 @@ void handleMouseMotion(SDL_MouseMotionEvent *motion, GameState *gameState) {
 
 
 void handleMouseUp(SDL_MouseButtonEvent *event, GameState *gameState) {
-    
     if (event->button == SDL_BUTTON_LEFT && gameState->isDragging) {
-        if (isValidBarrierPosition(gameState, gameState->dragRect.x,gameState->dragRect.y)) {
+        if (isValidBarrierPosition(gameState, gameState->dragRect, gameState->draggedBarrier->isHorizontal)) {
             gameState->draggedBarrier->isPlaced = true;
             gameState->draggedBarrier->rect = gameState->dragRect; // Mettre à jour la position de la barrière
-
-            // Décrémenter le nombre de barrières restantes pour le joueur actuel
-            gameState->players[gameState->playerTurn].barriersLeft--;
-
-            // Changement de tour après placement valide
-            gameState->playerTurn = (gameState->playerTurn + 1) % 2;
+            gameState->players[gameState->playerTurn].barriersLeft--; // Décrémenter le nombre de barrières
+            gameState->playerTurn = (gameState->playerTurn + 1) % 2; // Changer le tour après un placement valide
         }
-
-        // Réinitialisation des états de drag
         gameState->isDragging = false;
         gameState->draggedBarrier = NULL;
     }
@@ -76,24 +72,43 @@ void handleMouseUp(SDL_MouseButtonEvent *event, GameState *gameState) {
 
 
 
-
-bool isValidBarrierPosition(GameState *gameState, int x, int y) {
-    // Vérification des limites du plateau
-    if (x < 0 || x >= WINDOW_WIDTH || y < 0 || y >= WINDOW_HEIGHT)
-        return false;
-
-    // Vérification de non-chevauchement
+bool isValidBarrierPosition(GameState *game, SDL_Rect proposedRect, bool isHorizontal) {
+    // Vérifier que la barrière ne chevauche pas d'autres barrières placées
     for (int i = 0; i < BARRIER_NUMBER; i++) {
-        if (gameState->barriers[i].isPlaced && SDL_HasIntersection(&gameState->barriers[i].rect, &gameState->dragRect))
-            return false;
+        if (game->barriers[i].isPlaced && SDL_HasIntersection(&proposedRect, &game->barriers[i].rect)) {
+            return false; // Retourne faux si une intersection est trouvée
+        }
     }
 
-    return true;
+    // Assurer que la barrière reste dans les limites du plateau
+    if (proposedRect.x < SPACE_LENGTH || proposedRect.x + proposedRect.w > WINDOW_WIDTH - SPACE_LENGTH ||
+        proposedRect.y < TOP_LENGTH || proposedRect.y + proposedRect.h > WINDOW_HEIGHT - BOTTOM_LENGTH) {
+        return false;
+    }
+
+    // Flexibilité dans l'alignement sur la grille
+    const int tolerance = SPACE_LENGTH*3/4;  // Une demi-largeur de l'espace entre les cases
+
+    if (isHorizontal) {
+        // Pour les barrières horizontales, vérifier l'alignement horizontal avec une tolérance
+        int gridLineX = SPACE_LENGTH;
+        while (gridLineX <= WINDOW_WIDTH - SPACE_LENGTH) {
+            if (abs((proposedRect.x + proposedRect.w / 2) - gridLineX) <= tolerance) {
+                return true;  // La barrière est approximativement alignée
+            }
+            gridLineX += BOX_WIDTH + SPACE_LENGTH;
+        }
+    } else {
+        // Pour les barrières verticales, vérifier l'alignement vertical avec une tolérance
+        int gridLineY = TOP_LENGTH;
+        while (gridLineY <= WINDOW_HEIGHT - BOTTOM_LENGTH) {
+            if (abs((proposedRect.y + proposedRect.h / 2) - gridLineY) <= tolerance) {
+                return true;  // La barrière est approximativement alignée
+            }
+            gridLineY += BOX_HEIGHT + SPACE_LENGTH;
+        }
+    }
+
+    return false;  // Aucun alignement acceptable trouvé
 }
 
-
-
-bool isPointInsideRect(SDL_Point point, SDL_Rect rect) {
-    return (point.x >= rect.x && point.x <= rect.x + rect.w &&
-            point.y >= rect.y && point.y <= rect.y + rect.h);
-}
