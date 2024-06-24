@@ -7,8 +7,7 @@
 void handleMouseDown(SDL_MouseButtonEvent *btn, GameState *game);
 void handleMouseMotion(SDL_MouseMotionEvent *motion, GameState *game);
 void handleMouseUp(SDL_MouseButtonEvent *btn, GameState *game);
-/*bool isValidBarrierPosition(GameState *game, int x, int y);*/
+bool isValidBarrierPosition(GameState *game, int x, int y);
 bool isPointInsideRect(SDL_Point point, SDL_Rect rect);
-
 
 #endif

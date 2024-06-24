@@ -121,6 +121,13 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, in
             SDL_RenderCopy(renderer, allImages[10], NULL, &dstRectGrid);
         }
     }
+
+    // Dessin de toutes les barrières placées
+    for (int i = 0; i < BARRIER_NUMBER; i++) {
+        if (Jeu.barriers[i].isPlaced) {
+            SDL_RenderCopy(renderer, allImages[Jeu.barriers[i].isHorizontal ? 13 : 14], NULL, &Jeu.barriers[i].rect);
+        }
+    }
     
     // Dessiner les cases jouables en vert
     getPositionPlayable(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, boxesPlayable);
@@ -204,8 +211,29 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, in
         SDL_Rect dstRectNumber = {numberX, numberY, 4*numberWidth, 100};
         SDL_RenderCopy(renderer, allImages[Jeu.players[0].barriersLeft], NULL, &dstRectNumber);
     }
+
+    // Dessiner les cases jouables en vert
+    getPositionPlayable(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, boxesPlayable);
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 125);
+    for (int i = 0; i < BOX_NUMBER_COLUMN; i++) {
+        for (int j = 0; j < BOX_NUMBER_LINE; j++) {
+            if (boxesPlayable[i][j] == 1) {
+                int posX = Jeu.boxes[i][j].posPixel.x;
+                int posY = Jeu.boxes[i][j].posPixel.y;
+                SDL_Rect dstRectPlayable = { posX, posY, BOX_WIDTH, BOX_HEIGHT};
+                SDL_RenderFillRect(renderer, &dstRectPlayable);
+            }
+        }
+    }
+
     if (Jeu.isDragging && Jeu.draggedBarrier != NULL) {
-        SDL_RenderCopy(renderer, allImages[13], NULL, &Jeu.dragRect); // Utilisez 13 ou 14 selon l'orientation de la barrière----------------
+        SDL_RenderCopy(renderer, allImages[13], NULL, &Jeu.dragRect); 
+    }
+
+     for (int i = 0; i < BARRIER_NUMBER; i++) {
+        if (Jeu.barriers[i].isPlaced) {
+            SDL_RenderCopy(renderer, allImages[Jeu.barriers[i].isHorizontal ? 13 : 14], NULL, &Jeu.barriers[i].rect);
+        }
     }
 
 
