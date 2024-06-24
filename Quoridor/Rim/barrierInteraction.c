@@ -3,7 +3,7 @@
 
 
 
-
+//quand on appuie sur une barrière
 void handleMouseDown(SDL_MouseButtonEvent *event, GameState *gameState) {
     if (event->button == SDL_BUTTON_LEFT) {
         SDL_Point mousePos = {event->x, event->y};

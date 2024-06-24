@@ -7,6 +7,8 @@
 #include "structureQuoridor.h"
 #include "Rim/barrierInteraction.h" 
 
+
+//inutile
 int main() 
 {
     SDL_Window *window = NULL;

@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "structureQuoridor.h"
 
-
+//comm inutile
 
 
 GameState initGame(SDL_Texture* image_barrier)
