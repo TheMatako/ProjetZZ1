@@ -256,7 +256,7 @@ void initSDL(SDL_Window **window, SDL_Renderer **renderer)
         exit(1);
     }
 
-    *window = SDL_CreateWindow("Quoridor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+    *window = SDL_CreateWindow("Quoridor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
     if (*window == NULL) 
     {
         printf("Could not create window: %s\n", SDL_GetError());

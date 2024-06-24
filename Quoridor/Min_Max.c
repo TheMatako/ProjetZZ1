@@ -407,7 +407,7 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
 // int minOrMax : min = 0 max = 1
 int minMax(GameState game, int depth, int minOrMax)
 {
-    if (depth == || game.isGameRunning == 0)
+    if (depth == 0|| game.isGameRunning == 0)
     {
         return evaluate(game);
     }
