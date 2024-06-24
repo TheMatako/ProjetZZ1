@@ -87,7 +87,7 @@ bool isValidBarrierPosition(GameState *game, SDL_Rect proposedRect, bool isHoriz
     }
 
     // Flexibilité dans l'alignement sur la grille
-    const int tolerance = SPACE_LENGTH*3/4;  // Une demi-largeur de l'espace entre les cases
+    const int tolerance = SPACE_LENGTH/2;  // Une demi-largeur de l'espace entre les cases
 
     if (isHorizontal) {
         // Pour les barrières horizontales, vérifier l'alignement horizontal avec une tolérance
