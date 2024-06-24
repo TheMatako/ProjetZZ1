@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -std=c11 -MMD -Og -g
+CFLAGS = -Wall -Wextra -Werror -std=c11 -MMD -Og -g -fsanitize=address
 SDL2_CFLAGS = $(shell sdl2-config --cflags)
 SDL2_LIBS = $(shell sdl2-config --libs) -lSDL2_image
 
