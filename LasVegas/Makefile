@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -std=c11 -MMD -Og -g -fsanitizer
+CFLAGS = -Wall -Wextra -Werror -std=c11 -MMD -Og -g -fsanitizer=address
 CFILES = $(wildcard *.c)
 HFILES = $(wildcard *.h)
 DFILES = $(wildcard *.d)
@@ -27,4 +27,3 @@ clean:
 	rm -rf build $(EXEC) $(DFILES) $(OFILES) $(OUTFILES)
 
 -include $(DEPS)
-
