@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "structureQuoridor.h"
 
-//comm inutile
+
 
 
 GameState initGame(SDL_Texture* image_barrier)
@@ -127,25 +127,33 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, in
     }
 
     // Dessin de toutes les barrières placées
-    for (int i = 0; i < BARRIER_NUMBER; i++) {
-        if (Jeu.barriers[i].isPlaced) {
-            SDL_RenderCopy(renderer, allImages[Jeu.barriers[i].isHorizontal ? 13 : 14], NULL, &Jeu.barriers[i].rect);
+    for (int k = 0; k < BARRIER_NUMBER; k++) 
+    {
+        if (Jeu.barriers[k].isPlaced) 
+        {
+            printf("barriere numéro : %d, position x = %d, position y = %d\n", k, Jeu.barriers[k].pos1.x , Jeu.barriers[k].pos1.y);
+            SDL_Rect dstRectBarrier = { Jeu.boxes[Jeu.barriers[k].pos1.x][Jeu.barriers[k].pos1.y].posPixel.x,Jeu.boxes[Jeu.barriers[k].pos1.x][Jeu.barriers[k].pos1.y].posPixel.y-Jeu.barriers[k].rect.h, Jeu.barriers[k].rect.w, Jeu.barriers[k].rect.h };
+            if (Jeu.barriers[k].isHorizontal) SDL_RenderCopy(renderer, allImages[13], NULL, &dstRectBarrier);
+            else SDL_RenderCopy(renderer, allImages[14], NULL, &dstRectBarrier);
         }
     }
     
     // Dessiner les cases jouables en vert
-    getPositionPlayable(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, boxesPlayable);
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 125);
-    for (int i = 0; i < BOX_NUMBER_COLUMN; i++) 
+    if (Jeu.playerTurn == 0)
     {
-        for (int j = 0; j < BOX_NUMBER_LINE; j++)
+        getPositionPlayable(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, boxesPlayable);
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 125);
+        for (int i = 0; i < BOX_NUMBER_COLUMN; i++) 
         {
-            if (boxesPlayable[i][j] == 1)
+            for (int j = 0; j < BOX_NUMBER_LINE; j++)
             {
-                int posX = Jeu.boxes[i][j].posPixel.x;
-                int posY = Jeu.boxes[i][j].posPixel.y;
-                SDL_Rect dstRectPlayable = { posX, posY, BOX_WIDTH, BOX_HEIGHT};
-                SDL_RenderFillRect(renderer, &dstRectPlayable);
+                if (boxesPlayable[i][j] == 1)
+                {
+                    int posX = Jeu.boxes[i][j].posPixel.x;
+                    int posY = Jeu.boxes[i][j].posPixel.y;
+                    SDL_Rect dstRectPlayable = { posX, posY, BOX_WIDTH, BOX_HEIGHT};
+                    SDL_RenderFillRect(renderer, &dstRectPlayable);
+                }
             }
         }
     }
@@ -229,16 +237,13 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, in
             }
         }
     }
-
-    if (Jeu.isDragging && Jeu.draggedBarrier != NULL) {
-        SDL_RenderCopy(renderer, allImages[13], NULL, &Jeu.dragRect); 
+    
+    if (Jeu.isDragging && Jeu.draggedBarrier != NULL) 
+    {
+        if (Jeu.draggedBarrier->isHorizontal) SDL_RenderCopy(renderer, allImages[13], NULL, &Jeu.dragRect); 
+        else SDL_RenderCopy(renderer, allImages[14], NULL, &Jeu.dragRect);
     }
 
-     for (int i = 0; i < BARRIER_NUMBER; i++) {
-        if (Jeu.barriers[i].isPlaced) {
-            SDL_RenderCopy(renderer, allImages[Jeu.barriers[i].isHorizontal ? 13 : 14], NULL, &Jeu.barriers[i].rect);
-        }
-    }
 
 
 }
