@@ -1,0 +1,26 @@
+// Fonction qui créer un noeud
+Coup newMove(Gamestate previous)
+// Fonction qui simule une terminaison
+int simulation(Gamestate)
+// Fonction
+ typedef struct {
+    int attendance;
+    int averageGain;
+    int interest;
+
+    Gamstate previous; ?
+    Gamstate next; ?
+
+ } Coup;
+
+typedef struct list {
+	char * key;
+	char * value;
+	struct list * next;
+} list;
+
+typedef struct {
+	int n;
+	list ** tab;
+} hashtable;
+
