@@ -5,24 +5,7 @@
 #include <SDL2/SDL_image.h>
 #include "structureQuoridor.h"
 
-typedef struct Coup
-{   
-    struct Coup * Prec;
-    struct Coup * Suiv;
 
-    Position * NewPos; // Nouvelle Position engendré par le coup
-    Barrier * NewBar; // Nouvelle Barrière
-
-} Coup_t;
-
-typedef struct Liste_Coups
-{   
-    Coup_t * Tete;
-    Coup_t * Queue;
-
-    int Longueur;
-
-} Liste_Coups_t;
 
 Liste_Coups_t * Creer_Liste_Coups()
 { // Initialise une Liste de Coups (Liste Chaînée)
@@ -182,12 +165,12 @@ int evaluate(GameState game)
 
     if (game.playerTurn == 0)
     {
-        if (player1Distance == 0) return -1000 // On retourne une valeur très petite car le joueur à gagné
+        if (player1Distance == 0) return -1000; // On retourne une valeur très petite car le joueur à gagné
         else return player1Distance - player2Distance; // On retourne la différence de proximité entre les deux joueurs à leur case victorieuse
     }
     else 
     {
-        if (player2Distance == 0) return 1000 // Là c'est l'ordi qui gagne
+        if (player2Distance == 0) return 1000; // Là c'est l'ordi qui gagne
         else return player2Distance - player1Distance;
     }
 }
@@ -314,7 +297,7 @@ bool Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Next)
 
 
 
-Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
+Liste_Coups_t * Generer_Coup(GameState jeu, int Joueur)
 {
     
     // Il vaut mieux que L soit vide
@@ -323,7 +306,7 @@ Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur)
     Liste_Coups_t * L = Creer_Liste_Coups();
 
     int boxesPlayable[BOX_NUMBER_COLUMN][BOX_NUMBER_LINE];
-    getPositionPlayable(jeu, *jeu.players[Joueur].pos.x, *jeu.player[Joueur].pos.y, boxesPlayable);
+    getPositionPlayable(jeu, jeu.players[Joueur].pos.x, jeu.player[Joueur].pos.y, boxesPlayable);
     for (int i = 0; i < BOX_NUMBER_COLUMN; i++)
     {
         for (int j = 0; j < BOX_NUMBER_LINE; j++)

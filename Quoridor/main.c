@@ -37,46 +37,60 @@ int main()
         drawGame(renderer, allImages, Jeu, boxesPlayable); // Dessine le jeu actuel
 
         SDL_Event event;
+        if (Jeu.players[0].pos.y == 0)
+        {
+            Jeu.isGameRunning = false;
+            printf("Joueur 1 a gagné !\n");
+        }
+        if (Jeu.players[1].pos.y == 8)
+        {
+            Jeu.isGameRunning = false;
+            printf("Joueur 2 a gagné !\n");
+        }
+        
         while (SDL_PollEvent(&event)) 
         {
-            switch (event.type) {
+            switch (event.type) 
+            {
                 case SDL_QUIT:
                     Jeu.isGameRunning = false;
                     break;
                 case SDL_KEYDOWN:
-                    switch (event.key.keysym.scancode) {
+                    switch (event.key.keysym.scancode) 
+                    {
                         case SDL_SCANCODE_ESCAPE:
                             Jeu.isGameRunning = false;
-                            break;
-                        case SDL_SCANCODE_SPACE:
-                            Jeu.players[Jeu.playerTurn].barriersLeft -= 1;
                             break;
                         default:
                             break;
                     }
                     break;
                 case SDL_MOUSEBUTTONDOWN:
-                        if (event.button.button == SDL_BUTTON_LEFT) {
+                        if (event.button.button == SDL_BUTTON_LEFT) 
+                        {
                             getCursorIndex(Jeu, &Jeu.players[Jeu.playerTurn].pos.x, &Jeu.players[Jeu.playerTurn].pos.y, &mouvementEffectue, boxesPlayable);
-                            if (mouvementEffectue) {
+                            if (mouvementEffectue) 
+                            {
                                 Jeu.playerTurn = (Jeu.playerTurn + 1) % 2;
                                 mouvementEffectue = false;
-                        }
+                            }
                         
-                        bool onBarrier = false;
-                        for (int i = 0; i < BARRIER_NUMBER && !onBarrier; i++) {
-                            SDL_Point mousePos = {event.button.x, event.button.y};
-                            if (isPointInsideRect(mousePos, Jeu.barriers[i].rect)) {
-                               
-                               onBarrier = true;
-                        }
+                            bool onBarrier = false;
+                            for (int i = 0; i < BARRIER_NUMBER && !onBarrier; i++) 
+                            {
+                                SDL_Point mousePos = {event.button.x, event.button.y};
+                                if (isPointInsideRect(mousePos, Jeu.barriers[i].rect)) 
+                                {
+                                    onBarrier = true;
+                                }
                         
-                        }
+                            }
 
-                        if (onBarrier) {
-                        handleMouseDown(&event.button, &Jeu); // le drag commence que si le curseur est sur un barrière 
-                        }
-    
+                            if (onBarrier) 
+                            {
+                                handleMouseDown(&event.button, &Jeu); // le drag commence que si le curseur est sur un barrière 
+                            }
+        
                         }
                         break;
                         case SDL_MOUSEMOTION:

@@ -66,6 +66,24 @@ typedef struct {
     
 } GameState;
 
+typedef struct Coup
+{   
+    struct Coup * Prec;
+    struct Coup * Suiv;
+
+    Position * NewPos; // Nouvelle Position engendré par le coup
+    Barrier * NewBar; // Nouvelle Barrière
+
+} Coup_t;
+
+typedef struct Liste_Coups
+{   
+    Coup_t * Tete;
+    Coup_t * Queue;
+
+    int Longueur;
+
+} Liste_Coups_t;
 /* typedef struct Coup
 {   
     struct Coup * Prec;
@@ -92,6 +110,24 @@ GameState initGame(SDL_Texture* image_barreir);
 void getCursorIndex(GameState game, int *positionX, int *positionY, bool *mouvementEffectue, int boxesPlayable[BOX_NUMBER_COLUMN][BOX_NUMBER_LINE]);
 void getPositionPlayable(GameState game, int *positionX, int *positionY, int boxesPlayable[BOX_NUMBER_COLUMN][BOX_NUMBER_LINE]);
 int isThereBarrier(GameState game, int otherPlayerPosX, int otherPlayerPosY, int direction);
+
+
+Liste_Coups_t * Creer_Liste_Coups();
+// Fonction d'évaluation
+int evaluate(GameState game);
+Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur);
+// int minOrMax : min = 0 max = 1
+int minMax(GameState game, int depth, int minOrMax);
+
+GameState generateBestMove(GameState game);
+
+
+
+
+
+
+
+
 /*
 int Compare_Place(Pos1,Pos2)
 int Is_Diagonal_or_Simple_Moove(GameState * jeu, Position * Previous, Position * Next)
@@ -99,4 +135,6 @@ bool * Is_There_An_Obstacle(GameState * jeu, Position * Previous, Position * Nex
 Liste_Coups_t * Ajouter_Coup_Liste(Liste_Coups_t * L,int xp, int yp ,int xb ,int yb ,int H);
 Liste_Coups_t * Generer_Coup(GameState * jeu, int Joueur, Liste_Coups_t * L) 
 */
+
+
 #endif
