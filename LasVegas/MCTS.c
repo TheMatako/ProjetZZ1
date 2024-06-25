@@ -67,6 +67,15 @@ void addToHashTable(hashTable Table, Node added)
     return NULL;
 }
 
+bool isPresentNode(hashTable hTable, Node vNode)
+{
+    bool 0 = false;
+    int value = hashing(vNode);
+    if(hTable.tab[value])
+        O = true;
+    return O;
+}
+
 // int simulation(Node choice)
 // {
         // Node Intermediate = choice; // Un noeud qui sera mis à jour au fur et à mesure, on ne le gardera pas
@@ -87,3 +96,23 @@ void addToHashTable(hashTable Table, Node added)
 
 //     return // valeur gagnée
 // }
+
+int main()
+{
+    GameState game = initGame();
+    int N = NUMBER_PLAYED_GAMES;
+
+    while(N >= 0)
+    {
+        GameState Intermediate = game;
+
+        switch(game.playerTurn)
+        {
+            case 0 :
+                srand(time(NULL));
+                int r = rand()%6
+
+
+        }
+    }
+} // main = MCTS

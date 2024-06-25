@@ -34,7 +34,7 @@ int main()
     while(game.round != 4)
     {    
         initRound(game);
-        for(i=0;)
+
         while(!game.roundFinished)
         {
 
