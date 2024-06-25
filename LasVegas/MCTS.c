@@ -68,6 +68,7 @@ void addToHashTable(hashTable Table, Node added)
 
 // int simulation(Node choice)
 // {
+        Node Intermediate = choice; // Un noeud qui sera mis à jour au fur et à mesure, on ne le gardera pas
 //     while(!choice.GameState.roundFinished)
 //     {
 //         // on déroule un tour du joueur, donc un lancé de dés + un posage de dés au hasard
@@ -80,6 +81,8 @@ void addToHashTable(hashTable Table, Node added)
 //         }
         
 //     }
+
+    // free(Intermediate);
 
 //     return // valeur gagnée
 // }

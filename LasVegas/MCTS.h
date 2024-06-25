@@ -21,9 +21,9 @@
 
 typedef struct {
 
-    GameState currentState; //  On a besoin des placements des billets, car le choix en dépend
+    GameState currentState; // On a besoin des placements des billets, des placements des dés des joueurs
 
-    Players chosenMove; // On aura besoin de currentThrow et dicesChosen
+    Players chosenMove; // On aura besoin de dices left, currentThrow et dicesChosen
 
     int * value; // la fameuse valeur de la fonction hachage, elle est UNIQUE
 

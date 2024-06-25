@@ -29,7 +29,8 @@ typedef struct {
     int dicesLeft; // Le nombre de dés qu'il lui reste à placer
     int totalMoney; // La somme qu'il a emmagasiné
     int currentThrow[NUMBER_DICES]; // Le lancer qu'il vient de faire
-    int dicesChosen; // Le groupe de dés qu'il choisit de poser
+    int dicesChosen; // Le groupe de dés qu'il a choisi
+    int casinoChosen; // Le casino qu'il a choisi
 } Players;
 
 typedef struct {
@@ -40,7 +41,6 @@ typedef struct {
                                      // --> 4 dés sont placés
                                      // par le joueur 0 sur ce
                                      // casino.
-
 } Casino;
 
 typedef struct {
