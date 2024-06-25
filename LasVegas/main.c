@@ -24,8 +24,6 @@ int main()
         printf("%d,%d, %d \n", a,b, i); 
     }
 
-    
-    
 /* int i;
 
     while(game.round != 4)

@@ -48,11 +48,11 @@ hashTable createHashTable()
 }
 
 int hashing(Node hashed);
-{   
+{
     if(hashed)
     {
         int value = (17 * hashed.averageGain) + (31 * potential) + (43 * interest);
-        return value;        
+        return value;
     }
     return 0;
 }
@@ -76,26 +76,35 @@ bool isPresentNode(hashTable hTable, Node vNode)
     return O;
 }
 
-// int simulation(Node choice)
-// {
-        // Node Intermediate = choice; // Un noeud qui sera mis à jour au fur et à mesure, on ne le gardera pas
-//     while(!choice.GameState.roundFinished)
-//     {
-//         // on déroule un tour du joueur, donc un lancé de dés + un posage de dés au hasard
+int simulation(Node choice)
+{
+    int r = seed
+    Node Intermediate = choice; // Un noeud qui sera mis à jour au fur et à mesure, on ne le gardera pas
+    while(!choice.GameState.roundFinished)
+    {
+        switch(game.playerTurn)
+        {
+            case 0 :
+                if(game.roundFinished)
+                    return game.player[playerTurn].totalMoney
+                else
+                {
+                    throwDices(GameState);
+                    r=rand()
+                }
+        }
+            choice.GameState.roundFinished = true;
+        else
+        {
+            choice.GameState.
+        }
         
-//         // if(tout le monde a posé ses dés)
-//             choice.GameState.roundFinished = true;
-//         else
-//         {
-//             choice.GameState.
-//         }
-        
-//     }
+    }
 
-    // free(Intermediate);
+    free(Intermediate);
 
-//     return // valeur gagnée
-// }
+    return // valeur gagnée
+}
 
 int main()
 {
@@ -109,10 +118,11 @@ int main()
         switch(game.playerTurn)
         {
             case 0 :
-                srand(time(NULL));
-                int r = rand()%6
+                if(game.roundFinished)
+                {
 
+                }
 
         }
     }
-} // main = MCTS
+}

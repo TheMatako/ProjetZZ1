@@ -74,10 +74,27 @@ void UCB(GameState currentGame)
 
 }
 
-
 int rand
 {
-  Prob[] = [10,15,15,10,13,10,10,9,9]
+  Prob[] = [10,15,15,10,12,10,10,9,9]
+  int r = 0;
+
+  for(int i=0 ; i<=5 ; i++)
+  {
+      while(s < 50 000)
+      {
+          while(r>P[i])
+          {
+            i++;
+          }
+
+            i++;
+      }
+
+  }
+
+      
+
   r=rand()%10;
 
 }

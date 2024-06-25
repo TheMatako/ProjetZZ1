@@ -82,6 +82,6 @@ int max(int Tab[]);
 // Fonction qui vérifie si une liste contient un doublon
 bool doublons(int Tab[]);
 // Affiche le jeu
-void gameDisplay(GameState game)*/
+void gameDisplay(GameState game) */
 
 #endif

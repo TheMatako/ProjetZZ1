@@ -49,56 +49,68 @@ void initRound(GameState game)
 
 
 
- int randBanknotes(GameState *game){
-            srand(time(NULL));
-            int r=rand()% game->Banknotes[0] +1;
-            printf("le nbr aléa %d \n", r); 
-            int n=0;
-            int s = game->Banknotes[1];
-            if(r<=s)
-                n = 10;
-            
-            else {
-                s+=game->Banknotes[2];
-                if (r<=s) n = 20; 
+ int randBanknotes(GameState *game)
+ {
+    srand(time(NULL));
+    int r=rand()% game->Banknotes[0] +1;
+    printf("le nbr aléa %d \n", r); 
+    int n=0;
+    int s = game->Banknotes[1];
 
-                else{ 
-                    s+=game->Banknotes[3];
-                    if (r<=s) n = 30;
-                    
-                    else {
-                        s+=game->Banknotes[4];
-                        if (r<=s) n = 40;
-                           
-                        else {
-                            s+=game->Banknotes[5];
-                            if (r<=s) n = 50;
-
-                            else{ 
-                                s+=game->Banknotes[6];
-                                if (r<=s) n = 60;
-
-                                else{
-                                    s+=game->Banknotes[7];
-                                    if (r<=s) n = 70;
-
-                                    else{ s+=game->Banknotes[8];
-                                    if (r<=s) n = 80;
-
-                                    else {
-                                        if (r<=game->Banknotes[0]) n = 90;
-                                         }
-                                        }  
-                                    }
+    if(r<=s)
+        n = 10;
+    else 
+    {
+        s+=game->Banknotes[2];
+        if (r<=s) n = 20; 
+        else
+        { 
+            s+=game->Banknotes[3];
+            if (r<=s) n = 30;
+            else 
+            {
+                s+=game->Banknotes[4];
+                if (r<=s) n = 40;
+                else 
+                {
+                    s+=game->Banknotes[5];
+                    if (r<=s) n = 50;
+                    else
+                    { 
+                        s+=game->Banknotes[6];
+                        if (r<=s) n = 60;
+                        else
+                        {
+                            s+=game->Banknotes[7];
+                            if (r<=s) n = 70;
+                            else
+                            { 
+                                s+=game->Banknotes[8];
+                                if (r<=s) n = 80;
+                                else
+                                {
+                                    if (r<=game->Banknotes[0]) n = 90;
                                 }
-                            }
+                            }  
                         }
                     }
-               }
+                }
+            }
+        }
+    }
+
    return n; 
  }
  
-
+/* 
+void throwBanknotes() {
+    srand(time(NULL)); 
+    for (int i = 0; i < 6; i++) {
+        int banknote = generateWeightedRandom();
+        printf("Casino %d receives a banknote of type %d\n", i + 1, banknote);
+    }
+}
+*/
 
 void throwDices(GameState *game) 
 {
@@ -110,7 +122,7 @@ void throwDices(GameState *game)
     }
 }
 
-/*int max(int Tab[])
+int max(int Tab[])
 {
     int i = 0; int max = 0;
     while(Tab[i] || Tab[i] == 0)
@@ -182,4 +194,3 @@ void gameDisplay(GameState game)
         printf("\n\n");
     }
 }
-*/
