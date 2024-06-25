@@ -34,6 +34,7 @@
 typedef struct {
     int idPlayer; // l'ID du joueur : 0, 1 ...
     int dicesLeft; // Le nombre de dés qu'il lui reste à placer
+    int color; // 0 : noir; 1 : rouge; 2 : bleu; 3 : jaune; 4 : vert;
     int totalMoney; // La somme qu'il a emmagasiné
     int currentThrow[NUMBER_DICES]; // Le lancer qu'il vient de faire
     int dicesChosen; // Le groupe de dés qu'il a choisi

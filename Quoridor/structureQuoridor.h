@@ -60,7 +60,7 @@ typedef struct {
     int barrierCount;     // Nombre actuel de barrières placées
     bool isGameRunning;
     int playerTurn;
-    bool isDragging;   // Indique si un drag est en cours
+    int isDragging;   // Indique si un drag est en cours 0: pas de drag, 1: drag barrière horizontale, 2: drag barrière verticale
     Barrier *draggedBarrier; // Pointeur vers la barrière actuellement déplacée
     SDL_Rect dragRect; // Rectangle de rendu pour la barrière en cours de drag
     

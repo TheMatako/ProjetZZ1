@@ -15,7 +15,7 @@ GameState initGame(SDL_Texture* image_barrier)
         .barrierCount = 0,
         .isGameRunning = true,
         .playerTurn = 0,
-        .isDragging = false,
+        .isDragging = 0,
         .draggedBarrier = NULL
     };
 
@@ -131,7 +131,7 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, in
     {
         if (Jeu.barriers[k].isPlaced) 
         {
-            /*
+            
             for (int i = 0; i < BOX_NUMBER_COLUMN; i++)
             {
                 for (int j = 0; j < BOX_NUMBER_LINE; j++)
@@ -166,10 +166,7 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, in
                         
                     }
                 }
-            }*/
-            if (Jeu.barriers[k].isHorizontal) SDL_RenderCopy(renderer, allImages[13], NULL, &dstRectBarrier);
-
-            else SDL_RenderCopy(renderer, allImages[14], NULL, &dstRectBarrier);  
+            }
         }
     }
     
@@ -273,10 +270,23 @@ void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, GameState Jeu, in
         }
     }
     
-    if (Jeu.isDragging && Jeu.draggedBarrier != NULL) 
+    if (Jeu.isDragging == 1)
     {
-        if (Jeu.draggedBarrier->isHorizontal) SDL_RenderCopy(renderer, allImages[13], NULL, &Jeu.dragRect); 
-        else SDL_RenderCopy(renderer, allImages[14], NULL, &Jeu.dragRect);
+        int posCursorX; int posCursorY;
+        SDL_GetMouseState(&posCursorX, &posCursorY);
+        posCursorX -= SPACE_LENGTH/2 - BOX_WIDTH;
+        posCursorX -= SPACE_LENGTH/2;
+        SDL_Rect dstRectDragging = {posCursorX, posCursorY, 2*BOX_WIDTH+SPACE_LENGTH, SPACE_LENGTH};
+        SDL_RenderCopy(renderer, allImages[13], NULL, &dstRectDragging);
+    }
+    else if (Jeu.isDragging == 2)
+    {
+        int posCursorX; int posCursorY;
+        SDL_GetMouseState(&posCursorX, &posCursorY);
+        posCursorX -= SPACE_LENGTH/2;
+        posCursorX -= SPACE_LENGTH/2 - BOX_HEIGHT;
+        SDL_Rect dstRectDragging = {posCursorX, posCursorY, SPACE_LENGTH, 2*BOX_HEIGHT+SPACE_LENGTH};
+        SDL_RenderCopy(renderer, allImages[14], NULL, &dstRectDragging);
     }
 
 
