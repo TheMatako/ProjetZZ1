@@ -18,12 +18,11 @@
 #define POSSIBLE_MOVES {1,2,3,4,5,6}
 
 // Structure d'un noeud
-
 typedef struct {
 
     Casino; // On a besoin des placements des billets, des placements des dés des joueurs
-    
-    Players chosenMove; // On aura besoin de dices left, currentThrow et dicesChosen
+
+    Players chosenMove; // On aura besoin de dicesChosen, (dices left, currentThrow)
 
     int * value; // la fameuse valeur de la fonction hachage, elle est UNIQUE
 
@@ -32,12 +31,12 @@ typedef struct {
     int potential; // Voir la formule, dépend de C
     int interest; // La valeur d'Intérêt, voir formule
 
-	Node * next;
+    Node * next;
 } Node;
 
 // On stockera les noeud dans une table de hachage
 typedef struct {
-	int lenght;;
+    int lenght;
 	Node ** tab;
 } hashTable;
 
@@ -49,7 +48,6 @@ typedef struct {
 
 // Fonction qui créer un noeud, et seulement s'il s'agit d'un nouvel état
 Node newNode(Gamestate newState);
-
 // Fonction qui créer une liste de noeud, ne sert uniquement qu'en cas de collision
 List_Node newList();
 // Fonction qui ajoute un noeud à une liste

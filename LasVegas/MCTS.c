@@ -48,11 +48,11 @@ hashTable createHashTable()
 }
 
 int hashing(Node hashed);
-{   
+{
     if(hashed)
     {
         int value = (17 * hashed.averageGain) + (31 * potential) + (43 * interest);
-        return value;        
+        return value;
     }
     return 0;
 }
@@ -76,26 +76,52 @@ bool isPresentNode(hashTable hTable, Node vNode)
     return O;
 }
 
-// int simulation(Node choice)
-// {
-        // Node Intermediate = choice; // Un noeud qui sera mis à jour au fur et à mesure, on ne le gardera pas
-//     while(!choice.GameState.roundFinished)
-//     {
-//         // on déroule un tour du joueur, donc un lancé de dés + un posage de dés au hasard
-        
-//         // if(tout le monde a posé ses dés)
-//             choice.GameState.roundFinished = true;
-//         else
-//         {
-//             choice.GameState.
-//         }
-        
-//     }
+int simulation(GameState game) // , Node choice)
+{   
+    srand(time(NULL));
+    int r1 = -1;
+    int r2 = -1;
+    Node intermediateNode = state; // Jeu qui sera mis à jour, nous le gardons pas
+    // Node intermediateGame = choice; // Un noeud qui sera mis à jour au fur et à mesure, on ne le gardera pas
+    while(!choice.GameState.roundFinished)
+    {
+        if(game.roundFinished)
+        {
+            switch(game.playerTurn)
+            {
+                case 0 :
+                    return -game.player[game.playerTurn].totalMoney;
+                    break;
+                case 1 :
+                    return game.player[game.playerTurn].totalMoney;
+                    break;
+                default :
+                    return game.player[game.playerTurn].totalMoney;
+            }   
+        }
+        else
+        {
+            throwDices(GameState);
+            while(!game.player[game.playerTurn].currentThrow[r])
+                r1 = rand()%6+1;
+            r2 = rand()%6+1;
+            state.player[game.playerTurn].dicesLeft -= game.player[game.playerTurn].currentThrow[r];
+            game.player[game.playerTurn].dicesChosen = r1;
+            game.player[game.playerTurn].casinoChosen = r2;
+            game.casino[r2].dicesPlaced[game.player] += currentThrow[r];
 
-    // free(Intermediate);
+            if(!game.player[0].dicesLeft && !game.player[1].dicesLeft)
+            {
+                game.roundFinished = true;
+            }
+        }
 
-//     return // valeur gagnée
-// }
+    }
+
+    free(Intermediate);
+
+    return // valeur gagnée
+}
 
 int main()
 {
@@ -109,10 +135,11 @@ int main()
         switch(game.playerTurn)
         {
             case 0 :
-                srand(time(NULL));
-                int r = rand()%6
+                if(game.roundFinished)
+                {
 
+                }
 
         }
     }
-} // main = MCTS
+}

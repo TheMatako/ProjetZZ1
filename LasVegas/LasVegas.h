@@ -46,8 +46,7 @@ typedef struct {
                                      // --> 4 dés sont placés
                                      // par le joueur 0 sur ce
                                      // casino.
-    int associatedValues[MAX_BILLETS_PER_CASINO]; // La liste des billets disposés sur ce
-                            // casino.
+    int associatedValues[MAX_BILLETS_PER_CASINO]; // La liste des billets disposés sur ce casino.
 } Casino;
 
 typedef struct {
@@ -76,7 +75,6 @@ int randBanknotes(GameState*game);
 
 // Fonction qui distribue les billets à la fin d'un round
 void distributeMoney(GameState game);
-
 // Fonction qui renvoit la POSITION du maximum d'une Liste
 int max(int Tab[]);
 // Fonction qui vérifie si une liste contient un doublon
