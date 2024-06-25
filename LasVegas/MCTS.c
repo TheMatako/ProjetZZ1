@@ -8,7 +8,7 @@
 #include "LasVegas.h"
 #include "MCTS.h"
 
-Node newNode(Gamestate newState)
+Node newNode(GameState newState)
 {
     Node * newMove = malloc(sizeof(noeud));
 
@@ -42,7 +42,7 @@ hashTable createHashTable()
     if(newHash)
     {
         newHash->lenght = 10^6;
-        return newHash;
+        return *newHash;
     }
     return NULL;
 }

@@ -37,7 +37,7 @@ typedef struct {
 
 // On stockera les noeud dans une table de hachage
 typedef struct {
-	int n;
+	int lenght;;
 	Node ** tab;
 } hashTable;
 
