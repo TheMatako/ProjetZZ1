@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
-#include <SDL2/SDL>
-#include <SDL2/SDL_image>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 // Constantes pour les formules
 #define C sqrt(2)

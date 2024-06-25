@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
-#include <SDL2/SDL>
-#include <SDL2/SDL_image>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #define NUMBER_PLAYERS 2
 #define NUMBER_DICES 8
