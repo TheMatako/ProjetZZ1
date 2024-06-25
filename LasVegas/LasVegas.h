@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 #include <SDL2/SDL>
 #include <SDL2/SDL_image>
 
@@ -28,7 +29,7 @@ typedef struct {
     int dicesLeft; // Le nombre de dés qu'il lui reste à placer
     int totalMoney; // La somme qu'il a emmagasiné
     int currentThrow[NUMBER_DICES]; // Le lancer qu'il vient de faire
-    int dicesChosen;
+    int dicesChosen; // Le groupe de dés qu'il choisit de poser
 } Players;
 
 typedef struct {
