@@ -15,8 +15,6 @@ int main()
    
     throwBanknotes(&game);
     
-   
-    
     int a,b;
     throwDices(&game);
     for (int i=0; i < game.player[game.playerTurn].dicesLeft;i++)

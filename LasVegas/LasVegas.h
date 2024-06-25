@@ -65,11 +65,12 @@ Casino initCasino(int number);
 // Fonction d'initialisation du round
 void initRound(GameState game);
 // Fonction de tirage de billet
-void throwBanknotes(GameState game);
-// Fonction d'un tirage de dés
-void throwDices(GameState *game);
-//rand un nbr aléatoire
+void throwBanknotes(GameState *game);
+//fonction auxiliaire qui retourne un nbr aléatoire 
 int randBanknotes(GameState*game);
+// Fonction d'un tirage de dés
+void throwDices(GameState*game);
+
 
 
 
