@@ -12,8 +12,9 @@ int main()
     int r = game.playerTurn;
     printf("%d,%d\n",n,r);
     
-    int c = randBanknotes(&game);
-    printf("%d\n",c);
+   
+    throwBanknotes(&game);
+    
    
     
     int a,b;
@@ -38,6 +39,7 @@ int main()
         }
     }
 
-gameDisplay(game);*/
+    gameDisplay(game);*/
+
     return 0;
 }

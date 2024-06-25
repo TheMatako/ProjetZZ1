@@ -73,7 +73,7 @@ void throwDices(GameState *game);
 int randBanknotes(GameState*game);
 
 
-/* 
+
 // Fonction qui distribue les billets à la fin d'un round
 void distributeMoney(GameState game);
 
@@ -82,6 +82,6 @@ int max(int Tab[]);
 // Fonction qui vérifie si une liste contient un doublon
 bool doublons(int Tab[]);
 // Affiche le jeu
-void gameDisplay(GameState game)*/
+void gameDisplay(GameState game);
 
 #endif
