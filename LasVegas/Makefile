@@ -1,6 +1,5 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -std=c11 -MMD -Og -g -fsanitize=address
-CFLAGS = -Wall -Wextra -Werror -std=c11 -MMD -Og -g -fsanitizer=address
 CFILES = $(wildcard *.c)
 HFILES = $(wildcard *.h)
 DFILES = $(wildcard *.d)
