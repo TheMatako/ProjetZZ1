@@ -76,29 +76,46 @@ bool isPresentNode(hashTable hTable, Node vNode)
     return O;
 }
 
-int simulation(Node choice)
-{
-    int r = seed
-    Node Intermediate = choice; // Un noeud qui sera mis à jour au fur et à mesure, on ne le gardera pas
+int simulation(GameState game) // , Node choice)
+{   
+    srand(time(NULL));
+    int r1 = -1;
+    int r2 = -1;
+    Node intermediateNode = state; // Jeu qui sera mis à jour, nous le gardons pas
+    // Node intermediateGame = choice; // Un noeud qui sera mis à jour au fur et à mesure, on ne le gardera pas
     while(!choice.GameState.roundFinished)
     {
-        switch(game.playerTurn)
+        if(game.roundFinished)
         {
-            case 0 :
-                if(game.roundFinished)
-                    return game.player[playerTurn].totalMoney
-                else
-                {
-                    throwDices(GameState);
-                    r=rand()
-                }
+            switch(game.playerTurn)
+            {
+                case 0 :
+                    return -game.player[game.playerTurn].totalMoney;
+                    break;
+                case 1 :
+                    return game.player[game.playerTurn].totalMoney;
+                    break;
+                default :
+                    return game.player[game.playerTurn].totalMoney;
+            }   
         }
-            choice.GameState.roundFinished = true;
         else
         {
-            choice.GameState.
+            throwDices(GameState);
+            while(!game.player[game.playerTurn].currentThrow[r])
+                r1 = rand()%6+1;
+            r2 = rand()%6+1;
+            state.player[game.playerTurn].dicesLeft -= game.player[game.playerTurn].currentThrow[r];
+            game.player[game.playerTurn].dicesChosen = r1;
+            game.player[game.playerTurn].casinoChosen = r2;
+            game.casino[r2].dicesPlaced[game.player] += currentThrow[r];
+
+            if(!game.player[0].dicesLeft && !game.player[1].dicesLeft)
+            {
+                game.roundFinished = true;
+            }
         }
-        
+
     }
 
     free(Intermediate);

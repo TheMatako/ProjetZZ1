@@ -1,4 +1,3 @@
-
 #include "LasVegas.h"
 #include <stdio.h>
 #include <stddef.h>
@@ -47,10 +46,8 @@ void initRound(GameState game)
     game.roundFinished = !game.roundFinished;
 }
 
-
-
- int randBanknotes(GameState *game)
- {
+int randBanknotes(GameState *game)
+{
     srand(time(NULL));
     int r=rand()% game->Banknotes[0] +1;
     printf("le nbr aléa %d \n", r); 
@@ -62,7 +59,7 @@ void initRound(GameState game)
     else 
     {
         s+=game->Banknotes[2];
-        if (r<=s) n = 20; 
+        if (r<=s) n = 20;
         else
         { 
             s+=game->Banknotes[3];
@@ -88,10 +85,8 @@ void initRound(GameState game)
                                 s+=game->Banknotes[8];
                                 if (r<=s) n = 80;
                                 else
-                                {
                                     if (r<=game->Banknotes[0]) n = 90;
-                                }
-                            }  
+                            }
                         }
                     }
                 }
@@ -99,9 +94,9 @@ void initRound(GameState game)
         }
     }
 
-   return n; 
- }
- 
+    return n;
+}
+
 /* 
 void throwBanknotes() {
     srand(time(NULL)); 
@@ -117,7 +112,7 @@ void throwDices(GameState *game)
     srand(time(NULL));
     for (int i = 0; i < game->player[game->playerTurn].dicesLeft; i++) 
     {
-        int value = rand() % 6 + 1;  //générer un nombre entre 1 et 6 (reprédente les faces des dés)
+        int value = rand() % 6 + 1;  //générer un nombre entre 1 et 6 (représente les faces des dés)
         game->player[game->playerTurn].currentThrow[i] = value;
     }
 }
