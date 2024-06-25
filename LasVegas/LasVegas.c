@@ -13,7 +13,7 @@ GameState initGame()
     GameState game;
     game.playerTurn = 0;
     game.round = 0;
-    game.roundFinished = true;
+    game.roundFinished = false;
     int Banknotes[10] = {48,5,7,7,5,6,5,5,4,4}; 
     memcpy(game.Banknotes, Banknotes, 10 * sizeof(int)); 
 

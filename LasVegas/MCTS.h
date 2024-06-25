@@ -21,8 +21,8 @@
 
 typedef struct {
 
-    GameState currentState; // On a besoin des placements des billets, des placements des dés des joueurs
-
+    Casino; // On a besoin des placements des billets, des placements des dés des joueurs
+    
     Players chosenMove; // On aura besoin de dices left, currentThrow et dicesChosen
 
     int * value; // la fameuse valeur de la fonction hachage, elle est UNIQUE
@@ -63,10 +63,11 @@ hashTable createHashTable();
 int hashing(Node hashed);
 // Fonction qui ajoute un noeud à la table de hachage, fait appel à la fonction HASHING et gère les collisions
 void addToHashTable(hashTable Table,Node added);
+// Fonction vérifie si un noeud est déjà dans la table de hachage
+bool isPresentNode(hashTable hTable,Node vNode);
 
-// Fonction qui liste tous les coups possibles à partir d'un état
-// (Node Tab[NUMBER_POSSIBLE_MOVES]) * generer_Coups(GameState currentGame);
-
+// Fonction qui compare si deux noeuds sont exactement les mêmes
+bool nodeCompare(Node node1, Node node2)
 // Fonction qui simule une fin de partie à partir d'un état (attention à l'alternance des joueurs)
 int simulation(Node choice);
 // Fonction UCB
