@@ -1,16 +1,14 @@
 #ifndef LASVEGAS_H
 #define LASVEGAS_H
-/* 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <math.h>
-#include <SDL2/SDL>
-#include <SDL2/SDL_image>*/
-
-#include <stdbool.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #define NUMBER_PLAYERS 2
 #define NUMBER_DICES 8
@@ -29,11 +27,12 @@
 #define NUMBER_BILLET_90k 4
 #define MAX_BILLETS_PER_CASINO 5 // si jamais on pioche 5 billets de 10k
                                  // sinon on a besoin de moins de 5 billets 
-                                 //pour que leur somme dépasse 50k
+                                 // pour que leur somme dépasse 50k
 
 typedef struct {
     int idPlayer; // l'ID du joueur : 0, 1 ...
     int dicesLeft; // Le nombre de dés qu'il lui reste à placer
+    int color; // 0 : noir; 1 : rouge; 2 : bleu; 3 : jaune; 4 : vert;
     int totalMoney; // La somme qu'il a emmagasiné
     int currentThrow[NUMBER_DICES]; // Le lancer qu'il vient de faire
     int dicesChosen; // Le groupe de dés qu'il a choisi
@@ -62,17 +61,23 @@ typedef struct {
 
 // Fonction d'initialisation
 GameState initGame();
+// Initialiser un casino
+Casino initCasino(int number);
 // Fonction d'initialisation du round
 void initRound(GameState game);
 // Fonction de tirage de billet
 void throwBanknotes(GameState game);
 // Fonction d'un tirage de dés
 void throwDices(GameState *game);
-//rand un nbr aléatoire 
-int randBanknotes(GameState *game );
-/*// Fonction qui distribue les billets à la fin d'un round
-void distributeMoney(GameState game);*/
-//fonction qui initialise le casino 
-Casino initCasino(int number);
+//rand un nbr aléatoire
+void randBanknotes(GameState game);
+// Fonction qui distribue les billets à la fin d'un round
+void distributeMoney(GameState game);
+// Fonction qui renvoit la POSITION du maximum d'une Liste
+int max(int Tab[]);
+// Fonction qui vérifie si une liste contient un doublon
+bool doublons(int Tab[]);
+// Affiche le jeu
+void gameDisplay(GameState game);
 
 #endif

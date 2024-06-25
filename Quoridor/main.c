@@ -8,6 +8,7 @@
 #include "Rim/barrierInteraction.h" 
 
 
+
 //inutile
 int main() 
 {
@@ -75,29 +76,39 @@ int main()
                                 mouvementEffectue = false;
                             }
                         
-                            bool onBarrier = false;
-                            for (int i = 0; i < BARRIER_NUMBER && !onBarrier; i++) 
-                            {
-                                SDL_Point mousePos = {event.button.x, event.button.y};
-                                if (isPointInsideRect(mousePos, Jeu.barriers[i].rect)) 
-                                {
-                                    onBarrier = true;
-                                }
-                        
-                            }
+                            // Barri�re Verticale
+                            int barrierVerticalWidth, barrierVerticalHeight;
+                            SDL_QueryTexture(allImages[14], NULL, NULL, &barrierVerticalWidth, &barrierVerticalHeight); 
+                            float barrierVerticalX = WINDOW_WIDTH - (3*SPACE_LENGTH+BOX_WIDTH)+ barrierVerticalWidth/2;
+                            int barrierVerticalY = WINDOW_HEIGHT - 125;
+                            SDL_Rect dstRectbarrierVertical = {barrierVerticalX, barrierVerticalY, SPACE_LENGTH, 100};
+                            SDL_RenderCopy(renderer, allImages[14], NULL, &dstRectbarrierVertical);
+                            // Barri�re Horizontale
+                            int barrierHorizontalWidth, barrierHorizontalHeight;
+                            SDL_QueryTexture(allImages[13], NULL, NULL, &barrierHorizontalWidth, &barrierHorizontalHeight); 
+                            float barrierHorizontalX = SPACE_LENGTH + BOX_WIDTH/2;
+                            int barrierHorizontalY = WINDOW_HEIGHT - 85;
+                            SDL_Rect dstRectbarrierHorizontal = {barrierHorizontalX, barrierHorizontalY, 2*(BOX_WIDTH+SPACE_LENGTH), 20};
 
-                            if (onBarrier) 
+                            if (Jeu.isDragging)
                             {
-                                handleMouseDown(&event.button, &Jeu); // le drag commence que si le curseur est sur un barrière 
+                                Jeu.isDragging = 0;   
+                            }
+                            else
+                            {
+                                int positionX, positionY;
+                                SDL_GetMouseState(&positionX, &positionY);
+                                if (isPointInsideRect(positionX, positionY, dstRectbarrierVertical))
+                                {
+                                    Jeu.isDragging = 2;
+                                }
+                                else if (isPointInsideRect(positionX, positionY, dstRectbarrierHorizontal))
+                                {
+                                    Jeu.isDragging = 1;
+                                }
                             }
         
                         }
-                        break;
-                        case SDL_MOUSEMOTION:
-                        handleMouseMotion(&event.motion, &Jeu); // Gérer le mouvement du drag
-                        break;
-                        case SDL_MOUSEBUTTONUP:
-                        handleMouseUp(&event.button, &Jeu); // Gérer le relâchement du drag
                         break;
             }
         }

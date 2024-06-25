@@ -1,8 +1,13 @@
 #include "../structureQuoridor.h"
 #include "barrierInteraction.h"
 
+bool isPointInsideRect(positionX, positionY, SDL_Rect rect) 
+{
+    return (positionX >= rect.x && positionX <= rect.x + rect.w &&
+            positionY >= rect.y && positionY <= rect.y + rect.h);
+}
 
-
+/*
 //quand on appuie sur une barrière
 void handleMouseDown(SDL_MouseButtonEvent *event, GameState *gameState) {
     if (event->button == SDL_BUTTON_LEFT) {
@@ -32,10 +37,6 @@ void handleMouseDown(SDL_MouseButtonEvent *event, GameState *gameState) {
     }
 }
 
-bool isPointInsideRect(SDL_Point point, SDL_Rect rect) {
-    return (point.x >= rect.x && point.x <= rect.x + rect.w &&
-            point.y >= rect.y && point.y <= rect.y + rect.h);
-}
 
 void handleMouseMotion(SDL_MouseMotionEvent *motion, GameState *gameState) {
     if (gameState->isDragging && gameState->draggedBarrier != NULL) {
@@ -112,3 +113,4 @@ bool isValidBarrierPosition(GameState *game, SDL_Rect proposedRect, bool isHoriz
     return false;  // Aucun alignement acceptable trouvé
 }
 
+*/
