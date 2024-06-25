@@ -66,7 +66,20 @@ void addToHashTable(hashTable Table, Node added)
     return NULL;
 }
 
-void MCTS()
-{
-    int
-}
+// int simulation(Node choice)
+// {
+//     while(!choice.GameState.roundFinished)
+//     {
+//         // on déroule un tour du joueur, donc un lancé de dés + un posage de dés au hasard
+        
+//         // if(tout le monde a posé ses dés)
+//             choice.GameState.roundFinished = true;
+//         else
+//         {
+//             choice.GameState.
+//         }
+        
+//     }
+
+//     return // valeur gagnée
+// }
