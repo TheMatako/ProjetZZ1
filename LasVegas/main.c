@@ -15,9 +15,8 @@ int main()
     int c = randBanknotes(&game);
     printf("%d\n",c);
    
+    
     int a,b;
-
-    /* int a,b;
     throwDices(&game);
     for (int i=0; i < game.player[game.playerTurn].dicesLeft;i++)
     {   a=game.player[game.playerTurn].currentThrow[i];
@@ -26,21 +25,19 @@ int main()
     }
 
     
-   
-    } */
-
-    int i;
+    
+/* int i;
 
     while(game.round != 4)
     {    
         initRound(game);
-        for(i=0;)
+        for(i=0);
         while(!game.roundFinished)
         {
 
         }
     }
 
-    gameDisplay(game);
+gameDisplay(game);*/
     return 0;
 }

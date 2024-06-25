@@ -70,14 +70,18 @@ void throwBanknotes(GameState game);
 // Fonction d'un tirage de dés
 void throwDices(GameState *game);
 //rand un nbr aléatoire
-void randBanknotes(GameState game);
+int randBanknotes(GameState*game);
+
+
+/* 
 // Fonction qui distribue les billets à la fin d'un round
 void distributeMoney(GameState game);
+
 // Fonction qui renvoit la POSITION du maximum d'une Liste
 int max(int Tab[]);
 // Fonction qui vérifie si une liste contient un doublon
 bool doublons(int Tab[]);
 // Affiche le jeu
-void gameDisplay(GameState game);
+void gameDisplay(GameState game)*/
 
 #endif

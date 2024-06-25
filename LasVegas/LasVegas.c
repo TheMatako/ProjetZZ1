@@ -98,15 +98,7 @@ void initRound(GameState game)
    return n; 
  }
  
-/* 
-void throwBanknotes() {
-    srand(time(NULL)); 
-    for (int i = 0; i < 6; i++) {
-        int banknote = generateWeightedRandom();
-        printf("Casino %d receives a banknote of type %d\n", i + 1, banknote);
-    }
-}
-*/
+
 
 void throwDices(GameState *game) 
 {
@@ -118,7 +110,7 @@ void throwDices(GameState *game)
     }
 }
 
-int max(int Tab[])
+/*int max(int Tab[])
 {
     int i = 0; int max = 0;
     while(Tab[i] || Tab[i] == 0)
@@ -190,3 +182,4 @@ void gameDisplay(GameState game)
         printf("\n\n");
     }
 }
+*/
