@@ -1,12 +1,12 @@
 #ifndef LASVEGAS_H
 #define LASVEGAS_H
-/* 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
 #include <SDL2/SDL>
-#include <SDL2/SDL_image>*/
+#include <SDL2/SDL_image>
 
 #include <stdbool.h>
 #include <string.h>
@@ -62,16 +62,18 @@ typedef struct {
 
 // Fonction d'initialisation
 GameState initGame();
+// Initialiser un casino
+Casino initCasino(int number) 
 // Fonction d'initialisation du round
 void initRound(GameState game);
 // Fonction de tirage de billet
 void throwBanknotes(GameState game);
 // Fonction d'un tirage de dés
 void throwDices(GameState *game);
-//rand un nbr aléatoire 
-/*void randBanknotes(GameState game );
+//rand un nbr aléatoire
+void randBanknotes(GameState game);
 // Fonction qui distribue les billets à la fin d'un round
-void distributeMoney(GameState game);*/
+void distributeMoney(GameState game);
 //fonction qui initialise le casino 
 Casino initCasino(int number);
 

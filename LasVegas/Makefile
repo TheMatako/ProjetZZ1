@@ -24,6 +24,6 @@ build/%.o: %.c
 	$(CC) $(CFLAGS) $(SDL2_CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf build $(EXEC)
+	rm -rf build $(DFILES) $(OFILES) $(OUTFILES)
 
 -include $(DEPS)

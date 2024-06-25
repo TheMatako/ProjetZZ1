@@ -1,16 +1,16 @@
-
-#include "LasVegas.h"
 #include <stdio.h>
 #include <time.h>
 
-int main () {
+#include "LasVegas.h"
+
+int main () 
+{
     GameState game = initGame();
     initRound(game);
-    int n=game.round;
-    int r=game.playerTurn;
+    int n = game.round;
+    int r = game.playerTurn;
     printf("%d,%d\n",n,r);
 
-   
     int a,b;
     throwDices(&game);
     for (int i=0; i < game.player[game.playerTurn].dicesLeft;i++)
@@ -22,4 +22,3 @@ int main () {
     return 0;
 
 }
-

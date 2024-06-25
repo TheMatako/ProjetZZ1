@@ -1,11 +1,10 @@
-
-#include "LasVegas.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <time.h>
 
+#include "LasVegas.h"
 
-GameState initGame() 
+GameState initGame()
 {
     GameState game;
     game.playerTurn = 0;
@@ -28,10 +27,6 @@ GameState initGame()
     return game;
 }
 
-
-
-
-
 Casino initCasino(int number) 
 {
     Casino casino;
@@ -41,27 +36,22 @@ Casino initCasino(int number)
     return casino;
 }
 
-
-
-
 void initRound(GameState game)
 {
     game.round += 1;
     game.playerTurn = game.round % 2;
     game.roundFinished = !game.roundFinished; 
-    
 }
 
-
-
-/* int randBanknotes(GameState game){
-            int r=rand()%game.bank
-
-        }
+/* int randBanknotes(GameState game)
+{
+    int r=rand()%game.bank
+}
     
 
-void throwBanknotes() {
-    srand(time(NULL)); 
+void throwBanknotes(Gamestate * game) 
+{
+    srand(time(NULL));
     for (int i = 0; i < 6; i++) {
         int banknote = generateWeightedRandom();
         printf("Casino %d receives a banknote of type %d\n", i + 1, banknote);
@@ -69,21 +59,28 @@ void throwBanknotes() {
 }
 */
 
-
 void throwDices(GameState *game) 
 {
     srand(time(NULL));
-    for (int i = 0; i < game->player[game->playerTurn].dicesLeft; i++) {
-
+    for (int i = 0; i < game->player[game->playerTurn].dicesLeft; i++) 
+    {
         int value = rand() % 6 + 1;  //générer un nombre entre 1 et 6 (reprédente les faces des dés)
         game->player[game->playerTurn].currentThrow[i] = value;
     }
-    
 }
-
 
 /* void distributeMoney(GameState game){
 
 }
 */
 
+void gameDisplay(GameState game)
+{
+    printf("| Il s'agit du tour de %d :\n" game.playerTurn);
+
+    int i=0;
+    for(i=0;i<=5;i++)
+    {
+        printf("| ")
+    }
+}
