@@ -9,6 +9,7 @@
 
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
 
 #define NUMBER_PLAYERS 2
 #define NUMBER_DICES 8
@@ -53,6 +54,7 @@ typedef struct {
     Casino casino[6];
     int round;
     bool roundFinished;
+    int Banknotes[10];
 } GameState;
 
 // Fonction d'initialisation
@@ -63,8 +65,10 @@ void initRound(GameState game);
 void throwBanknotes(GameState game);
 // Fonction d'un tirage de dés
 void throwDices(GameState *game);
+//rand un nbr aléatoire 
+/*void randBanknotes(GameState game );
 // Fonction qui distribue les billets à la fin d'un round
-void distributeMoney(GameState game);
+void distributeMoney(GameState game);*/
 //fonction qui initialise le casino 
 Casino initCasino(int number);
 
