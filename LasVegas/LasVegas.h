@@ -4,13 +4,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <math.h>
-#include <SDL2/SDL>
-#include <SDL2/SDL_image>
-
-#include <stdbool.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #define NUMBER_PLAYERS 2
 #define NUMBER_DICES 8
@@ -29,7 +27,7 @@
 #define NUMBER_BILLET_90k 4
 #define MAX_BILLETS_PER_CASINO 5 // si jamais on pioche 5 billets de 10k
                                  // sinon on a besoin de moins de 5 billets 
-                                 //pour que leur somme dépasse 50k
+                                 // pour que leur somme dépasse 50k
 
 typedef struct {
     int idPlayer; // l'ID du joueur : 0, 1 ...
@@ -64,7 +62,7 @@ typedef struct {
 // Fonction d'initialisation
 GameState initGame();
 // Initialiser un casino
-Casino initCasino(int number) 
+Casino initCasino(int number);
 // Fonction d'initialisation du round
 void initRound(GameState game);
 // Fonction de tirage de billet
@@ -75,7 +73,11 @@ void throwDices(GameState *game);
 void randBanknotes(GameState game);
 // Fonction qui distribue les billets à la fin d'un round
 void distributeMoney(GameState game);
-//fonction qui initialise le casino 
-Casino initCasino(int number);
+// Fonction qui renvoit la POSITION du maximum d'une Liste
+int max(int Tab[]);
+// Fonction qui vérifie si une liste contient un doublon
+bool doublons(int Tab[]);
+// Affiche le jeu
+void gameDisplay(GameState game);
 
 #endif
