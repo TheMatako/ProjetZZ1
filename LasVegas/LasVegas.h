@@ -1,11 +1,14 @@
 #ifndef LASVEGAS_H
 #define LASVEGAS_H
-
+/* 
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <SDL2/SDL>
-#include <SDL2/SDL_image>
+#include <SDL2/SDL_image>*/
+
+#include <stdbool.h>
+#include <string.h>
 
 #define NUMBER_PLAYERS 2
 #define NUMBER_DICES 8
@@ -21,6 +24,9 @@
 #define NUMBER_BILLET_70k 5
 #define NUMBER_BILLET_80k 4
 #define NUMBER_BILLET_90k 4
+#define MAX_BILLETS_PER_CASINO 5 // si jamais on pioche 5 billets de 10k
+                                 // sinon on a besoin de moins de 5 billets 
+                                 //pour que leur somme dépasse 50k
 
 typedef struct {
     int idPlayer; // l'ID du joueur : 0, 1 ... 
@@ -32,13 +38,13 @@ typedef struct {
 
 typedef struct {
     int number; // Entre 1 et 6.
-    int associatedValues[]; // La liste des billets disposés sur ce
-                            // casino.
+   
     int dicesPlaced[NUMBER_PLAYERS]; // dicesPlaced[0] = 4
                                      // --> 4 dés sont placés
                                      // par le joueur 0 sur ce
                                      // casino.
-
+    int associatedValues[MAX_BILLETS_PER_CASINO]; // La liste des billets disposés sur ce
+                            // casino.
 } Casino;
 
 typedef struct {
@@ -55,7 +61,11 @@ GameState initGame();
 void initRound(GameState game);
 // Fonction de tirage de billet
 void throwBanknotes(GameState game);
-// Fonnction d'un tirage de dés
-void throwDices(GameState game);
+// Fonction d'un tirage de dés
+void throwDices(GameState *game);
 // Fonction qui distribue les billets à la fin d'un round
 void distributeMoney(GameState game);
+//fonction qui initialise le casino 
+Casino initCasino(int number);
+
+#endif

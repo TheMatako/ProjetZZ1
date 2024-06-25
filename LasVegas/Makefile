@@ -1,14 +1,9 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -std=c11 -MMD -Og -g -fsanitizer
-CFILES = $(wildcard *.c)
-HFILES = $(wildcard *.h)
-DFILES = $(wildcard *.d)
-OFILES = $(patsubst %.c,%.o,$(CFILES))
-OUTFILES = $(wildcard *.out)
+CFLAGS = -Wall -Wextra -Werror -std=c11 -MMD -Og -g -fsanitize=address
 SDL2_CFLAGS = $(shell sdl2-config --cflags)
 SDL2_LIBS = $(shell sdl2-config --libs) -lSDL2_image
 
-SRCS = main.c
+SRCS = main.c LasVegas.c
 OBJS = $(SRCS:%.c=build/%.o)
 DEPS = $(OBJS:.o=.d)
 
@@ -24,7 +19,6 @@ build/%.o: %.c
 	$(CC) $(CFLAGS) $(SDL2_CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf build $(EXEC) $(DFILES) $(OFILES) $(OUTFILES)
+	rm -rf build $(EXEC)
 
 -include $(DEPS)
-
