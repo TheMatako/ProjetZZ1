@@ -4,9 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <string.h>
-#include <time.h>
 #include <math.h>
+#include <time.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -26,7 +25,7 @@
 #define NUMBER_BILLET_80k 4
 #define NUMBER_BILLET_90k 4
 #define MAX_BILLETS_PER_CASINO 5 // si jamais on pioche 5 billets de 10k
-                                 // sinon on a besoin de moins de 5 billets 
+                                 // sinon on a besoin de moins de 5 billets
                                  // pour que leur somme dépasse 50k
 
 typedef struct {
@@ -54,6 +53,7 @@ typedef struct {
     int playerTurn; // 0 ou 1 ou ...
     Casino casino[6];
     int round;
+    int turn;
     bool roundFinished;
     int Banknotes[10];
 } GameState;
@@ -71,15 +71,25 @@ int randBanknotes(GameState*game);
 // Fonction d'un tirage de dés
 void throwDices(GameState*game);
 
+// Fonction qui génère un billet aléatoire respectant les probabilitées individuelles
+int randBankNotes(GameState * game);
 
-
-
-// Fonction qui distribue les billets à la fin d'un round
-void distributeMoney(GameState game);
+// Fonction qui renvoit la somme d'une Liste
+int sumList(int Tab[],int lenght);
 // Fonction qui renvoit la POSITION du maximum d'une Liste
-int max(int Tab[]);
+int max(int Tab[],int lenght);
 // Fonction qui vérifie si une liste contient un doublon
-bool doublons(int Tab[]);
+bool doublons(int Tab[],int lenght);
+// La Fonctiondu tri à bulle
+void bubbleTri(int tab[],int lenght);
+
+// Fonction de tirage de billet
+GameState throwBanknotes(GameState game);
+// Fonction d'un tirage de dés
+GameState throwDices(GameState * game);
+// Fonction qui distribue les billets à la fin d'un round
+GameState distributeMoney(GameState game);
+
 // Affiche le jeu
 void gameDisplay(GameState game);
 
