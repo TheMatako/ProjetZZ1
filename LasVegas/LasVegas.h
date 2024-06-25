@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 #include <SDL2/SDL>
 #include <SDL2/SDL_image>*/
 
@@ -14,7 +15,8 @@
 #define NUMBER_PLAYERS 2
 #define NUMBER_DICES 8
 #define NUMBER_ROUNDS 4
-// Constantes des billets : 
+
+// Constantes des billets :
 #define NUMBER_TOTAL_BILLET 48
 #define NUMBER_BILLET_10k 5
 #define NUMBER_BILLET_20k 7
@@ -30,11 +32,12 @@
                                  //pour que leur somme dépasse 50k
 
 typedef struct {
-    int idPlayer; // l'ID du joueur : 0, 1 ... 
-    int dicesLeft; // Le nombre de dés qu'ils lui reste à placer
+    int idPlayer; // l'ID du joueur : 0, 1 ...
+    int dicesLeft; // Le nombre de dés qu'il lui reste à placer
     int totalMoney; // La somme qu'il a emmagasiné
     int currentThrow[NUMBER_DICES]; // Le lancer qu'il vient de faire
-    int dicesChosen;
+    int dicesChosen; // Le groupe de dés qu'il a choisi
+    int casinoChosen; // Le casino qu'il a choisi
 } Players;
 
 typedef struct {

@@ -1,0 +1,75 @@
+#ifndef MCTS_H
+#define MCTS_H
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <math.h>
+#include <SDL2/SDL>
+#include <SDL2/SDL_image>
+
+// Constantes pour les formules
+#define C sqrt(2)
+#define ESPILON 0.3
+
+// Fonction qui créer un noeud, et seulement s'il s'agit d'un nouvel état
+Node newNode(Gamestate newState);
+
+// Fonction qui créer une liste de noeud, ne sert uniquement 
+
+// Fonction qui libére cette liste
+
+// Fonction qui liste tous les coups possibles à partir d'un état
+Liste_Noeud generer_Coups(GameState currentGame);
+
+// Fonction qui simule une fin de partie à partir d'un état 
+// (attention à l'alternance des joueurs)
+int simulation(Gamestate currentGame);
+
+// La Fonction de hachage
+int hachage(noeud);
+
+// Fonction UCB
+Coup UCB(GameState);
+
+// Fonction MCTS
+Ce sera un main en fait
+
+// Structure d'un noeud
+ typedef struct {
+
+   Gamstate
+
+   int attendance; // nombre de fois que le noeud a été visité (n)
+   int averageGain; // Moyenne des simulations effectuées sur ce noeud
+   int potential; // 
+   int interest; // La valeur d'Intérêt
+
+ } Node;
+
+// On stockera les noeud dans une table de hachage
+typedef struct cell {
+	int * value; // Valeur assignée à l'évaluation de hachage pour ce coup
+	struct cell * next;
+} cell;
+
+typedef struct {
+	int n;
+	cell ** tab;
+} hashTable;
+
+void simulation(GameState currentGame)
+{
+  List_Node branch = newList();
+
+  while(!currentGame.roundFinished)
+  {
+    List_Node moves = newList();
+    moves = 
+  }
+}
+
+void UCB(GameState currentGame)
+{
+
+}
