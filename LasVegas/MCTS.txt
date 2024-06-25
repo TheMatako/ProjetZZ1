@@ -73,3 +73,20 @@ void UCB(GameState currentGame)
 {
 
 }
+
+
+int rand
+{
+  Prob[] = [10,15,15,10,13,10,10,9,9]
+  r=rand()%10;
+
+}
+void throwBanknotes(GameState)
+{
+  int i;
+
+  for(i=0;i<=5;i++)
+  {
+
+  }
+}
