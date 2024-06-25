@@ -1,5 +1,6 @@
 
 #include "LasVegas.h"
+#include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <time.h>
@@ -37,7 +38,7 @@ Casino initCasino(int number)
     Casino casino;
     casino.number = number;
     memset(casino.associatedValues, 0, MAX_BILLETS_PER_CASINO * sizeof(int)); // Initialiser les billets à 0
-    memset(casino.dicesPlaced, 0, NUMBER_PLAYERS * sizeof(int)); // Initialiser les dés à 0 0
+    memset(casino.dicesPlaced, 0, NUMBER_PLAYERS * sizeof(int)); // Initialiser les dés à 0 
     return casino;
 }
 
@@ -54,12 +55,56 @@ void initRound(GameState game)
 
 
 
-/* int randBanknotes(GameState game){
-            int r=rand()%game.bank
+ int randBanknotes(GameState *game){
+            srand(time(NULL));
+            int r=rand()% game->Banknotes[0] +1;
+            printf("le nbr aléa %d \n", r); 
+            int n=0;
+            int s = game->Banknotes[1];
+            if(r<=s)
+                n = 10;
+            
+            else {
+                s+=game->Banknotes[2];
+                if (r<=s) n = 20; 
 
-        }
-    
+                else{ 
+                    s+=game->Banknotes[3];
+                    if (r<=s) n = 30;
+                    
+                    else {
+                        s+=game->Banknotes[4];
+                        if (r<=s) n = 40;
+                           
+                        else {
+                            s+=game->Banknotes[5];
+                            if (r<=s) n = 50;
 
+                            else{ 
+                                s+=game->Banknotes[6];
+                                if (r<=s) n = 60;
+
+                                else{
+                                    s+=game->Banknotes[7];
+                                    if (r<=s) n = 70;
+
+                                    else{ s+=game->Banknotes[8];
+                                    if (r<=s) n = 80;
+
+                                    else {
+                                        if (r<=game->Banknotes[0]) n = 90;
+                                         }
+                                        }  
+                                    }
+                                }
+                            }
+                        }
+                    }
+               }
+   return n; 
+ }
+ 
+/* 
 void throwBanknotes() {
     srand(time(NULL)); 
     for (int i = 0; i < 6; i++) {

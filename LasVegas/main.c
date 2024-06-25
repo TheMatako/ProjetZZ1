@@ -9,7 +9,9 @@ int main () {
     int n=game.round;
     int r=game.playerTurn;
     printf("%d,%d\n",n,r);
-
+    
+    int c = randBanknotes(&game);
+    printf("%d\n",c);
    
     int a,b;
     throwDices(&game);
@@ -18,6 +20,8 @@ int main () {
         b=game.player[game.playerTurn].dicesLeft;
         printf("%d,%d, %d \n", a,b, i); 
     }
+
+    
    
     return 0;
 

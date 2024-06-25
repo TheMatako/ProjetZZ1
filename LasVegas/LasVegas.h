@@ -69,8 +69,8 @@ void throwBanknotes(GameState game);
 // Fonction d'un tirage de dés
 void throwDices(GameState *game);
 //rand un nbr aléatoire 
-/*void randBanknotes(GameState game );
-// Fonction qui distribue les billets à la fin d'un round
+int randBanknotes(GameState *game );
+/*// Fonction qui distribue les billets à la fin d'un round
 void distributeMoney(GameState game);*/
 //fonction qui initialise le casino 
 Casino initCasino(int number);
