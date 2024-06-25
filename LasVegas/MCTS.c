@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
-#include <SDL2/SDL>
-#include <SDL2/SDL_image>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
+#include "LasVegas.h"
 #include "MCTS.h"
 
 Node newNode(Gamestate newState)
@@ -68,7 +69,7 @@ void addToHashTable(hashTable Table, Node added)
 
 // int simulation(Node choice)
 // {
-        Node Intermediate = choice; // Un noeud qui sera mis à jour au fur et à mesure, on ne le gardera pas
+        // Node Intermediate = choice; // Un noeud qui sera mis à jour au fur et à mesure, on ne le gardera pas
 //     while(!choice.GameState.roundFinished)
 //     {
 //         // on déroule un tour du joueur, donc un lancé de dés + un posage de dés au hasard
