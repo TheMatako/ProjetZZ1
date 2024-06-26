@@ -4,14 +4,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <time.h>
-<<<<<<< HEAD
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-=======
 #include "SDL.h"
-#include "LasVegas.h"
->>>>>>> 8a2e2b3 (Ajout images + début SDL)
 
 #include "LasVegas.h"
 #include "MCTS.h"
@@ -19,44 +12,39 @@
 int main()
 {
     GameState game = initGame();
-    game = initRound(game);
+    game = throwBanknotes(game);
 
-    int d = -1; int c = -1;
-    
+    game.round = 0;
+    game.playerTurn = 0;
+
+    int dice; int group;
+
     while(game.round != 4)
     {
-        game.roundFinished = false;
-        game = throwBanknotes(game);
-
+        game = initRound(game);
+        printf("Nouveau round\n");
         while(!game.roundFinished)
         {
+            printf("Nouveau tour\n");
+            dice = game.player[game.playerTurn].dicesLeft;
             game = throwDices(&game);
             gameDisplay(game);
+            group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
             printf("Alors, quel groupe de dés choisis-tu ? ");
-            while(!game.player[game.playerTurn].currentThrow[d])
+            while(group == 0)
             {
-                scanf("%d",&d);
-                if(!game.player[game.playerTurn].currentThrow[d])
-                    printf("\nNope ! quel groupe de dés choisis-tu ? ");
+                scanf("%d",&dice);
+                printf("\n");
+                group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
+                if(group == 0)
+                    printf("\nNope ! quel groupe de dés choisis-tu ?");
             }
-            printf("\nEt donc, sur quel Casino ? ");
-            while(!(c-- >= 0 && c-- <= 5))
-            {
-                scanf("%d",&c);
-                if(!game.player[game.playerTurn].currentThrow[c])
-                    printf("\nNope ! Sur quel Casino mises-tu ? ");
-            }
+            printf("\n\n||||||||||||||||||||||||||||||||||||||||||||||\n\n");
+            game.player[game.playerTurn].dicesLeft -= group;
+            game.player[game.playerTurn].dicesChosen = dice-1;
+            game.casino[dice-1].dicesPlaced[game.playerTurn] = group;
 
-            game.player[game.playerTurn].dicesLeft -= game.player[game.playerTurn].currentThrow[d];
-            game.player[game.playerTurn].dicesChosen = d;
-            game.player[game.playerTurn].casinoChosen = c;
-            game.casino[d].dicesPlaced[game.playerTurn] = game.player[game.playerTurn].currentThrow[d];
-
-            if(game.playerTurn == 0)
-                game.playerTurn = 1;
-            else
-                game.playerTurn = 0;
-
+            game.playerTurn = (game.playerTurn+1)%NUMBER_PLAYERS;
             game.turn++;
  
             if(!game.player[0].dicesLeft && !game.player[1].dicesLeft)

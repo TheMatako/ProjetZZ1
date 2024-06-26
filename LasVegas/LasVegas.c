@@ -35,7 +35,7 @@ GameState initGame()
 }
 
 Casino initCasino(int number)
-{   
+{
     int i; int j;
     Casino casino;
     casino.number = number;
@@ -43,59 +43,59 @@ Casino initCasino(int number)
         casino.dicesPlaced[i] = 0;
     for(j = 0 ; j < MAX_BILLETS_PER_CASINO; j++)
         casino.associatedValues[j] = 0;
-    // memset(casino.associatedValues, 0, MAX_BILLETS_PER_CASINO * sizeof(int)); // Initialiser les billets à 0
-    // memset(casino.dicesPlaced, 0, NUMBER_PLAYERS * sizeof(int)); // Initialiser les dés à 0
+    memset(casino.associatedValues, 0, MAX_BILLETS_PER_CASINO * sizeof(int)); // Initialiser les billets à 0
+    memset(casino.dicesPlaced, 0, NUMBER_PLAYERS * sizeof(int)); // Initialiser les dés à 0
     return casino;
 }
 
 GameState initRound(GameState game)
 {
     game.round += 1;
-    game.playerTurn = game.round % 2;
-    game.roundFinished = !game.roundFinished;
+    game.playerTurn = game.round % NUMBER_PLAYERS;
+    game.roundFinished = false;
     return game;
 }
 
 int randBankNotes(GameState * game)
 {
     int r = rand() % game->Banknotes[0] + 1;
-    // printf("Nombre Aléatoire :  %d \n", r);
+    printf("Nombre Aléatoire :  %d \n", r);
     int n = 0;
     int s = game->Banknotes[1];
     if(r<=s)
-        n = 10; // 1 sera associé au billet de 10k par exemple
+        n = 1; // 1 sera associé au billet de 10k par exemple
     else
     {
         s+=game->Banknotes[2];
-        if (r<=s) n = 20; 
+        if (r<=s) n = 2;
 
         else
         {
             s+=game->Banknotes[3];
-            if (r<=s) n = 30;
+            if (r<=s) n = 3;
             else
             {
                 s+=game->Banknotes[4];
-                if (r<=s) n = 40;
+                if (r<=s) n = 4;
                 else 
                 {
                     s+=game->Banknotes[5];
-                    if (r<=s) n = 50;
+                    if (r<=s) n = 5;
                     else
                     { 
                         s+=game->Banknotes[6];
-                        if (r<=s) n = 60;
+                        if (r<=s) n = 6;
                         else
                         {
                             s+=game->Banknotes[7];
-                            if (r<=s) n = 70;
+                            if (r<=s) n = 7;
                             else
                             {
                                 s+=game->Banknotes[8];
-                                if (r<=s) n = 80;
+                                if (r<=s) n = 8;
                                 else
                                 {
-                                    if (r<=game->Banknotes[0]) n = 90;
+                                    if (r<=game->Banknotes[0]) n = 9;
                                 }
                             }
                         }
@@ -107,7 +107,7 @@ int randBankNotes(GameState * game)
     return n; 
 }
 
-// void throwBanknotes(GameState *game) 
+// void throwBanknotes(GameState * game) 
 // {
 //     for (int i =0; i<6; i++)
 //     {
@@ -211,22 +211,32 @@ void bubbleTea(int tab[],int lenght)
     }
 }
 
+int occurrences(int tab[],int lenght,int number)
+{   int c = 0;
+    for(int i = 0; i<lenght; i++)
+    {
+        // printf("i = %d , tab[i] = %d\n ",i,tab[i]);
+        if(tab[i] == number) c++;
+    }
+    return c;
+}
+
 GameState throwBanknotes(GameState game)
 {
     srand(time(0));
     int bankNote; int j = 0;
     for (int i = 0; i < 6; i++)
     {   
-        while(sumList(game.casino[i].associatedValues,MAX_BILLETS_PER_CASINO) < 50)
-        {   
+        while(sumList(game.casino[i].associatedValues,MAX_BILLETS_PER_CASINO) < 5)
+        {
             bankNote = randBankNotes(&game);
             game.casino[i].associatedValues[j] = bankNote;
-            game.Banknotes[0]--;
-            game.Banknotes[bankNote]--;
+            // game.Banknotes[0]--;
+            // game.Banknotes[bankNote]--;
             j++;
-            printf("le Casino N° %d reçoit un billet de valeur %d \n", i + 1, bankNote);
+            printf("le Casino N° %d reçoit un billet de valeur %d0k \n", i + 1, bankNote);
         }
-        printf("SOMME : %d\n",sumList(game.casino[i].associatedValues,MAX_BILLETS_PER_CASINO));
+        printf("SOMME : %d0k\n",sumList(game.casino[i].associatedValues,MAX_BILLETS_PER_CASINO));
         j = 0;
         printf("\n");
     }
@@ -236,7 +246,7 @@ GameState throwBanknotes(GameState game)
 GameState throwDices(GameState * game)
 {
     srand(time(0));
-    for (int i =0 ;i<NUMBER_DICES;i++)
+    for (int i = 0 ;i<game->player[game->playerTurn].dicesLeft;i++)
     { 
         int value = rand()%6 +1;
         game->player[game->playerTurn].currentThrow[i]= value;
@@ -269,8 +279,8 @@ GameState distributeMoney(GameState game)
 void gameDisplay(GameState game)
 {   
     printf("|| Round N° %d , Tour N° %d ||\n\n",game.round,game.turn);
-    printf("Joueur N° 0 : %d Dés Restants, %d Money\n",game.player[0].dicesLeft,game.player[0].totalMoney);
-    printf("Joueur N° 1 : %d Dés Restants, %d Money\n\n",game.player[1].dicesLeft,game.player[1].totalMoney);
+    printf("Joueur N° 0 : %d Dés Restants, %d0k Money\n",game.player[0].dicesLeft,game.player[0].totalMoney);
+    printf("Joueur N° 1 : %d Dés Restants, %d0k Money\n\n",game.player[1].dicesLeft,game.player[1].totalMoney);
     printf("| Il s'agit du tour du joueur %d |\n\n",game.playerTurn);
 
     int i; int j;
@@ -280,7 +290,7 @@ void gameDisplay(GameState game)
         printf("| CASINO N° %d : %d dés pour le joueur 0 , %d dés pour le joueur 1 |",game.casino[i].number,game.casino[i].dicesPlaced[0],
         game.casino[i].dicesPlaced[1]);
         printf("\n");
-        printf("Valeur des billets : %d %d %d %d %d , ",game.casino[i].associatedValues[0]
+        printf("Valeur des billets : %d0k %d0k %d0k %d0k %d0k , ",game.casino[i].associatedValues[0]
                                                         ,game.casino[i].associatedValues[1]
                                                         ,game.casino[i].associatedValues[2]
                                                         ,game.casino[i].associatedValues[3]

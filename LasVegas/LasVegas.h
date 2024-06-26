@@ -42,7 +42,7 @@ typedef struct {
     int totalMoney; // La somme qu'il a emmagasiné
     int currentThrow[NUMBER_DICES]; // Le lancer qu'il vient de faire
     int dicesChosen; // Le groupe de dés qu'il a choisi
-    int casinoChosen; // Le casino qu'il a choisi
+                     // Le casino qu'il a choisi
 } Players;
 
 typedef struct {
@@ -80,13 +80,16 @@ int sumList(int Tab[],int lenght);
 int max(int Tab[],int lenght);
 // Fonction qui vérifie si une liste contient un doublon
 bool doublons(int Tab[],int lenght);
-// La Fonctiondu tri à bulle
+// La Fonction du tri à bulle
 void bubbleTri(int tab[],int lenght);
+// Fonction qui compte l'occurence d'une valeur ans une liste
+int occurrences(int tab[],int lenght,int number);
 
 // Fonction de tirage de billet
 GameState throwBanknotes(GameState game);
 // Fonction d'un tirage de dés
 GameState throwDices(GameState * game);
+
 // Fonction qui distribue les billets à la fin d'un round
 GameState distributeMoney(GameState game);
 
