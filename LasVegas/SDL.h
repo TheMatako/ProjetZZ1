@@ -5,7 +5,7 @@
 
 
 
-void drawGame(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages, SDL_Texture **dicesImages);
+void drawGame(GameState game,SDL_Renderer *renderer, SDL_Texture **allImages, SDL_Texture **dicesImages);
 
 void drawLines(SDL_Renderer *renderer);
 void drawDiceImages(SDL_Renderer *renderer, SDL_Texture **dicesImages);

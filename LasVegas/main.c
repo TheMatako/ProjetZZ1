@@ -22,6 +22,7 @@ int main()
     while(game.round != 4)
     {
         game = initRound(game);
+        
         while(!game.roundFinished)
         {
             if(game.player[game.playerTurn].dicesLeft)
@@ -56,3 +57,4 @@ int main()
         game = distributeMoney(game);
     }
 }
+

@@ -166,11 +166,14 @@ void drawLines(SDL_Renderer *renderer)
 
 void drawBanknotes(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages)
 {
+
     for (int i = 0; i < 6; i ++) // On parcourt les casinos
     {
+        bubbleTea(game.casino[i].associatedValues, MAX_BILLETS_PER_CASINO, 1);
         for (int j = 0; j < MAX_BILLETS_PER_CASINO; j++) // On va parcourir les billets associés au casino
         {
             int value = game.casino[i].associatedValues[j];
+            
             if (value > 0)
             {
                 SDL_Rect dstRectBanknote = {game.casino[i].rectCasino[0]+j*100,game.casino[i].rectCasino[1]+game.casino[i].rectCasino[3],100,game.casino[i].rectCasino[3]};

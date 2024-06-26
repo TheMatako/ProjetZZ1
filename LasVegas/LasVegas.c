@@ -45,12 +45,11 @@ Casino initCasino(int number)
         casino.associatedValues[j] = 0;
     memset(casino.associatedValues, 0, MAX_BILLETS_PER_CASINO * sizeof(int)); // Initialiser les billets à 0
     memset(casino.dicesPlaced, 0, NUMBER_PLAYERS * sizeof(int)); // Initialiser les dés à 0
-    // memset(casino.associatedValues, 0, MAX_BILLETS_PER_CASINO * sizeof(int)); // Initialiser les billets à 0
-    // memset(casino.dicesPlaced, 0, NUMBER_PLAYERS * sizeof(int)); // Initialiser les dés à 0
 
     // Initialise les positions utiles pour la SDL des casinos et des zones de dés
-    int column = ((number+2)%3);
-    int line = number/3;
+    int column = ((number-1)%3);
+    int line = (number-1)/3;
+    printf("Casino n°%d en colonne %d et ligne %d\n", casino.number, column, line);
     casino.rectCasino[0] = 240+400*column;
     casino.rectCasino[1] = 255+360*line;
     casino.rectCasino[2] = 400;
@@ -319,16 +318,17 @@ void gameDisplay(GameState game)
 
         printf("\n\n");
     }
+    /*
     printf("Joueur N° %d, Tu as fait ce lancer : \n",game.playerTurn);
 
     for (i=0; i<game.player[game.playerTurn].dicesLeft; i++)
     {
         printf("%d ", game.player[game.playerTurn].currentThrow[i]);
     }
-    printf("\n");
+    printf("\n");*/
     bubbleTea(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft, 0);
 
     for(j=0;j<game.player[game.playerTurn].dicesLeft;j++)
-        printf("%d ",game.player[game.playerTurn].currentThrow[j]);
+        printf("%d  ",game.player[game.playerTurn].currentThrow[j]);
     printf("\n\n");
 }
