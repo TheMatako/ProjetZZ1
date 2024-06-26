@@ -63,7 +63,11 @@ GameState initRound(GameState game)
 {
     game.round += 1;
     game.playerTurn = game.round % NUMBER_PLAYERS;
+    game.turn = 1;
+    game.player[0].dicesLeft = game.player[1].dicesLeft = 8;
     game.roundFinished = false;
+    for(int i=0;i<5;i++)
+        game.casino[i] = initCasino(i);
     return game;
 }
 
@@ -117,7 +121,6 @@ int randBankNotes(GameState * game)
     }
     return n; 
 }
-
 
 int sumList(int Tab[],int lenght)
 {
@@ -193,12 +196,11 @@ void bubbleTea(int tab[],int lenght, int croissant)
     }
 }
 
-
 int occurrences(int tab[],int lenght,int number)
 {   int c = 0;
     for(int i = 0; i<lenght; i++)
     {
-        printf("i = %d , tab[i] = %d   ",i,tab[i]);
+        // printf("i = %d , tab[i] = %d   ",i,tab[i]);
         if(tab[i] == number) c++;
     }
     return c;
@@ -239,20 +241,20 @@ GameState throwDices(GameState * game)
 
 GameState distributeMoney(GameState game)
 {   
-    int i; int j;
+    int i; int j; int winner; int maxBankNote;
     for (i = 0; i <= 5; i++) 
     {
-        for(j = 0; j <= 1; j++)
+        for(j = 0; j <= NUMBER_PLAYERS; j++)
         {
             if(!doublons(game.casino[i].dicesPlaced,NUMBER_PLAYERS))
             {
-                int winner = max(game.casino[i].dicesPlaced,NUMBER_PLAYERS);
-                int maxNote = max(game.casino[i].associatedValues,MAX_BILLETS_PER_CASINO);
+                winner = max(game.casino[i].dicesPlaced,NUMBER_PLAYERS);
+                maxBankNote = max(game.casino[i].associatedValues,MAX_BILLETS_PER_CASINO);
 
-                game.player[winner].totalMoney += maxNote;
+                game.player[winner].totalMoney += maxBankNote;
 
                 game.casino[i].dicesPlaced[winner] = 0;
-                game.casino[i].associatedValues[maxNote] = 0;
+                game.casino[i].associatedValues[maxBankNote] = 0;
             }
         }
     }
