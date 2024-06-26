@@ -24,17 +24,16 @@
 
 // Structure d'un noeud
 typedef struct {
-    Casino chosenCasino; // On a besoin des placements des billets, des placements des dés des joueurs
-
-    Players chosenMove; // On aura besoin de dicesChosen, (dices left, currentThrow)
-
+    GameState currentGame; // On aura besoin des placements des billets, des placements des dés des joueurs
+                           // des dés qu'il nous reste et de notre tir (les sommes)
+    int chosenDice;
+    
     int * value; // la fameuse valeur de la fonction hachage, elle est UNIQUE
 
     int attendance; // nombre de fois que le noeud a été visité (n)
     int averageGain; // Moyenne des simulations effectuées sur ce noeud (G)
     int potential; // Voir la formule, dépend de C
     int interest; // La valeur d'Intérêt, voir formule
-
 } Node;
 
 // On stockera les noeud dans une table de hachage
@@ -68,11 +67,8 @@ void addToHashTable(hashTable Table,Node added);
 bool isPresentNode(hashTable hTable,Node vNode);
 
 // Fonction qui simule une fin de partie à partir d'un état (attention à l'alternance des joueurs)
-int simulation(GameState game);
-// Fonction UCB
-Node UCB(GameState);
-
-// Fonction MCTS
-/* Ce sera comme un main */
+int simulation(GameState game,int profit,int player);
+// Fonction qui liste les Noeuds possibles, FAIRE UN THROWDICE AVANT CHANGER DE PLAYERTURN
+List_Node listing_Moves(GameState);
 
 #endif
