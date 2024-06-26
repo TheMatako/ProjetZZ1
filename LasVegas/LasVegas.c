@@ -117,26 +117,26 @@ int randBankNotes(GameState * game)
 //        game->casino[i].associatedValues[0]= Banknotes_1_cas1;
 //        printf("on distribue  un billet de %d0k\n", Banknotes_1_cas1);     //juste un test
 
-       if (Banknotes_1_cas1<=50)
-       {
-        int Banknotes_2_cas1 = randBanknotes(game);
-        game->Banknotes[0]--;
-        game->Banknotes[Banknotes_2_cas1]--;
-        game->casino[i].associatedValues[1]= Banknotes_2_cas1;
+//        if (Banknotes_1_cas1<=50)
+//        {
+//         int Banknotes_2_cas1 = randBanknotes(game);
+//         game->Banknotes[0]--;
+//         game->Banknotes[Banknotes_2_cas1]--;
+//         game->casino[i].associatedValues[1]= Banknotes_2_cas1;
         
 
 //         printf("on distribue aussi un billet de %d0k\n", Banknotes_2_cas1);   //encore un test
 
-        if(Banknotes_1_cas1+Banknotes_2_cas1<50) 
-        {
-            int Banknotes_3_cas1 = randBanknotes(game);
-            game->Banknotes[0]--;
-            game->Banknotes[Banknotes_3_cas1]--;
-            game->casino[i].associatedValues[2]= Banknotes_3_cas1;
-            printf("on distribue aussi un billet de %d0k\n", Banknotes_3_cas1);  
+//         if(Banknotes_1_cas1+Banknotes_2_cas1<50) 
+//         {
+//             int Banknotes_3_cas1 = randBanknotes(game);
+//             game->Banknotes[0]--;
+//             game->Banknotes[Banknotes_3_cas1]--;
+//             game->casino[i].associatedValues[2]= Banknotes_3_cas1;
+//             printf("on distribue aussi un billet de %d0k\n", Banknotes_3_cas1);  
 
 
-//             if(Banknotes_1_cas1+Banknotes_2_cas1+Banknotes_3_cas1<5) 
+//             if(Banknotes_1_cas1+Banknotes_2_cas1+Banknotes_3_cas1<50) 
 //             {
 //                 int Banknotes_4_cas1 = randBanknotes(game);
 //                 game->Banknotes[0]--;
@@ -236,7 +236,7 @@ GameState throwBanknotes(GameState game)
 GameState throwDices(GameState * game)
 {
     srand(time(0));
-    for (int i =0 ;i<NUMBER_DICES;i++)
+    for (int i =0 ;i<game->player[game->playerTurn].dicesLeft;i++)
     { 
         int value = rand()%6 +1;
         game->player[game->playerTurn].currentThrow[i]= value;
