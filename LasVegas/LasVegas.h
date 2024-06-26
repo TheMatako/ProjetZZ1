@@ -8,8 +8,6 @@
 #include <math.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-
-#include <stdbool.h>
 #include <string.h>
 #include <time.h>
 
@@ -36,13 +34,12 @@
                                  // pour que leur somme dépasse 50k
 
 typedef struct {
-    int idPlayer; // l'ID du joueur : 0, 1 ...
+    int idPlayer; // l'ID du joueur : 0, 1 ... --> corrélé à une couleur, 0: bleu, 1: jaune, 2: rouge, 3: vert, 4: violet 
     int dicesLeft; // Le nombre de dés qu'il lui reste à placer
-    int color; // 0 : noir; 1 : rouge; 2 : bleu; 3 : jaune; 4 : vert;
     int totalMoney; // La somme qu'il a emmagasiné
     int currentThrow[NUMBER_DICES]; // Le lancer qu'il vient de faire
     int dicesChosen; // Le groupe de dés qu'il a choisi
-    int casinoChosen; // Le casino qu'il a choisi
+                     // Le casino qu'il a choisi
 } Players;
 
 typedef struct {
@@ -53,6 +50,8 @@ typedef struct {
                                      // par le joueur 0 sur ce
                                      // casino.
     int associatedValues[MAX_BILLETS_PER_CASINO]; // La liste des billets disposés sur ce casino.
+    int rectCasino[4];
+    int rectDice[4];
 } Casino;
 
 typedef struct {
@@ -80,13 +79,16 @@ int sumList(int Tab[],int lenght);
 int max(int Tab[],int lenght);
 // Fonction qui vérifie si une liste contient un doublon
 bool doublons(int Tab[],int lenght);
-// La Fonctiondu tri à bulle
-void bubbleTri(int tab[],int lenght);
+// La Fonction du tri à bulle
+void bubbleTea(int tab[],int lenght, int croissant);
+// Fonction qui compte l'occurence d'une valeur ans une liste
+int occurrences(int tab[],int lenght,int number);
 
 // Fonction de tirage de billet
 GameState throwBanknotes(GameState game);
 // Fonction d'un tirage de dés
 GameState throwDices(GameState * game);
+
 // Fonction qui distribue les billets à la fin d'un round
 GameState distributeMoney(GameState game);
 

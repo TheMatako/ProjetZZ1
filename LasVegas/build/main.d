@@ -1,1 +1,1 @@
-build/main.o: main.c LasVegas.h MCTS.h
+build/main.o: main.c SDL.h LasVegas.h MCTS.h
