@@ -1,22 +1,22 @@
-
-#include "LasVegas.h"
 #include <stdio.h>
-#include <stddef.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <stddef.h>
 #include <stdbool.h>
 #include <math.h>
+#include <time.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-#include "LasVegas.h"
+#include "MCTS.h"
 
 GameState initGame()
 {
     GameState game;
     game.playerTurn = 0;
     game.round = 0;
-    game.roundFinished =true;
+    game.roundFinished = true;
+    game.turn = 1;
     int Banknotes[10] = {48,5,7,7,5,6,5,5,4,4}; 
     memcpy(game.Banknotes, Banknotes, 10 * sizeof(int)); 
 
@@ -48,136 +48,115 @@ Casino initCasino(int number)
     return casino;
 }
 
-void initRound(GameState game)
+GameState initRound(GameState game)
 {
     game.round += 1;
     game.playerTurn = game.round % 2;
     game.roundFinished = !game.roundFinished;
+    return game;
 }
 
- int randBanknotes(GameState *game){
-            srand(time(NULL));
-            int r=rand()% game->Banknotes[0] +1;
-            printf("le nbr aléa %d \n", r); 
-            int n=0;
-            int s = game->Banknotes[1];
-            if(r<=s)
-                n = 1;                  // 1 sera associé au billet de 10k
-            
-            else {
-                s+=game->Banknotes[2];
-                if (r<=s) n = 2; 
+int randBankNotes(GameState * game)
+{
+    int r = rand() % game->Banknotes[0] + 1;
+    // printf("Nombre Aléatoire :  %d \n", r);
+    int n = 0;
+    int s = game->Banknotes[1];
+    if(r<=s)
+        n = 10; // 1 sera associé au billet de 10k par exemple
+    else
+    {
+        s+=game->Banknotes[2];
+        if (r<=s) n = 20; 
 
-                else{ 
-                    s+=game->Banknotes[3];
-                    if (r<=s) n = 3;
-                    
-                    else {
-                        s+=game->Banknotes[4];
-                        if (r<=s) n = 4;
-                           
-                        else {
-                            s+=game->Banknotes[5];
-                            if (r<=s) n = 5;
-
-                            else{ 
-                                s+=game->Banknotes[6];
-                                if (r<=s) n = 6;
-
-                                else{
-                                    s+=game->Banknotes[7];
-                                    if (r<=s) n = 7;
-
-                                    else{ s+=game->Banknotes[8];
-                                    if (r<=s) n = 8;
-
-                                    else {
-                                        if (r<=game->Banknotes[0]) n = 9;
-                                         }
-                                        }  
-                                    }
+        else
+        {
+            s+=game->Banknotes[3];
+            if (r<=s) n = 30;
+            else
+            {
+                s+=game->Banknotes[4];
+                if (r<=s) n = 40;
+                else 
+                {
+                    s+=game->Banknotes[5];
+                    if (r<=s) n = 50;
+                    else
+                    { 
+                        s+=game->Banknotes[6];
+                        if (r<=s) n = 60;
+                        else
+                        {
+                            s+=game->Banknotes[7];
+                            if (r<=s) n = 70;
+                            else
+                            {
+                                s+=game->Banknotes[8];
+                                if (r<=s) n = 80;
+                                else
+                                {
+                                    if (r<=game->Banknotes[0]) n = 90;
                                 }
                             }
                         }
                     }
-               }
-    
-    return n; 
- }
- 
-
-
-void throwBanknotes(GameState *game) 
-{
-    for (int i =0; i<6; i++)
-    {
-       int Banknotes_1_cas1 = randBanknotes(game);
-       game->Banknotes[0]--;
-       game->Banknotes[Banknotes_1_cas1]--;
-       game->casino[i].associatedValues[0]= Banknotes_1_cas1;
-       printf("on distribue  un billet de %d0k\n", Banknotes_1_cas1);     //juste un test
-
-       if (Banknotes_1_cas1<=50)
-       {
-        int Banknotes_2_cas1 = randBanknotes(game);
-        game->Banknotes[0]--;
-        game->Banknotes[Banknotes_2_cas1]--;
-        game->casino[i].associatedValues[1]= Banknotes_2_cas1;
-        
-
-        printf("on distribue aussi un billet de %d0k\n", Banknotes_2_cas1);   //encore un test
-
-        if(Banknotes_1_cas1+Banknotes_2_cas1<50) 
-        {
-            int Banknotes_3_cas1 = randBanknotes(game);
-            game->Banknotes[0]--;
-            game->Banknotes[Banknotes_3_cas1]--;
-            game->casino[i].associatedValues[2]= Banknotes_3_cas1;
-            printf("on distribue aussi un billet de %d0k\n", Banknotes_3_cas1);  
-
-
-            if(Banknotes_1_cas1+Banknotes_2_cas1+Banknotes_3_cas1<50) 
-            {
-                int Banknotes_4_cas1 = randBanknotes(game);
-                game->Banknotes[0]--;
-                game->Banknotes[Banknotes_4_cas1]--;
-                game->casino[i].associatedValues[3]= Banknotes_4_cas1;
-                
-                if(Banknotes_1_cas1+Banknotes_2_cas1+Banknotes_3_cas1+Banknotes_4_cas1<50) 
-                {
-                    int Banknotes_5_cas1 = randBanknotes(game);
-                    game->Banknotes[0]--;
-                    game->Banknotes[Banknotes_5_cas1]--;
-                    game->casino[i].associatedValues[4]= Banknotes_5_cas1;   // le cas où le casino
-                                                                             //a 5 billets de 10k
                 }
-    
             }
-        }       
-       }
-    }
-}
-
-void throwDices(GameState*game)
-{
-    srand(time(NULL));
-    for (int i =0 ;i<NUMBER_DICES;i++)
-    { 
-        int value = rand()%6 +1;
-        game->player[game->playerTurn].currentThrow[i]= value;
-        
-    }
-}
-
-
-
-
-int max(int Tab[])
         }
     }
-
-    return n;
+    return n; 
 }
+
+// void throwBanknotes(GameState *game) 
+// {
+//     for (int i =0; i<6; i++)
+//     {
+//        int Banknotes_1_cas1 = randBanknotes(game);
+//        game->Banknotes[0]--;
+//        game->Banknotes[Banknotes_1_cas1]--;
+//        game->casino[i].associatedValues[0]= Banknotes_1_cas1;
+//        printf("on distribue  un billet de %d0k\n", Banknotes_1_cas1);     //juste un test
+
+//        if (Banknotes_1_cas1<=50)
+//        {
+//         int Banknotes_2_cas1 = randBanknotes(game);
+//         game->Banknotes[0]--;
+//         game->Banknotes[Banknotes_2_cas1]--;
+//         game->casino[i].associatedValues[1]= Banknotes_2_cas1;
+        
+
+//         printf("on distribue aussi un billet de %d0k\n", Banknotes_2_cas1);   //encore un test
+
+//         if(Banknotes_1_cas1+Banknotes_2_cas1<50) 
+//         {
+//             int Banknotes_3_cas1 = randBanknotes(game);
+//             game->Banknotes[0]--;
+//             game->Banknotes[Banknotes_3_cas1]--;
+//             game->casino[i].associatedValues[2]= Banknotes_3_cas1;
+//             printf("on distribue aussi un billet de %d0k\n", Banknotes_3_cas1);  
+
+
+//             if(Banknotes_1_cas1+Banknotes_2_cas1+Banknotes_3_cas1<50) 
+//             {
+//                 int Banknotes_4_cas1 = randBanknotes(game);
+//                 game->Banknotes[0]--;
+//                 game->Banknotes[Banknotes_4_cas1]--;
+//                 game->casino[i].associatedValues[3]= Banknotes_4_cas1;
+                
+//                 if(Banknotes_1_cas1+Banknotes_2_cas1+Banknotes_3_cas1+Banknotes_4_cas1<50) 
+//                 {
+//                     int Banknotes_5_cas1 = randBanknotes(game);
+//                     game->Banknotes[0]--;
+//                     game->Banknotes[Banknotes_5_cas1]--;
+//                     game->casino[i].associatedValues[4]= Banknotes_5_cas1;   // le cas où le casino
+//                                                                              //a 5 billets de 10k
+//                 }
+    
+//             }
+//         }       
+//        }
+//     }
+// }
 
 int sumList(int Tab[],int lenght)
 {
@@ -215,14 +194,22 @@ bool doublons(int Tab[],int lenght)
     return O;
 }
 
-// void bubbleTri(int tab[],int lenght)
-// {
-//     for(int i=0;i<lenght;i++)
-//     {
-//         for(int j=0;j<i;j++)
-
-//     }
-// }
+void bubbleTea(int tab[],int lenght)
+{
+    int i, j, temp;
+    for (i = 0; i < lenght-1; i++)
+    {
+        for (j = 0; j < lenght-i-1; j++)
+        {
+            if (tab[j] > tab[j+1]) 
+            {
+                temp = tab[j];
+                tab[j] = tab[j+1];
+                tab[j+1] = temp;
+            }
+        }
+    }
+}
 
 GameState throwBanknotes(GameState game)
 {
@@ -234,6 +221,8 @@ GameState throwBanknotes(GameState game)
         {   
             bankNote = randBankNotes(&game);
             game.casino[i].associatedValues[j] = bankNote;
+            game.Banknotes[0]--;
+            game.Banknotes[bankNote]--;
             j++;
             printf("le Casino N° %d reçoit un billet de valeur %d \n", i + 1, bankNote);
         }
@@ -244,13 +233,13 @@ GameState throwBanknotes(GameState game)
     return game;
 }
 
-GameState throwDices(GameState * game) 
+GameState throwDices(GameState * game)
 {
     srand(time(0));
-    for (int i = 0; i < game->player[game->playerTurn].dicesLeft; i++) 
-    {
-        int value = rand() % 6 + 1;  //générer un nombre entre 1 et 6 (représente les faces des dés)
-        game->player[game->playerTurn].currentThrow[i] = value;
+    for (int i =0 ;i<NUMBER_DICES;i++)
+    { 
+        int value = rand()%6 +1;
+        game->player[game->playerTurn].currentThrow[i]= value;
     }
     return *game;
 }
@@ -299,10 +288,11 @@ void gameDisplay(GameState game)
 
         printf("\n\n");
     }
-}
-
-
     printf("Joueur N° %d, Tu as fait ce lancer : ",game.playerTurn);
+
+    bubbleTea(game.player[game.playerTurn].currentThrow,NUMBER_DICES);
+
     for(j=0;j<game.player[game.playerTurn].dicesLeft;j++)
         printf("%d ",game.player[game.playerTurn].currentThrow[j]);
+    printf("\n\n");
 }

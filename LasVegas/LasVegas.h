@@ -1,11 +1,13 @@
 #ifndef LASVEGAS_H
 #define LASVEGAS_H
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
 #include <stdbool.h>
 #include <math.h>
 #include <time.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -58,19 +60,12 @@ typedef struct {
     int Banknotes[10];
 } GameState;
 
-// Fonction d'initialisation
+// Fonction d'Initialisation du Jeu
 GameState initGame();
-// Initialiser un casino
+// Fonction d'Initialisation un Casino
 Casino initCasino(int number);
-// Fonction d'initialisation du round
-void initRound(GameState game);
-// Fonction de tirage de billet
-void throwBanknotes(GameState *game);
-//fonction auxiliaire qui retourne un nbr aléatoire 
-int randBanknotes(GameState*game);
-// Fonction d'un tirage de dés
-void throwDices(GameState*game);
-
+// Fonction d'Initialisation du Round
+GameState initRound(GameState game);
 // Fonction qui génère un billet aléatoire respectant les probabilitées individuelles
 int randBankNotes(GameState * game);
 

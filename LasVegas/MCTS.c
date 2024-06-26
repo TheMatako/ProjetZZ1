@@ -1,8 +1,10 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
 #include <stdbool.h>
 #include <math.h>
 #include <time.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
