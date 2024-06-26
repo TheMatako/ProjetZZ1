@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <time.h>
+
 #include "SDL.h"
 #include "LasVegas.h"
 #include "MCTS.h"
@@ -26,7 +27,7 @@ int main()
             dice = game.player[game.playerTurn].dicesLeft;
             game = throwDices(&game);
             gameDisplay(game);
-            mainSDL();
+            mainSDL(game);
             group = 0;
             printf("Alors, quel groupe de dés choisis-tu ? ");
             while(group == 0)
