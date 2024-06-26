@@ -31,7 +31,7 @@ int main()
             printf("Alors, quel groupe de dés choisis-tu ? ");
             while(group == 0)
             {
-                scanf("%d%c",&dice);
+                scanf("%d%*c",&dice);
                 group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
                 if(group == 0)
                     printf("\nNope ! quel groupe de dés choisis-tu ?");
