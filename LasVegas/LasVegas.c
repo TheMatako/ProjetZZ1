@@ -13,7 +13,8 @@ GameState initGame()
     GameState game;
     game.playerTurn = 0;
     game.round = 0;
-    game.roundFinished =true;
+    game.roundFinished = true;
+    game.turn = 1;
     int Banknotes[10] = {48,5,7,7,5,6,5,5,4,4}; 
     memcpy(game.Banknotes, Banknotes, 10 * sizeof(int)); 
 
@@ -47,57 +48,55 @@ void initRound(GameState game)
     game.roundFinished = !game.roundFinished;
 }
 
+int randBanknotes(GameState *game)
+{
+    srand(time(NULL));
+    int r=rand()% game->Banknotes[0] +1;
+    printf("le nbr aléa %d \n", r); 
+    int n=0;
+    int s = game->Banknotes[1];
+    if(r<=s)
+        n = 1; // 1 sera associé au billet de 10k par exemple
+    
+    else {
+        s+=game->Banknotes[2];
+        if (r<=s) n = 2; 
 
-
- int randBanknotes(GameState *game){
-            srand(time(NULL));
-            int r=rand()% game->Banknotes[0] +1;
-            printf("le nbr aléa %d \n", r); 
-            int n=0;
-            int s = game->Banknotes[1];
-            if(r<=s)
-                n = 1;                  // 1 sera associé au billet de 10k
+        else{ 
+            s+=game->Banknotes[3];
+            if (r<=s) n = 3;
             
             else {
-                s+=game->Banknotes[2];
-                if (r<=s) n = 2; 
-
-                else{ 
-                    s+=game->Banknotes[3];
-                    if (r<=s) n = 3;
+                s+=game->Banknotes[4];
+                if (r<=s) n = 4;
                     
-                    else {
-                        s+=game->Banknotes[4];
-                        if (r<=s) n = 4;
-                           
-                        else {
-                            s+=game->Banknotes[5];
-                            if (r<=s) n = 5;
+                else {
+                    s+=game->Banknotes[5];
+                    if (r<=s) n = 5;
 
-                            else{ 
-                                s+=game->Banknotes[6];
-                                if (r<=s) n = 6;
+                    else{ 
+                        s+=game->Banknotes[6];
+                        if (r<=s) n = 6;
 
-                                else{
-                                    s+=game->Banknotes[7];
-                                    if (r<=s) n = 7;
+                        else{
+                            s+=game->Banknotes[7];
+                            if (r<=s) n = 7;
 
-                                    else{ s+=game->Banknotes[8];
-                                    if (r<=s) n = 8;
-
-                                    else {
-                                        if (r<=game->Banknotes[0]) n = 9;
-                                         }
-                                        }  
+                            else{ s+=game->Banknotes[8];
+                            if (r<=s) n = 8;
+                            else {
+                                if (r<=game->Banknotes[0]) n = 9;
                                     }
-                                }
+                                }  
                             }
                         }
                     }
-               }
-    
-    return n; 
- }
+                }
+            }
+        }
+
+return n; 
+}
  
 
 
