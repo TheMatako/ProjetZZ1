@@ -78,7 +78,7 @@ int sumList(int Tab[],int lenght);
 // Fonction qui renvoit la POSITION du maximum d'une Liste
 int max(int Tab[],int lenght);
 // Fonction qui vérifie si une liste contient un doublon
-bool doublons(int Tab[],int lenght);
+bool doublons(int Tab[],int lenght, int number);
 // La Fonction du tri à bulle
 void bubbleTea(int tab[],int lenght, int croissant);
 // Fonction qui compte l'occurence d'une valeur ans une liste
@@ -91,6 +91,7 @@ GameState throwDices(GameState * game);
 
 // Fonction qui distribue les billets à la fin d'un round
 GameState distributeMoney(GameState game);
+GameState distributeBiggestBanknote(GameState game, Casino casino);
 
 // Affiche le jeu
 void gameDisplay(GameState game);
