@@ -137,28 +137,25 @@ int sumList(int Tab[],int lenght)
 
 int max(int Tab[],int lenght)
 {
-    int i = 0; int maximum = 0;
+    int i = 0; 
+    int maximum = 0;
     for(i = 0 ; i < lenght ; i++)
     {
         if(Tab[i] > Tab[maximum])
             maximum = i;
-        i++;
     }
     return maximum;
 }
 
 bool doublons(int Tab[],int lenght, int number)
 {
-    int i = 0; int j = 0;
-    for(i = 0 ; i < lenght ; i++)
+    int count = 0;
+    for(int i = 0 ; i < lenght ; i++)
     {
-        for(j = 0 ; j < lenght ; j++)
-        {
-            if(Tab[i] == Tab[j] && Tab[i] == number)
-                return true;
-            j++;
-        }
-        i++;
+        if(Tab[i] == number)
+            count++;
+        if (count > 1)
+            return true;
     }
     return false;
 }
@@ -246,9 +243,9 @@ GameState throwDices(GameState * game)
 
 GameState distributeMoney(GameState game)
 {
+    // On boucle sur tout les casinos
     for (int i = 0; i < 6; i ++)
     {
-        printf("Casino n°%d\n",i);
         game = distributeBiggestBanknote(game, game.casino[i]);
     }
     return game;
@@ -256,28 +253,41 @@ GameState distributeMoney(GameState game)
 
 GameState distributeBiggestBanknote(GameState game, Casino casino)
 {
-
+    // On trie les billets du casino par ordre décroissant
     bubbleTea(casino.associatedValues, MAX_BILLETS_PER_CASINO, 1);
-    printf("Casino %d [ ", casino.number);
-    for (int w = 0; w < NUMBER_PLAYERS; w++)
-    {
-        printf("%d0K ", casino.associatedValues[w]);
-    }
-    printf("]\n");
     
-    printf("[ ");
-    for (int y = 0; y < NUMBER_PLAYERS; y++)
+    // Vérifie si tous les billets ont été distribués
+    bool allBanknotesDistributed = true;
+    for (int i = 0; i < MAX_BILLETS_PER_CASINO; i++)
     {
-        printf("%d ", casino.dicesPlaced[y]);
+        if (casino.associatedValues[i] != 0)
+        {
+            allBanknotesDistributed = false;
+            break;
+        }
     }
-    printf("]\n");
+    
+    // Vérifie si tous les dés ont été placés
+    bool allDicesUnplaced = true;
+    for (int i = 0; i < NUMBER_PLAYERS; i++)
+    {
+        if (casino.dicesPlaced[i] != 0)
+        {
+            allDicesUnplaced = false;
+            break;
+        }
+    }
 
-    printf("Plus gros billet = %d0K\n", casino.associatedValues[0]);
-    
+    // Condition de terminaison pour éviter la récursion infinie
+    if (allBanknotesDistributed || allDicesUnplaced)
+    {
+        return game;
+    }
+
     int playerMaxed = max(casino.dicesPlaced, NUMBER_PLAYERS);
     if (doublons(casino.dicesPlaced, NUMBER_PLAYERS, playerMaxed))
     {
-        for (int i = 0; i < MAX_BILLETS_PER_CASINO; i ++)
+        for (int i = 0; i < MAX_BILLETS_PER_CASINO; i++)
         {
             casino.associatedValues[i] = 0;
             for (int j = 0; j < NUMBER_PLAYERS; j++)
@@ -293,11 +303,6 @@ GameState distributeBiggestBanknote(GameState game, Casino casino)
         casino.associatedValues[0] = 0;
         game.player[playerMaxed].totalMoney += biggestBanknote;
         casino.dicesPlaced[playerMaxed] = 0;
-        printf("distribué au player %d\n",playerMaxed);
-        for (int k = 0; k < NUMBER_PLAYERS; k++)
-        {
-            printf("Money du joueur %d = %d\n", k, game.player[k].totalMoney);
-        }
         return distributeBiggestBanknote(game, casino);
     }
 }
