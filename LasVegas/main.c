@@ -22,19 +22,16 @@ int main()
     while(game.round != 4)
     {
         game = initRound(game);
-        printf("Nouveau round\n");
         while(!game.roundFinished)
         {
-            printf("Nouveau tour\n");
             dice = game.player[game.playerTurn].dicesLeft;
             game = throwDices(&game);
             gameDisplay(game);
-            group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
+            group = 0;
             printf("Alors, quel groupe de dés choisis-tu ? ");
             while(group == 0)
             {
-                scanf("%d",&dice);
-                printf("\n");
+                scanf("%d%c",&dice);
                 group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
                 if(group == 0)
                     printf("\nNope ! quel groupe de dés choisis-tu ?");
