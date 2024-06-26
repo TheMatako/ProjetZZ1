@@ -14,4 +14,5 @@ void drawCasino(SDL_Renderer *renderer, SDL_Texture **allImages);
 void initSDL(SDL_Window **window, SDL_Renderer **renderer);
 void loadTextures(SDL_Renderer *renderer, SDL_Texture ***allImages);
 void loadTexturesDices(SDL_Renderer *renderer, SDL_Texture ***dicesImages);
+void mainSDL();
 #endif

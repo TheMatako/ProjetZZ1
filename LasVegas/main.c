@@ -26,26 +26,30 @@ int main()
             dice = game.player[game.playerTurn].dicesLeft;
             game = throwDices(&game);
             gameDisplay(game);
+            mainSDL();
             group = 0;
             printf("Alors, quel groupe de dés choisis-tu ? ");
             while(group == 0)
             {
                 scanf("%d%*c",&dice);
+                printf("\nVous avez choisis les : %d\n", dice);
                 group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
+                printf("\nIl y a %d %d dans le lancé\n", group, dice);
                 if(group == 0)
                     printf("\nNope ! quel groupe de dés choisis-tu ?");
             }
-            printf("\n\n||||||||||||||||||||||||||||||||||||||||||||||\n\n");
+            printf("\n\n||||||||||||||||||||||||||||||||||||||||||||||\n\n\n");
             game.player[game.playerTurn].dicesLeft -= group;
             game.player[game.playerTurn].dicesChosen = dice-1;
-            game.casino[dice-1].dicesPlaced[game.playerTurn] = group;
+            game.casino[dice-1].dicesPlaced[game.playerTurn] += group;
 
             game.playerTurn = (game.playerTurn+1)%NUMBER_PLAYERS;
-            game.turn++;
- 
-            if(!game.player[0].dicesLeft && !game.player[1].dicesLeft)
+            if (game.playerTurn == 1) game.turn++;
+            printf("Dé restant joueur 0: %d, joueur 1: %d\n", game.player[0].dicesLeft == 0, game.player[1].dicesLeft == 0);
+            if(game.player[0].dicesLeft == 0 && game.player[1].dicesLeft == 0)
             {
-                game.round++; game.roundFinished = true;
+                game.round++; 
+                game.roundFinished = true;
             }
         }  
     }

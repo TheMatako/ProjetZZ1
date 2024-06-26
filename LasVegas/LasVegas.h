@@ -80,7 +80,7 @@ int max(int Tab[],int lenght);
 // Fonction qui vérifie si une liste contient un doublon
 bool doublons(int Tab[],int lenght);
 // La Fonction du tri à bulle
-void bubbleTri(int tab[],int lenght);
+void bubbleTea(int tab[],int lenght, int croissant);
 // Fonction qui compte l'occurence d'une valeur ans une liste
 int occurrences(int tab[],int lenght,int number);
 

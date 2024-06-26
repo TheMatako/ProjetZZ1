@@ -1,7 +1,7 @@
 #include "SDL.h"
 
 
-int main()
+void mainSDL()
 {
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
@@ -10,12 +10,12 @@ int main()
     if (!allImages) 
     {
         fprintf(stderr, "Failed to allocate memory for textures.\n");
-        return 1;
+        return;
     }
     if (!dicesImages) 
     {
         fprintf(stderr, "Failed to allocate memory for textures.\n");
-        return 1;
+        return;
     }
     for (int i = 0; i < 16; i++) 
     {
@@ -70,8 +70,6 @@ int main()
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-
-    return 0;
 }
 
 
@@ -112,27 +110,27 @@ void drawDiceImages(SDL_Renderer *renderer, SDL_Texture **dicesImages)
 void drawCasino(SDL_Renderer *renderer, SDL_Texture **allImages)
 {
     // Casino 1 :
-    SDL_Rect dstRectCasino1 = {240,255,400,360};
+    SDL_Rect dstRectCasino1 = {240,255,400,180};
     SDL_RenderCopy(renderer, allImages[10], NULL, &dstRectCasino1);
 
     // Casino 2 :
-    SDL_Rect dstRectCasino2 = {640,255,400,360};
+    SDL_Rect dstRectCasino2 = {640,255,400,180};
     SDL_RenderCopy(renderer, allImages[11], NULL, &dstRectCasino2);
     
     // Casino 3 :
-    SDL_Rect dstRectCasino3 = {1040,255,400,360};
+    SDL_Rect dstRectCasino3 = {1040,255,400,180};
     SDL_RenderCopy(renderer, allImages[12], NULL, &dstRectCasino3);
 
     // Casino 4 :
-    SDL_Rect dstRectCasino4 = {240,615,400,360};
+    SDL_Rect dstRectCasino4 = {240,615,400,180};
     SDL_RenderCopy(renderer, allImages[13], NULL, &dstRectCasino4);
 
     // Casino 5 :
-    SDL_Rect dstRectCasino5 = {640,615,400,360};
+    SDL_Rect dstRectCasino5 = {640,615,400,180};
     SDL_RenderCopy(renderer, allImages[14], NULL, &dstRectCasino5);
 
     // Casino 6 :
-    SDL_Rect dstRectCasino6 = {1040,615,400,360};
+    SDL_Rect dstRectCasino6 = {1040,615,400,180};
     SDL_RenderCopy(renderer, allImages[15], NULL, &dstRectCasino6);
 }
 void drawLines(SDL_Renderer *renderer)
