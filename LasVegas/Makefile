@@ -17,7 +17,7 @@ EXEC = main
 all: $(EXEC)
 
 $(EXEC): $(OBJS)
-	$(CC) $(CFLAGS) $(SDL2_CFLAGS) $(OBJS) -o $@ $(SDL2_LIBS)
+	$(CC) $(CFLAGS) $(SDL2_CFLAGS) -o $@ $(SDL2_LIBS) $(OBJS)
 
 build/%.o: %.c
 	@mkdir -p $(dir $@)

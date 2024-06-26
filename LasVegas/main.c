@@ -1,41 +1,68 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include <math.h>
 #include <time.h>
+<<<<<<< HEAD
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+=======
+#include "SDL.h"
+#include "LasVegas.h"
+>>>>>>> 8a2e2b3 (Ajout images + début SDL)
 
 #include "LasVegas.h"
+#include "MCTS.h"
 
 int main()
 {
     GameState game = initGame();
-    initRound(game);
-    int n = game.round;
-    int r = game.playerTurn;
-    printf("%d,%d\n",n,r);
-    
-   
-    throwBanknotes(&game);
-    
-    int a,b;
-    throwDices(&game);
-    for (int i=0; i < game.player[game.playerTurn].dicesLeft;i++)
-    {   a=game.player[game.playerTurn].currentThrow[i];
-        b=game.player[game.playerTurn].dicesLeft;
-        printf("%d,%d, %d \n", a,b, i); 
-    }
+    game = initRound(game);
 
-/* int i;
-
+    int d = -1; int c = -1;
+    
     while(game.round != 4)
-    {    
-        initRound(game);
-        for(i=0);
+    {
+        game.roundFinished = false;
+        game = throwBanknotes(game);
+
         while(!game.roundFinished)
         {
+            game = throwDices(&game);
+            gameDisplay(game);
+            printf("Alors, quel groupe de dés choisis-tu ? ");
+            while(!game.player[game.playerTurn].currentThrow[d])
+            {
+                scanf("%d",&d);
+                if(!game.player[game.playerTurn].currentThrow[d])
+                    printf("\nNope ! quel groupe de dés choisis-tu ? ");
+            }
+            printf("\nEt donc, sur quel Casino ? ");
+            while(!(c-- >= 0 && c-- <= 5))
+            {
+                scanf("%d",&c);
+                if(!game.player[game.playerTurn].currentThrow[c])
+                    printf("\nNope ! Sur quel Casino mises-tu ? ");
+            }
 
-        }
+            game.player[game.playerTurn].dicesLeft -= game.player[game.playerTurn].currentThrow[d];
+            game.player[game.playerTurn].dicesChosen = d;
+            game.player[game.playerTurn].casinoChosen = c;
+            game.casino[d].dicesPlaced[game.playerTurn] = game.player[game.playerTurn].currentThrow[d];
+
+            if(game.playerTurn == 0)
+                game.playerTurn = 1;
+            else
+                game.playerTurn = 0;
+
+            game.turn++;
+ 
+            if(!game.player[0].dicesLeft && !game.player[1].dicesLeft)
+            {
+                game.round++; game.roundFinished = true;
+            }
+        }  
     }
-
-    gameDisplay(game);*/
-
-    return 0;
 }

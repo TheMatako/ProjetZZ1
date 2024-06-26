@@ -1,12 +1,17 @@
 #ifndef MCTS_H
 #define MCTS_H
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
 #include <stdbool.h>
 #include <math.h>
+#include <time.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+
+#include "LasVegas.h"
 
 // Constantes pour les formules
 #define C sqrt(2)
@@ -19,8 +24,7 @@
 
 // Structure d'un noeud
 typedef struct {
-
-    Casino; // On a besoin des placements des billets, des placements des dés des joueurs
+    Casino chosenCasino; // On a besoin des placements des billets, des placements des dés des joueurs
 
     Players chosenMove; // On aura besoin de dicesChosen, (dices left, currentThrow)
 
@@ -31,7 +35,6 @@ typedef struct {
     int potential; // Voir la formule, dépend de C
     int interest; // La valeur d'Intérêt, voir formule
 
-    Node * next;
 } Node;
 
 // On stockera les noeud dans une table de hachage
@@ -47,7 +50,7 @@ typedef struct {
 } List_Node;
 
 // Fonction qui créer un noeud, et seulement s'il s'agit d'un nouvel état
-Node newNode(Gamestate newState);
+Node newNode();
 // Fonction qui créer une liste de noeud, ne sert uniquement qu'en cas de collision
 List_Node newList();
 // Fonction qui ajoute un noeud à une liste
@@ -64,12 +67,12 @@ void addToHashTable(hashTable Table,Node added);
 // Fonction vérifie si un noeud est déjà dans la table de hachage
 bool isPresentNode(hashTable hTable,Node vNode);
 
-// Fonction qui compare si deux noeuds sont exactement les mêmes
-bool nodeCompare(Node node1, Node node2)
 // Fonction qui simule une fin de partie à partir d'un état (attention à l'alternance des joueurs)
-int simulation(Node choice);
+int simulation(GameState game);
 // Fonction UCB
-Coup UCB(GameState);
+Node UCB(GameState);
 
 // Fonction MCTS
 /* Ce sera comme un main */
+
+#endif

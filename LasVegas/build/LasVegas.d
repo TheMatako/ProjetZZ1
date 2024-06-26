@@ -1,1 +1,1 @@
-build/LasVegas.o: LasVegas.c LasVegas.h
+build/LasVegas.o: LasVegas.c MCTS.h LasVegas.h
