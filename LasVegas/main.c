@@ -17,7 +17,6 @@ int main()
     game.playerTurn = 1;
 
     int dice; int group;
-
     while(game.round != 4)
     {
         game = initRound(game);

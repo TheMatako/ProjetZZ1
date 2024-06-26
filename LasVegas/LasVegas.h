@@ -64,6 +64,7 @@ typedef struct {
     int Banknotes[10];
 } GameState;
 
+
 // Fonction d'Initialisation du Jeu
 GameState initGame();
 // Fonction d'Initialisation un Casino

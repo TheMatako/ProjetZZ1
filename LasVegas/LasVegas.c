@@ -232,6 +232,7 @@ GameState throwBanknotes(GameState game)
     return game;
 }
 
+
 GameState throwDices(GameState * game)
 {
     srand(time(0));
