@@ -1,7 +1,7 @@
 #include "SDL.h"
 
 
-void mainSDL()
+void mainSDL(GameState game)
 {
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
@@ -31,7 +31,7 @@ void mainSDL()
     {
         SDL_SetRenderDrawColor(renderer, 55, 55, 55, 255);
         SDL_RenderClear(renderer);
-        drawGame(renderer, allImages, dicesImages);
+        drawGame(game, renderer, allImages, dicesImages);
         SDL_Event event;
         while (SDL_PollEvent(&event)) 
         {
@@ -73,11 +73,12 @@ void mainSDL()
 }
 
 
-void drawGame(SDL_Renderer *renderer, SDL_Texture **allImages, SDL_Texture **dicesImages)
+void drawGame(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages, SDL_Texture **dicesImages)
 {
     drawLines(renderer);
     drawDiceImages(renderer, dicesImages);
     drawCasino(renderer, allImages);
+    drawBanknotes(game, renderer, allImages);
 }
 
 void drawDiceImages(SDL_Renderer *renderer, SDL_Texture **dicesImages)
@@ -162,6 +163,23 @@ void drawLines(SDL_Renderer *renderer)
     SDL_Rect r10 = {1440, 735,240,1};
     SDL_RenderFillRect(renderer, &r10);
 }
+
+void drawBanknotes(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages)
+{
+    for (int i = 0; i < 6; i ++) // On parcourt les casinos
+    {
+        for (int j = 0; j < MAX_BILLETS_PER_CASINO; j++) // On va parcourir les billets associés au casino
+        {
+            int value = game.casino[i].associatedValues[j];
+            if (value > 0)
+            {
+                SDL_Rect dstRectBanknote = {game.casino[i].rectCasino[0]+j*100,game.casino[i].rectCasino[1]+game.casino[i].rectCasino[3],100,game.casino[i].rectCasino[3]};
+                SDL_RenderCopy(renderer, allImages[game.casino[i].associatedValues[j]], NULL, &dstRectBanknote);
+            }
+        }
+    }
+}
+
 void initSDL(SDL_Window **window, SDL_Renderer **renderer) 
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) 

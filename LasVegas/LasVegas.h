@@ -78,7 +78,7 @@ int sumList(int Tab[],int lenght);
 // Fonction qui renvoit la POSITION du maximum d'une Liste
 int max(int Tab[],int lenght);
 // Fonction qui vérifie si une liste contient un doublon
-bool doublons(int Tab[],int lenght,int number);
+bool doublons(int Tab[],int lenght);
 // La Fonction du tri à bulle
 void bubbleTea(int tab[],int lenght, int croissant);
 // Fonction qui compte l'occurence d'une valeur ans une liste
