@@ -4,9 +4,14 @@
 #include <stdbool.h>
 #include <math.h>
 #include <time.h>
+<<<<<<< HEAD
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+=======
+#include "SDL.h"
+#include "LasVegas.h"
+>>>>>>> 8a2e2b3 (Ajout images + début SDL)
 
 #include "LasVegas.h"
 #include "MCTS.h"
