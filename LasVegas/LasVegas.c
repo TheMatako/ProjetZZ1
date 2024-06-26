@@ -45,6 +45,14 @@ Casino initCasino(int number)
         casino.associatedValues[j] = 0;
     memset(casino.associatedValues, 0, MAX_BILLETS_PER_CASINO * sizeof(int)); // Initialiser les billets à 0
     memset(casino.dicesPlaced, 0, NUMBER_PLAYERS * sizeof(int)); // Initialiser les dés à 0
+    // memset(casino.associatedValues, 0, MAX_BILLETS_PER_CASINO * sizeof(int)); // Initialiser les billets à 0
+    // memset(casino.dicesPlaced, 0, NUMBER_PLAYERS * sizeof(int)); // Initialiser les dés à 0
+
+    // Initialise les positions utiles pour la SDL des casinos et des zones de dés
+    int column = ((number+2)%3);
+    int line = number/3;
+    casino.rectCasino = {240+400*column, 255+360*number,400,360};
+    
     return casino;
 }
 
@@ -246,7 +254,7 @@ GameState throwBanknotes(GameState game)
 GameState throwDices(GameState * game)
 {
     srand(time(0));
-    for (int i = 0 ;i<game->player[game->playerTurn].dicesLeft;i++)
+    for (int i = 0 ;i < game->player[game->playerTurn].dicesLeft; i++)
     { 
         int value = rand()%6 +1;
         game->player[game->playerTurn].currentThrow[i]= value;

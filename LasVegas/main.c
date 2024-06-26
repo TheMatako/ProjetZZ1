@@ -5,7 +5,6 @@
 #include <math.h>
 #include <time.h>
 #include "SDL.h"
-
 #include "LasVegas.h"
 #include "MCTS.h"
 
