@@ -163,9 +163,6 @@ void throwDices(GameState*game)
     }
 }
 
-
-
-
 int max(int Tab[])
 {
     int i = 0; int max = 0;
@@ -186,7 +183,7 @@ bool doublons(int Tab[])
     {
         while(Tab[j] || Tab[i] == 0)
         {
-            if(Tab[i] == Tab[j] et tab[i] == number)
+            if(Tab[i] == Tab[j] && Tab[i] == number)
                 O = true;
             j++;
         }
@@ -195,9 +192,93 @@ bool doublons(int Tab[])
     return O;
 }
 
-void distributeMoney(GameState game)
-{   
-    int i; int j;
+// Tri le tableau avec le tri à bulle dans l'ordre croissant pour 0 et decroissant pour 1
+void bubbleTea(int tab[],int lenght, int croissant)
+{
+    if (croissant)
+    {
+        int i, j, temp;
+        for (i = 0; i < lenght-1; i++)
+        {
+            for (j = 0; j < lenght-i-1; j++)
+            {
+                if (tab[j] < tab[j+1]) 
+                {
+                    temp = tab[j];
+                    tab[j] = tab[j+1];
+                    tab[j+1] = temp;   
+                }
+            }
+        }
+    }
+    else
+    {
+        int i, j, temp;
+        for (i = 0; i < lenght-1; i++)
+        {
+            for (j = 0; j < lenght-i-1; j++)
+            {
+                if (tab[j] > tab[j+1]) 
+                {
+                    temp = tab[j];
+                    tab[j] = tab[j+1];
+                    tab[j+1] = temp; 
+                }
+            }
+        }
+    }
+}
+
+int occurrences(int tab[],int lenght,int number)
+{   int c = 0;
+    for(int i = 0; i<lenght; i++)
+    {
+        printf("i = %d , tab[i] = %d   ",i,tab[i]);
+        if(tab[i] == number) c++;
+    }
+    return c;
+}
+
+GameState throwBanknotes(GameState game)
+{
+    srand(time(0));
+    int bankNote; int j = 0;
+    for (int i = 0; i < 6; i++)
+    {   
+        while(sumList(game.casino[i].associatedValues,MAX_BILLETS_PER_CASINO) < 5)
+        {
+            bankNote = randBankNotes(&game);
+            game.casino[i].associatedValues[j] = bankNote;
+            game.Banknotes[0]--;
+            game.Banknotes[bankNote]--;
+            j++;
+            printf("le Casino N° %d reçoit un billet de valeur %d0k \n", i + 1, bankNote);
+        }
+        printf("SOMME : %d0k\n",sumList(game.casino[i].associatedValues,MAX_BILLETS_PER_CASINO));
+        j = 0;
+        printf("\n");
+    }
+    return game;
+}
+
+GameState throwDices(GameState * game)
+{
+    if(game->player[0].dicesLeft < 0 && game->player[1].dicesLeft < 0)
+    {
+        srand(time(0));
+        for (int i = 0 ;i < game->player[game->playerTurn].dicesLeft; i++)
+        { 
+            int value = rand()%6 +1;
+            game->player[game->playerTurn].currentThrow[i]= value;
+        }
+        
+    }
+    return *game; 
+}
+
+GameState distributeMoney(GameState game)
+{
+    int i; int j; int winner; int maxBankNote;
     for (i = 0; i <= 5; i++) 
     {
         Casino currentCasino = game.casino[i];
@@ -209,10 +290,9 @@ void distributeMoney(GameState game)
                 int winner = max(currentCasino.dicesPlaced);
                 int maxNote = max(currentCasino.associatedValues);
 
-                game.player[winner].totalMoney += maxNote;
-
-                currentCasino.dicesPlaced[winner] = 0;
-                currentCasino.associatedValues[maxNote] = 0;
+                game.player[winner].totalMoney += maxBankNote;
+                game.casino[i].dicesPlaced[winner] = 0;
+                game.casino[i].associatedValues[maxBankNote] = 0;
             }
             else
             {

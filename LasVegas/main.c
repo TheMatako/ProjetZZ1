@@ -26,7 +26,7 @@ int main()
             dice = game.player[game.playerTurn].dicesLeft;
             game = throwDices(&game);
             gameDisplay(game);
-            mainSDL();
+            // mainSDL();
             group = 0;
             printf("Alors, quel groupe de dés choisis-tu ? ");
             while(group == 0)
@@ -46,11 +46,9 @@ int main()
             game.playerTurn = (game.playerTurn+1)%NUMBER_PLAYERS;
             if (game.playerTurn == 1) game.turn++;
             printf("Dé restant joueur 0: %d, joueur 1: %d\n", game.player[0].dicesLeft == 0, game.player[1].dicesLeft == 0);
-            if(game.player[0].dicesLeft == 0 && game.player[1].dicesLeft == 0)
-            {
-                game.round++; 
+            if(game.player[0].dicesLeft < 0 && game.player[1].dicesLeft < 0)
                 game.roundFinished = true;
-            }
-        }  
+        }
+        game = distributeMoney(game);
     }
 }
