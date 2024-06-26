@@ -45,7 +45,7 @@ void initRound(GameState game)
 {
     game.round += 1;
     game.playerTurn = game.round % 2;
-    game.roundFinished = !game.roundFinished;
+    game.roundFinished = false;
 }
 
 int randBanknotes(GameState *game)
@@ -57,98 +57,46 @@ int randBanknotes(GameState *game)
     int s = game->Banknotes[1];
     if(r<=s)
         n = 1; // 1 sera associé au billet de 10k par exemple
-    
-    else {
+    else
+    {
         s+=game->Banknotes[2];
         if (r<=s) n = 2; 
-
-        else{ 
+        else
+        { 
             s+=game->Banknotes[3];
             if (r<=s) n = 3;
-            
-            else {
+            else
+            {
                 s+=game->Banknotes[4];
-                if (r<=s) n = 4;
-                    
-                else {
+                if (r<=s) n = 4;  
+                else
+                {
                     s+=game->Banknotes[5];
                     if (r<=s) n = 5;
-
-                    else{ 
+                    else
+                    { 
                         s+=game->Banknotes[6];
                         if (r<=s) n = 6;
-
-                        else{
+                        else
+                        {
                             s+=game->Banknotes[7];
                             if (r<=s) n = 7;
-
-                            else{ s+=game->Banknotes[8];
-                            if (r<=s) n = 8;
-                            else {
-                                if (r<=game->Banknotes[0]) n = 9;
-                                    }
-                                }  
+                            else
+                            { 
+                                s+=game->Banknotes[8];
+                                if (r<=s) n = 8;
+                                else
+                                {
+                                    if (r<=game->Banknotes[0]) n = 9;
+                                }
                             }
                         }
                     }
                 }
             }
         }
-
-return n; 
-}
- 
-
-
-void throwBanknotes(GameState *game) 
-{
-    for (int i =0; i<6; i++)
-    {
-       int Banknotes_1_cas1 = randBanknotes(game);
-       game->Banknotes[0]--;
-       game->Banknotes[Banknotes_1_cas1]--;
-       game->casino[i].associatedValues[0]= Banknotes_1_cas1;
-       printf("on distribue  un billet de %d0k\n", Banknotes_1_cas1);     //juste un test
-
-       if (Banknotes_1_cas1<=5)
-       {
-        int Banknotes_2_cas1 = randBanknotes(game);
-        game->Banknotes[0]--;
-        game->Banknotes[Banknotes_2_cas1]--;
-        game->casino[i].associatedValues[1]= Banknotes_2_cas1;
-        
-
-        printf("on distribue aussi un billet de %d0k\n", Banknotes_2_cas1);   //encore un test
-
-        if(Banknotes_1_cas1+Banknotes_2_cas1<5) 
-        {
-            int Banknotes_3_cas1 = randBanknotes(game);
-            game->Banknotes[0]--;
-            game->Banknotes[Banknotes_3_cas1]--;
-            game->casino[i].associatedValues[2]= Banknotes_3_cas1;
-            printf("on distribue aussi un billet de %d0k\n", Banknotes_3_cas1);  
-
-
-            if(Banknotes_1_cas1+Banknotes_2_cas1+Banknotes_3_cas1<5) 
-            {
-                int Banknotes_4_cas1 = randBanknotes(game);
-                game->Banknotes[0]--;
-                game->Banknotes[Banknotes_4_cas1]--;
-                game->casino[i].associatedValues[3]= Banknotes_4_cas1;
-                
-                if(Banknotes_1_cas1+Banknotes_2_cas1+Banknotes_3_cas1+Banknotes_4_cas1<50) 
-                {
-                    int Banknotes_5_cas1 = randBanknotes(game);
-                    game->Banknotes[0]--;
-                    game->Banknotes[Banknotes_5_cas1]--;
-                    game->casino[i].associatedValues[4]= Banknotes_5_cas1;   // le cas où le casino
-                                                                             //a 5 billets de 10k
-                }
-    
-            }
-        }       
-       }
     }
+return n; 
 }
 
 void throwDices(GameState*game)
