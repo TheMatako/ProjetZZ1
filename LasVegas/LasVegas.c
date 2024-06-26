@@ -111,7 +111,7 @@ void throwBanknotes(GameState *game)
        game->casino[i].associatedValues[0]= Banknotes_1_cas1;
        printf("on distribue  un billet de %d0k\n", Banknotes_1_cas1);     //juste un test
 
-       if (Banknotes_1_cas1<=50)
+       if (Banknotes_1_cas1<=5)
        {
         int Banknotes_2_cas1 = randBanknotes(game);
         game->Banknotes[0]--;
@@ -121,7 +121,7 @@ void throwBanknotes(GameState *game)
 
         printf("on distribue aussi un billet de %d0k\n", Banknotes_2_cas1);   //encore un test
 
-        if(Banknotes_1_cas1+Banknotes_2_cas1<50) 
+        if(Banknotes_1_cas1+Banknotes_2_cas1<5) 
         {
             int Banknotes_3_cas1 = randBanknotes(game);
             game->Banknotes[0]--;
@@ -130,7 +130,7 @@ void throwBanknotes(GameState *game)
             printf("on distribue aussi un billet de %d0k\n", Banknotes_3_cas1);  
 
 
-            if(Banknotes_1_cas1+Banknotes_2_cas1+Banknotes_3_cas1<50) 
+            if(Banknotes_1_cas1+Banknotes_2_cas1+Banknotes_3_cas1<5) 
             {
                 int Banknotes_4_cas1 = randBanknotes(game);
                 game->Banknotes[0]--;
