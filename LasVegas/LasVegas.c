@@ -139,14 +139,14 @@ int max(int Tab[],int lenght)
     return max;
 }
 
-bool doublons(int Tab[],int lenght)
+bool doublons(int Tab[],int lenght,int number)
 {
     int i = 0; int j = 0; bool O = false;
     for(i = 0 ; i < lenght ; i++)
     {
         for(j = 0 ; j < lenght ; j++)
         {
-            if(Tab[i] == Tab[j])
+            if(Tab[i] == Tab[j] et tab[i] == number)
                 O = true;
             j++;
         }
@@ -213,8 +213,8 @@ GameState throwBanknotes(GameState game)
         {
             bankNote = randBankNotes(&game);
             game.casino[i].associatedValues[j] = bankNote;
-            // game.Banknotes[0]--;
-            // game.Banknotes[bankNote]--;
+            game.Banknotes[0]--;
+            game.Banknotes[bankNote]--;
             j++;
             printf("le Casino N° %d reçoit un billet de valeur %d0k \n", i + 1, bankNote);
         }
@@ -237,21 +237,28 @@ GameState throwDices(GameState * game)
 }
 
 GameState distributeMoney(GameState game)
-{   
-    int i; int j;
+{
+    int i; int j; int winner; int maxBankNote;
     for (i = 0; i <= 5; i++) 
     {
-        for(j = 0; j <= 1; j++)
+        for(j = 0; j < NUMBER_PLAYERS; j++)
         {
-            if(!doublons(game.casino[i].dicesPlaced,NUMBER_PLAYERS))
+            winner = max(game.casino[i].dicesPlaced,NUMBER_PLAYERS);
+            if(!doublons(game.casino[i].dicesPlaced,NUMBER_PLAYERS,game.casino[i].dicesPlaced[winner]))
             {
-                int winner = max(game.casino[i].dicesPlaced,NUMBER_PLAYERS);
-                int maxNote = max(game.casino[i].associatedValues,MAX_BILLETS_PER_CASINO);
+                maxBankNote = max(game.casino[i].associatedValues,MAX_BILLETS_PER_CASINO);
 
                 game.player[winner].totalMoney += maxNote;
-
                 game.casino[i].dicesPlaced[winner] = 0;
                 game.casino[i].associatedValues[maxNote] = 0;
+            }
+            else
+            {
+                for(j=0;j<NUMBER_PLAYERS;j++)
+                {
+                    if(game.casino[i].dicesPlaced[j] == game.casino[i].dicesPlaced[winner])
+                        game.casino[i].dicesPlaced[j] = 0;
+                }
             }
         }
     }
