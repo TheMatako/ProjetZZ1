@@ -239,7 +239,7 @@ GameState throwDices(GameState * game)
 }
 
 GameState distributeMoney(GameState game)
-{   
+{
     int i; int j; int winner; int maxBankNote;
     for (i = 0; i <= 5; i++) 
     {
@@ -353,7 +353,13 @@ List_Node newList()
     }
 }
 
-// List_Node addList(Node adding) {}
+List_Node addList(List_Node List,Node adding)
+{
+    if(List->head)
+    {
+        
+    }
+}
 
 // void freeList(List_Node freeing) {}
 
@@ -393,7 +399,7 @@ bool isPresentNode(hashTable hTable, Node vNode)
 List_Node listing_Moves(GameState game)
 {
     List_Node = newList();
-    
+
 }
 
 int simulation(GameState game,int profit,int player)

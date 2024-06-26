@@ -53,7 +53,7 @@ Node newNode();
 // Fonction qui créer une liste de noeud, ne sert uniquement qu'en cas de collision
 List_Node newList();
 // Fonction qui ajoute un noeud à une liste
-List_Node addList(Node adding);
+List_Node addList(List_Node List,Node adding)
 // Fonction qui libére une liste
 void freeList(List_Node freeing);
 
