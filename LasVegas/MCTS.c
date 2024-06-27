@@ -17,7 +17,7 @@ Node_t * newNode()
     Node_t * newMove = malloc(sizeof(Node_t));
     if(newMove)
     {
-        newMove->attendance = 1;
+        newMove->attendance = 0;
         newMove->averageGain = newMove->potential = newMove->interest = 0;
         newMove->value = 0;
         newMove->next = NULL;
@@ -42,13 +42,14 @@ List_Node * addList(List_Node * list,Node_t * adding)
     return list;
 }
 
-void displayList(List_Node * List)
+void displayList(List_Node * List, hashTable * hash)
 {
     Node_t * currentNode = List->head;
     while(currentNode)
     {
-        printf("| %d %d %d %d %d %p|->",currentNode->value,currentNode->attendance,
-                currentNode->averageGain,currentNode->potential,currentNode->interest,currentNode->next);
+        printf("| %d %d %d %d %d %d %p %p|->",currentNode->value,currentNode->attendance,
+                currentNode->averageGain,currentNode->potential,currentNode->interest,
+            currentNode->currentGame.player[1].dicesChosen,hash->tab[currentNode->value],currentNode->next);
         currentNode = currentNode->next;
     }
     printf("FIN\n");
@@ -104,7 +105,11 @@ hashTable * addToHashTable(hashTable * hTable, Node_t * added)
 {
     int value = hashing(added);
     if(!hTable->tab[value])
-        hTable->tab[value] = added;
+    {
+        added->value = value;
+        hTable->tab[added->value] = added;
+    }
+    // printf("VALUE : %d , CONSULTING HASH : %p\n",added->value,hTable->tab[added->value]);
     return hTable;
 }
 
@@ -141,7 +146,6 @@ void freeHashTable(hashTable * hash)
 
 int compare(const void* a, const void* b) {return (*(int*)a - *(int*)b);}
     
-
 void removeDuplicates(int * array, int * length)
 {   
     int MAX_VAL = 10000;
@@ -157,9 +161,16 @@ void removeDuplicates(int * array, int * length)
         {
             seen[array[i]] = true;
             array[uniqueIndex++] = array[i];
+            // printf("%d",array[i]);
         }
     }
+
     *length = uniqueIndex;
+
+    bubbleTea(array,*length,0);
+    for(int j=0 ; j<*length ; j++)
+        printf("%d ",array[j]);
+    printf("\n");
 }
 
 int simulation(GameState game,int profit,int player)
@@ -167,7 +178,7 @@ int simulation(GameState game,int profit,int player)
     if(!game.roundFinished)
     {
         game = throwDices(&game);
-        gameDisplay(game);
+        // gameDisplay(game);
         if(game.player[game.playerTurn].dicesLeft)
         {
             int dice = 100; int group = 0; // game = throwDices(&game);
@@ -186,7 +197,7 @@ int simulation(GameState game,int profit,int player)
         {
             game.roundFinished = true;
             game = distributeMoney(game);
-            gameDisplay(game);
+            // gameDisplay(game);
         }
 
         return simulation(game,profit,player);
@@ -196,17 +207,17 @@ int simulation(GameState game,int profit,int player)
     return profit;
 }
 
-List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int player)
+List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int interestPlayer)
 {
     List_Node * list = newList(); // Contiendra tout les noeuds visités
     int s; // Sera la valeur de simulation
     int i; int j;
     int group;
-    int throw[game.player[player].dicesLeft];
-    memcpy(throw,game.player[player].currentThrow,(game.player[player].dicesLeft) * sizeof(int));
-    int length = game.player[player].dicesLeft;
+    int length = game.player[game.playerTurn].dicesLeft;
+    int throw[length];
+    memcpy(throw,game.player[game.playerTurn].currentThrow,(length) * sizeof(int));
     removeDuplicates(throw,&length);
-    GameState intermediate = game; // Une copie du jeu pour ne pasmodifier l'original
+    GameState intermediate = game; // Une copie du jeu pour ne pas modifier l'original
 
     if(list)
     {
@@ -214,36 +225,39 @@ List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int p
         {
             for(j = 0; j<length; j++)
             {
-                if(throw[j] == i /* && !isPresentNode() */)
+                if(throw[j] == i + 1 /* && !isPresentNode() */)
                 {
                     Node_t * node = newNode(); // Nouveau noeud !
 
                     // La suite n'est que l'application d'un tour classique
-                    group = occurrences(intermediate.player[player].currentThrow,intermediate.player[player].dicesLeft,i);
-                    intermediate.player[player].dicesLeft -= group;
-                    intermediate.player[player].dicesChosen = i-1;
-                    intermediate.casino[i-1].dicesPlaced[player] += group;
-                    intermediate.player[player].dicesChosen = i;
+
+                    group = occurrences(intermediate.player[game.playerTurn].currentThrow,intermediate.player[game.playerTurn].dicesLeft,i);
+                    intermediate.player[game.playerTurn].dicesLeft -= group;
+                    intermediate.casino[i+1].dicesPlaced[game.playerTurn] += group;
+                    intermediate.player[interestPlayer].dicesChosen = i+1;
                     intermediate.turn++;
-                    player = (player+1)%NUMBER_PLAYERS;
+                    game.playerTurn = (game.playerTurn+1)%NUMBER_PLAYERS;
                     if(intermediate.player[0].dicesLeft <= 0 && intermediate.player[1].dicesLeft <= 0)
                     {
                         intermediate.roundFinished = true;
                         intermediate = distributeMoney(game);
                     }
+
                     // fin du tour classique
 
                     node->currentGame = intermediate;
-                    s = simulation(intermediate,1,player);
+                    s = simulation(intermediate,0,interestPlayer);
                     node->attendance++;
                     node->averageGain = s/1;
                     node->potential = 0;
                     node->interest = node->averageGain + node->potential;
-                    node->value = hashing(node); printf("AXE : %d",node->value);
-                    hash = addToHashTable(hash,node); printf("AXED : %p",hash->tab[node->value]);
+                    // printf("HASHING : %d\n",node->value);
+                    hash = addToHashTable(hash,node);
+                    // printf("AXED : %p\n",hash->tab[node->value]);
                     list = addList(list,node);
                 }
             }
+
             intermediate = game;
         }
     }
@@ -252,7 +266,7 @@ List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int p
 
 int main()
 {
-    GameState game = initGame();
+    /* GameState game = initGame();
     game = initRound(game);
     game.playerTurn = 0;
     game.round = 1;
@@ -299,21 +313,48 @@ int main()
         printf("NON");
 
     freeList(testList);
-    freeHashTable(HASH);
+    freeHashTable(HASH);*/
 
-    HASH = createHashTable();
+    hashTable * HASH = createHashTable();
 
-    game = initGame();
+    GameState game = initGame();
     game = initRound(game);
     game.playerTurn = 0;
     game.round = 1;
     game.roundFinished = false;
     game = throwBanknotes(game);
     game = throwDices(&game);
+    gameDisplay(game);
 
-    List_Node * firstSimulation = listing_And_Simulating_Moves(game,HASH,0);
+    if(game.player[game.playerTurn].dicesLeft)
+    {
+        int dice = 100; int group = 0; // game = throwDices(&game);
+        while(group == 0)
+        {
+            dice = rand()%6 + 1;
+            group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
+        }
+        game.player[game.playerTurn].dicesLeft -= group;
+        game.player[game.playerTurn].dicesChosen = dice-1;
+        game.casino[dice-1].dicesPlaced[game.playerTurn] += group;
+        game.turn++;
+    }
+    game.playerTurn = (game.playerTurn+1)%NUMBER_PLAYERS;
+    if(game.player[0].dicesLeft <= 0 && game.player[1].dicesLeft <= 0)
+    {
+        game.roundFinished = true;
+        game = distributeMoney(game);
+        gameDisplay(game);
+    }
 
-    displayList(firstSimulation);
+    game = throwDices(&game);
+    gameDisplay(game);
+
+    List_Node * firstSimulation = listing_And_Simulating_Moves(game,HASH,game.playerTurn);
+
+    printf("Coups Possibles pour le joueur %d : \n",game.playerTurn);
+
+    displayList(firstSimulation,HASH);
 
     free(firstSimulation);
 }

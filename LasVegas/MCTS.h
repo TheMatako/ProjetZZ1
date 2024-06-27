@@ -56,7 +56,7 @@ List_Node * newList();
 // Fonction qui ajoute un noeud à une liste
 List_Node * addList(List_Node * List,Node_t * adding);
 // Fonction qui affiche une liste
-void displayList(List_Node * List);
+void displayList(List_Node * List, hashTable * hash);
 // Fonction qui libére une liste
 void freeList(List_Node * freeing);
 
