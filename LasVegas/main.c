@@ -16,7 +16,6 @@ int main()
     game.round = 0;
     game.playerTurn = 1;
 
-    int dice; int group;
     while(game.round != 4)
     {
         game = initRound(game);
@@ -26,22 +25,10 @@ int main()
         {
             if(game.player[game.playerTurn].dicesLeft)
             {
-                dice = game.player[game.playerTurn].dicesLeft;
                 game = throwDices(&game);
                 gameDisplay(game);
-                //mainSDL(game);
-                group = 0;
-                printf("Alors, quel groupe de dés choisis-tu ? ");
-                while(group == 0)
-                {
-                    scanf("%d%*c",&dice);
-                    group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
-                    if(group == 0)
-                        printf("\nNope ! quel groupe de dés choisis-tu ?");
-                }
-                game.player[game.playerTurn].dicesLeft -= group;
-                game.player[game.playerTurn].dicesChosen = dice-1;
-                game.casino[dice-1].dicesPlaced[game.playerTurn] += group;
+                int diceChosen = mainSDL(game);
+                game = choiceDice(game, diceChosen);
                 if (game.playerTurn%NUMBER_PLAYERS== 0) game.turn++;
             }
             printf("\n\n||||||||||||||||||||||||||||||||||||||||||||||\n\n\n");

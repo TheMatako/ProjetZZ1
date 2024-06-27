@@ -1,21 +1,57 @@
 #include "SDL.h"
 
 
-void mainSDL(GameState game)
+
+
+
+int mainSDL(GameState game)
 {
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
-    SDL_Texture **allImages = malloc(16 * sizeof(SDL_Texture *));
+    SDL_Texture **allImages = malloc(18 * sizeof(SDL_Texture *));
     SDL_Texture **dicesImages = malloc(16 * sizeof(SDL_Texture *));
+
+    // Allocation du tableau de pointeurs vers les lignes
+    SDL_Texture ***dicesPlayersImages = malloc(NUMBER_PLAYERS * sizeof(SDL_Texture **));
+    if (!dicesPlayersImages) 
+    {
+        fprintf(stderr, "Failed to allocate memory for dicesPlayersImages.\n");
+        SDL_Quit();
+        return 0;
+    }
+
+    // Allocation de chaque ligne
+    for (int i = 0; i < NUMBER_PLAYERS; i++) 
+    {
+        dicesPlayersImages[i] = malloc(6 * sizeof(SDL_Texture *));
+        if (!dicesPlayersImages[i]) 
+        {
+            fprintf(stderr, "Failed to allocate memory for dicesPlayersImages[%d].\n", i);
+            // Libération de la mémoire déjà allouée
+            for (int j = 0; j < i; j++) 
+            {
+                free(dicesPlayersImages[j]);
+            }
+            free(dicesPlayersImages);
+            SDL_Quit();
+            return 0;
+        }
+        // Initialiser chaque pointeur de texture à NULL
+        for (int j = 0; j < 6; j++) 
+        {
+            dicesPlayersImages[i][j] = NULL;
+        }
+    }
+
     if (!allImages) 
     {
         fprintf(stderr, "Failed to allocate memory for textures.\n");
-        return;
+        return 0;
     }
     if (!dicesImages) 
     {
         fprintf(stderr, "Failed to allocate memory for textures.\n");
-        return;
+        return 0;
     }
     for (int i = 0; i < 16; i++) 
     {
@@ -26,12 +62,13 @@ void mainSDL(GameState game)
     // Chargez toutes les images nécessaires au jeu
     loadTextures(renderer, &allImages);
     loadTexturesDices(renderer, &dicesImages);
+    loadDicesPlayersTextures(renderer, dicesPlayersImages);
     int running = 1;
     while (running)
     {
-        SDL_SetRenderDrawColor(renderer, 55, 55, 55, 255);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        drawGame(game, renderer, allImages, dicesImages);
+        drawGame(game, renderer, allImages, dicesImages, dicesPlayersImages);
         SDL_Event event;
         while (SDL_PollEvent(&event)) 
         {
@@ -50,14 +87,53 @@ void mainSDL(GameState game)
                             break;
                     }
                     break;
+                case SDL_MOUSEBUTTONDOWN:
+                    if (event.button.button == SDL_BUTTON_LEFT) 
+                    {
+                        int diceChosen = checkHitbox(game);
+                        if (diceChosen > 0)
+                        {
+                            // Libération des ressources allouées
+                            for (int i = 0; i < 16; i++) 
+                            {
+                                if (i < 6)
+                                {
+                                    if (dicesImages[i] != NULL) SDL_DestroyTexture(dicesImages[i]);
+                                }
+                                if (allImages[i] != NULL) SDL_DestroyTexture(allImages[i]);
+                            }
+                            // Libération de la mémoire
+                            for (int i = 0; i < NUMBER_PLAYERS; i++) 
+                            {
+                                for (int j = 0; j < 6; j++) 
+                                {
+                                    if (dicesPlayersImages[i][j] != NULL) 
+                                    {
+                                        SDL_DestroyTexture(dicesPlayersImages[i][j]);
+                                    }
+                                }
+                                free(dicesPlayersImages[i]);
+                            }
+
+                            free(dicesPlayersImages);
+                            free(dicesImages);
+                            free(allImages);
+                            SDL_DestroyRenderer(renderer);
+                            SDL_DestroyWindow(window);
+                            SDL_Quit();
+                            return diceChosen;
+                        }
+                    }
             }
         }
+        SDL_RenderPresent(renderer);
+        SDL_Delay(100); // Délai pour limiter la fréquence de mise à jour
         SDL_RenderPresent(renderer);
         SDL_Delay(100); // Délai pour limiter la fréquence de mise à jour
     }
 
     // Libération des ressources allouées
-    for (int i = 0; i < 16; i++) 
+    for (int i = 0; i < 18; i++) 
     {
         if (i < 6)
         {
@@ -65,22 +141,96 @@ void mainSDL(GameState game)
         }
         if (allImages[i] != NULL) SDL_DestroyTexture(allImages[i]);
     }
+    // Libération de la mémoire
+    for (int i = 0; i < NUMBER_PLAYERS; i++) 
+    {
+        for (int j = 0; j < 6; j++) 
+        {
+            if (dicesPlayersImages[i][j] != NULL) 
+            {
+                SDL_DestroyTexture(dicesPlayersImages[i][j]);
+            }
+        }
+        free(dicesPlayersImages[i]);
+    }
+
+    free(dicesPlayersImages);
     free(dicesImages);
     free(allImages);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+    return 0;
 }
 
-
-void drawGame(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages, SDL_Texture **dicesImages)
+int checkHitbox(GameState game)
 {
+    // On r�cup�re la position en pixels de la souris
+    int positionCursorX, positionCursorY;
+    SDL_GetMouseState(&positionCursorX, &positionCursorY);
+
+    for (int i = 0; i < 6; i++)
+    {
+        int posX = game.casino[i].rectDice[0];
+        int posY = game.casino[i].rectDice[1];
+        int width = game.casino[i].rectDice[2];
+        int height = game.casino[i].rectDice[3];
+        if ((positionCursorX > posX && positionCursorX < posX + width) && (positionCursorY > posY && positionCursorY < posY + height))
+        {
+            if (occurrences(game.player[game.playerTurn].currentThrow, game.player[game.playerTurn].dicesLeft, i+1) > 0)
+                return i+1;
+            else 
+                return 0;
+        }
+    }
+    return 0;
+}
+
+void drawDicesOverCasino(GameState game, SDL_Renderer *renderer, SDL_Texture **dicesPlayersImages, int player)
+{
+    for (int i = 0; i < 6; i++)
+    {
+        for (int j = 0; j < game.casino[i].dicesPlaced[player]; j++)
+        {
+            int posX = game.casino[i].rectCasino[0] + 43 *j;
+            int posY = game.casino[i].rectCasino[1] + 43*player;
+
+
+            SDL_Rect dstRectDice = {posX,posY,42,42};
+            SDL_RenderCopy(renderer, dicesPlayersImages[i], NULL, &dstRectDice);
+        }
+    }
+}
+
+// Fonctions de dessin
+void drawGame(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages, SDL_Texture **dicesImages, SDL_Texture ***dicesPlayersImages)
+{
+    drawBackground(game, renderer, allImages);
     drawLines(renderer);
     drawDiceImages(renderer, dicesImages);
     drawCasino(renderer, allImages);
     drawBanknotes(game, renderer, allImages);
+    drawPlayersThrows(game, renderer, dicesPlayersImages[game.playerTurn]);
+    for (int i = 0; i < NUMBER_PLAYERS; i++)
+    {
+        drawDicesOverCasino(game, renderer, dicesPlayersImages[i], i);
+    }
 }
 
+void drawBackground(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages)
+{
+    SDL_Rect dstRectDevanture = {0,0,1680,255};
+    SDL_RenderCopy(renderer, allImages[16], NULL, &dstRectDevanture);
+    for (int i = 0; i < 6; i++)
+    {
+        int posX = game.casino[i].rectCasino[0];
+        int posY = game.casino[i].rectCasino[1];
+        int width = game.casino[i].rectCasino[2];
+        int height = game.casino[i].rectCasino[3]*2;
+        SDL_Rect dstRectBackground = {posX,posY,width,height};
+        SDL_RenderCopy(renderer, allImages[17], NULL, &dstRectBackground);
+    }
+}
 void drawDiceImages(SDL_Renderer *renderer, SDL_Texture **dicesImages)
 {
     // Dé 1 :
@@ -107,7 +257,6 @@ void drawDiceImages(SDL_Renderer *renderer, SDL_Texture **dicesImages)
     SDL_Rect dstRectdice6 = {1680-42,735,42,42};
     SDL_RenderCopy(renderer, dicesImages[5], NULL, &dstRectdice6);
 }
-
 void drawCasino(SDL_Renderer *renderer, SDL_Texture **allImages)
 {
     // Casino 1 :
@@ -163,7 +312,6 @@ void drawLines(SDL_Renderer *renderer)
     SDL_Rect r10 = {1440, 735,240,1};
     SDL_RenderFillRect(renderer, &r10);
 }
-
 void drawBanknotes(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages)
 {
 
@@ -182,46 +330,330 @@ void drawBanknotes(GameState game, SDL_Renderer *renderer, SDL_Texture **allImag
         }
     }
 }
-
-void initSDL(SDL_Window **window, SDL_Renderer **renderer) 
+void drawPlayersThrows(GameState game, SDL_Renderer *renderer, SDL_Texture **dicesPlayersImages)
 {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) 
+    for (int i = 1; i < 7; i++)
     {
-        printf("Could not initialize SDL: %s\n", SDL_GetError());
-        exit(1);
-    }
+        int column = i/4;
+        int line = (i-1)%3;
+        //printf("Dé n°%d, column = %d, line = %d\n", i, column, line);
+        int numberOf = occurrences(game.player[game.playerTurn].currentThrow, game.player[game.playerTurn].dicesLeft, i);
+        if (numberOf == 1)
+        {
+            draw1Dices(renderer, dicesPlayersImages, column*1440, 255+line*240, i-1);
+        }
+        else if (numberOf == 2)
+        {
+            draw2Dices(renderer, dicesPlayersImages, column*1440, 255+line*240, i-1);
+        }
+        else if (numberOf == 3)
+        {
+            draw3Dices(renderer, dicesPlayersImages, column*1440, 255+line*240, i-1);
+        }
+        else if (numberOf == 4)
+        {
+            draw4Dices(renderer, dicesPlayersImages, column*1440, 255+line*240, i-1);
+        }
+        else if (numberOf == 5)
+        {
+            draw5Dices(renderer, dicesPlayersImages, column*1440, 255+line*240, i-1);
 
-    SDL_DisplayMode DM;
-    SDL_GetCurrentDisplayMode(0, &DM);
-    
-    *window = SDL_CreateWindow("LasVegas", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, DM.w, DM.h, SDL_WINDOW_SHOWN);
-    if (*window == NULL) 
-    {
-        printf("Could not create window: %s\n", SDL_GetError());
-        SDL_Quit();
-        exit(1);
-    }
-
-    printf("Width : %d, Height : %d\n", DM.w, DM.h);
-
-    *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED);
-    if (*renderer == NULL) 
-    {
-        printf("Could not create renderer: %s\n", SDL_GetError());
-        SDL_DestroyWindow(*window);
-        SDL_Quit();
-        exit(1);
+        }
+        else if (numberOf == 6)
+        {
+            draw6Dices(renderer, dicesPlayersImages, column*1440, 255+line*240, i-1);
+        }
+        else if (numberOf == 7)
+        {
+            draw7Dices(renderer, dicesPlayersImages, column*1440, 255+line*240, i-1);
+        }
+        else if (numberOf == 8)
+        {
+            draw8Dices(renderer, dicesPlayersImages, column*1440, 255+line*240, i-1);
+        }
     }
 }
+void draw1Dices(SDL_Renderer *renderer, SDL_Texture **dicesPlayersImages, int positionX, int positionY, int dice)
+{
+    if (dicesPlayersImages[dice] == NULL)
+    {
+        fprintf(stderr, "Texture for dice %d is NULL.\n", dice);
+        return;
+    }
+    else
+    {
+        int dicePositionX = positionX + (240-42)/2;
+        int dicePositionY = positionY + (240-42)/2;
+        SDL_Rect dstRectDice = {dicePositionX, dicePositionY, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRectDice);
+    }
 
+}
+void draw2Dices(SDL_Renderer *renderer, SDL_Texture **dicesPlayersImages, int positionX, int positionY, int dice)
+{
+    if (dicesPlayersImages[dice] == NULL)
+    {
+        fprintf(stderr, "Texture for dice %d is NULL.\n", dice);
+        return;
+    }
+    else
+    {
+        int dicePosition1X = positionX + 5*(240-42)/8;
+        int dicePosition1Y = positionY + 3*(240-42)/8;
+        SDL_Rect dstRect1Dice = {dicePosition1X, dicePosition1Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect1Dice);
+
+        int dicePosition2X = positionX + 3*(240-42)/8;
+        int dicePosition2Y = positionY + 5*(240-42)/8;
+        SDL_Rect dstRect2Dice = {dicePosition2X, dicePosition2Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect2Dice);
+    }
+
+}
+void draw3Dices(SDL_Renderer *renderer, SDL_Texture **dicesPlayersImages, int positionX, int positionY, int dice)
+{
+    if (dicesPlayersImages[dice] == NULL)
+    {
+        fprintf(stderr, "Texture for dice %d is NULL.\n", dice);
+        return;
+    }
+    else
+    {
+        int dicePosition1X = positionX + (240-42)/4;
+        int dicePosition1Y = positionY + (240-42)/4;
+        SDL_Rect dstRect1Dice = {dicePosition1X, dicePosition1Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect1Dice);
+
+        int dicePosition2X = positionX + 2*(240-42)/4;
+        int dicePosition2Y = positionY + 2*(240-42)/4;
+        SDL_Rect dstRect2Dice = {dicePosition2X, dicePosition2Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect2Dice);
+        
+        int dicePosition3X = positionX + 3*(240-42)/4;
+        int dicePosition3Y = positionY + 3*(240-42)/4;
+        SDL_Rect dstRect3Dice = {dicePosition3X, dicePosition3Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect3Dice);
+    }
+
+}
+void draw4Dices(SDL_Renderer *renderer, SDL_Texture **dicesPlayersImages, int positionX, int positionY, int dice)
+{
+    if (dicesPlayersImages[dice] == NULL)
+    {
+        fprintf(stderr, "Texture for dice %d is NULL.\n", dice);
+        return;
+    }
+    else
+    {
+        int dicePosition1X = positionX + 3*(240-42)/10;
+        int dicePosition1Y = positionY + 3*(240-42)/10;
+        SDL_Rect dstRect1Dice = {dicePosition1X, dicePosition1Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect1Dice);
+
+        int dicePosition2X = positionX + 7*(240-42)/10;
+        int dicePosition2Y = positionY + 7*(240-42)/10;
+        SDL_Rect dstRect2Dice = {dicePosition2X, dicePosition2Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect2Dice);
+
+        int dicePosition3X = positionX + 7*(240-42)/10;
+        int dicePosition3Y = positionY + 3*(240-42)/10;
+        SDL_Rect dstRect3Dice = {dicePosition3X, dicePosition3Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect3Dice);
+
+        int dicePosition4X = positionX + 3*(240-42)/10;
+        int dicePosition4Y = positionY + 7*(240-42)/10;
+        SDL_Rect dstRect4Dice = {dicePosition4X, dicePosition4Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect4Dice);
+    }
+
+}
+void draw5Dices(SDL_Renderer *renderer, SDL_Texture **dicesPlayersImages, int positionX, int positionY, int dice)
+{
+    if (dicesPlayersImages[dice] == NULL)
+    {
+        fprintf(stderr, "Texture for dice %d is NULL.\n", dice);
+        return;
+    }
+    else
+    {
+        int dicePosition1X = positionX + (240-42)/4;
+        int dicePosition1Y = positionY + (240-42)/4;
+        SDL_Rect dstRect1Dice = {dicePosition1X, dicePosition1Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect1Dice);
+
+        int dicePosition2X = positionX + 2*(240-42)/4;
+        int dicePosition2Y = positionY + 2*(240-42)/4;
+        SDL_Rect dstRect2Dice = {dicePosition2X, dicePosition2Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect2Dice);
+        
+        int dicePosition3X = positionX + 3*(240-42)/4;
+        int dicePosition3Y = positionY + 3*(240-42)/4;
+        SDL_Rect dstRect3Dice = {dicePosition3X, dicePosition3Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect3Dice);
+
+
+        int dicePosition4X = positionX + 3*(240-42)/4;
+        int dicePosition4Y = positionY + (240-42)/4;
+        SDL_Rect dstRect4Dice = {dicePosition4X, dicePosition4Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect4Dice);
+
+        int dicePosition5X = positionX + (240-42)/4;
+        int dicePosition5Y = positionY + 3*(240-42)/4;
+        SDL_Rect dstRect5Dice = {dicePosition5X, dicePosition5Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect5Dice);
+    }
+
+}
+void draw6Dices(SDL_Renderer *renderer, SDL_Texture **dicesPlayersImages, int positionX, int positionY, int dice)
+{
+    if (dicesPlayersImages[dice] == NULL)
+    {
+        fprintf(stderr, "Texture for dice %d is NULL.\n", dice);
+        return;
+    }
+    else
+    {
+        int dicePosition1X = positionX + 4*(240-42)/12;
+        int dicePosition1Y = positionY + 3*(240-42)/12;
+        SDL_Rect dstRect1Dice = {dicePosition1X, dicePosition1Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect1Dice);
+
+        int dicePosition2X = positionX + 4*(240-42)/12;
+        int dicePosition2Y = positionY + 6*(240-42)/12;
+        SDL_Rect dstRect2Dice = {dicePosition2X, dicePosition2Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect2Dice);
+
+        int dicePosition3X = positionX + 4*(240-42)/12;
+        int dicePosition3Y = positionY + 9*(240-42)/12;
+        SDL_Rect dstRect3Dice = {dicePosition3X, dicePosition3Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect3Dice);
+
+        int dicePosition4X = positionX + 8*(240-42)/12;
+        int dicePosition4Y = positionY + 3*(240-42)/12;
+        SDL_Rect dstRect4Dice = {dicePosition4X, dicePosition4Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect4Dice);
+
+        int dicePosition5X = positionX + 8*(240-42)/12;
+        int dicePosition5Y = positionY + 6*(240-42)/12;
+        SDL_Rect dstRect5Dice = {dicePosition5X, dicePosition5Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect5Dice);
+
+        int dicePosition6X = positionX + 8*(240-42)/12;
+        int dicePosition6Y = positionY + 9*(240-42)/12;
+        SDL_Rect dstRect6Dice = {dicePosition6X, dicePosition6Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect6Dice);
+    }
+
+}
+void draw7Dices(SDL_Renderer *renderer, SDL_Texture **dicesPlayersImages, int positionX, int positionY, int dice)
+{
+    if (dicesPlayersImages[dice] == NULL)
+    {
+        fprintf(stderr, "Texture for dice %d is NULL.\n", dice);
+        return;
+    }
+    else
+    {
+        int dicePosition1X = positionX + 6*(240-42)/24;
+        int dicePosition1Y = positionY + 3*(240-42)/12;
+        SDL_Rect dstRect1Dice = {dicePosition1X, dicePosition1Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect1Dice);
+
+        int dicePosition2X = positionX + 6*(240-42)/24;
+        int dicePosition2Y = positionY + 6*(240-42)/12;
+        SDL_Rect dstRect2Dice = {dicePosition2X, dicePosition2Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect2Dice);
+
+        int dicePosition3X = positionX + 6*(240-42)/24;
+        int dicePosition3Y = positionY + 9*(240-42)/12;
+        SDL_Rect dstRect3Dice = {dicePosition3X, dicePosition3Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect3Dice);
+
+        int dicePosition4X = positionX + 18*(240-42)/24;
+        int dicePosition4Y = positionY + 3*(240-42)/12;
+        SDL_Rect dstRect4Dice = {dicePosition4X, dicePosition4Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect4Dice);
+
+        int dicePosition5X = positionX + 18*(240-42)/24;
+        int dicePosition5Y = positionY + 6*(240-42)/12;
+        SDL_Rect dstRect5Dice = {dicePosition5X, dicePosition5Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect5Dice);
+
+        int dicePosition6X = positionX + 18*(240-42)/24;
+        int dicePosition6Y = positionY + 9*(240-42)/12;
+        SDL_Rect dstRect6Dice = {dicePosition6X, dicePosition6Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect6Dice);
+
+        int dicePosition7X = positionX + (240-42)/2;
+        int dicePosition7Y = positionY + (240-42)/2;
+        SDL_Rect dstRect7Dice = {dicePosition7X, dicePosition7Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect7Dice);
+
+
+    }
+
+}
+void draw8Dices(SDL_Renderer *renderer, SDL_Texture **dicesPlayersImages, int positionX, int positionY, int dice)
+{
+    if (dicesPlayersImages[dice] == NULL)
+    {
+        fprintf(stderr, "Texture for dice %d is NULL.\n", dice);
+        return;
+    }
+    else
+    {
+        int dicePosition1X = positionX + 6*(240-42)/24;
+        int dicePosition1Y = positionY + 3*(240-42)/12;
+        SDL_Rect dstRect1Dice = {dicePosition1X, dicePosition1Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect1Dice);
+
+        int dicePosition2X = positionX + 6*(240-42)/24;
+        int dicePosition2Y = positionY + 6*(240-42)/12;
+        SDL_Rect dstRect2Dice = {dicePosition2X, dicePosition2Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect2Dice);
+
+        int dicePosition3X = positionX + 6*(240-42)/24;
+        int dicePosition3Y = positionY + 9*(240-42)/12;
+        SDL_Rect dstRect3Dice = {dicePosition3X, dicePosition3Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect3Dice);
+
+        int dicePosition4X = positionX + 18*(240-42)/24;
+        int dicePosition4Y = positionY + 3*(240-42)/12;
+        SDL_Rect dstRect4Dice = {dicePosition4X, dicePosition4Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect4Dice);
+
+        int dicePosition5X = positionX + 18*(240-42)/24;
+        int dicePosition5Y = positionY + 6*(240-42)/12;
+        SDL_Rect dstRect5Dice = {dicePosition5X, dicePosition5Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect5Dice);
+
+        int dicePosition6X = positionX + 18*(240-42)/24;
+        int dicePosition6Y = positionY + 9*(240-42)/12;
+        SDL_Rect dstRect6Dice = {dicePosition6X, dicePosition6Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect6Dice);
+
+        int dicePosition7X = positionX + (240-42)/2;
+        int dicePosition7Y = positionY + 5*(240-42)/12;
+        SDL_Rect dstRect7Dice = {dicePosition7X, dicePosition7Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect7Dice);
+
+        int dicePosition8X = positionX + (240-42)/2;
+        int dicePosition8Y = positionY + 8*(240-42)/12;
+        SDL_Rect dstRect8Dice = {dicePosition8X, dicePosition8Y, 42, 42};
+        SDL_RenderCopy(renderer, dicesPlayersImages[dice], NULL, &dstRect8Dice);
+    }
+
+
+}
+// Fonctions de chargement des images
 void loadTextures(SDL_Renderer *renderer, SDL_Texture ***allImages)
 {
 
     char *filesName[] = {"./images/billetFaceCache.png", "./images/billet10.png", "./images/billet20.png", "./images/billet30.png", "./images/billet40.png",
                              "./images/billet50.png", "./images/billet60.png", "./images/billet70.png", "./images/billet80.png", "./images/billet90.png",
                              "./images/casino1.png", "./images/casino2.png", "./images/casino3.png", "./images/casino4.png",
-                             "./images/casino5.png", "./images/casino6.png"};
-    for (int i = 0; i < 16; i++)
+                             "./images/casino5.png", "./images/casino6.png", "./images/devanture2.png","./images/casinoBackground.png"};
+    for (int i = 0; i < 18; i++)
     {
         SDL_Surface *imageSurface = IMG_Load(filesName[i]);
         if (!imageSurface)
@@ -265,3 +697,155 @@ void loadTexturesDices(SDL_Renderer *renderer, SDL_Texture ***dicesImages)
     }
 }
 
+void loadDicesPlayersTextures(SDL_Renderer *renderer, SDL_Texture ***dicesPlayersImages)
+{
+    if (NUMBER_PLAYERS > 0)
+    {
+        // Joueur 0 = bleu
+        char *filesNameBleu[] = {"./images/de1bleu.png","./images/de2bleu.png","./images/de3bleu.png","./images/de4bleu.png","./images/de5bleu.png","./images/de6bleu.png",};
+        for (int i = 0; i < 6; i++)
+        {
+            SDL_Surface *imageSurface = IMG_Load(filesNameBleu[i]);
+            if (!imageSurface)
+            {
+                printf("Impossible to load image %s ! SDL_image Error: %s\n", filesNameBleu[i], IMG_GetError());
+                dicesPlayersImages[0][i] = NULL;
+            }
+            else
+            {
+                dicesPlayersImages[0][i] = SDL_CreateTextureFromSurface(renderer, imageSurface);
+                if (!dicesPlayersImages[0][i])
+                {
+                    printf("Impossible to create texture from image %s ! SDL Error: %s\n", filesNameBleu[i], SDL_GetError());
+                }
+                SDL_FreeSurface(imageSurface);
+            }
+        }
+        if (NUMBER_PLAYERS > 1)
+        {
+            // Joueur 1 = jaune
+            char *filesNameJaune[] = {"./images/de1jaune.png","./images/de2jaune.png","./images/de3jaune.png","./images/de4jaune.png","./images/de5jaune.png","./images/de6jaune.png",};
+            for (int i = 0; i < 6; i++)
+            {
+                SDL_Surface *imageSurface = IMG_Load(filesNameJaune[i]);
+                if (!imageSurface)
+                {
+                    printf("Impossible to load image %s ! SDL_image Error: %s\n", filesNameJaune[i], IMG_GetError());
+                    dicesPlayersImages[1][i] = NULL;
+                }
+                else
+                {
+                    dicesPlayersImages[1][i] = SDL_CreateTextureFromSurface(renderer, imageSurface);
+                    if (!dicesPlayersImages[1][i])
+                    {
+                        printf("Impossible to create texture from image %s ! SDL Error: %s\n", filesNameJaune[i], SDL_GetError());
+                    }
+                    SDL_FreeSurface(imageSurface);
+                }
+            }   
+            if (NUMBER_PLAYERS > 2)
+            {
+                // Joueur 2 = rouge
+                char *filesNameRouge[] = {"./images/de1rouge.png","./images/de2rouge.png","./images/de3rouge.png","./images/de4rouge.png","./images/de5rouge.png","./images/de6rouge.png",};
+                for (int i = 0; i < 6; i++)
+                {
+                    SDL_Surface *imageSurface = IMG_Load(filesNameRouge[i]);
+                    if (!imageSurface)
+                    {
+                        printf("Impossible to load image %s ! SDL_image Error: %s\n", filesNameRouge[i], IMG_GetError());
+                        dicesPlayersImages[2][i] = NULL;
+                    }
+                    else
+                    {
+                        dicesPlayersImages[2][i] = SDL_CreateTextureFromSurface(renderer, imageSurface);
+                        if (!dicesPlayersImages[2][i])
+                        {
+                            printf("Impossible to create texture from image %s ! SDL Error: %s\n", filesNameRouge[i], SDL_GetError());
+                        }
+                        SDL_FreeSurface(imageSurface);
+                    }
+                }  
+                if (NUMBER_PLAYERS > 3) 
+                {
+                    // Joueur 3 = vert
+                    char *filesNameVert[] = {"./images/de1vert.png","./images/de2vert.png","./images/de3vert.png","./images/de4vert.png","./images/de5vert.png","./images/de6vert.png",};
+                    for (int i = 0; i < 6; i++)
+                    {
+                        SDL_Surface *imageSurface = IMG_Load(filesNameVert[i]);
+                        if (!imageSurface)
+                        {
+                            printf("Impossible to load image %s ! SDL_image Error: %s\n", filesNameVert[i], IMG_GetError());
+                            dicesPlayersImages[3][i] = NULL;
+                        }
+                        else
+                        {
+                            dicesPlayersImages[3][i] = SDL_CreateTextureFromSurface(renderer, imageSurface);
+                            if (!dicesPlayersImages[3][i])
+                            {
+                                printf("Impossible to create texture from image %s ! SDL Error: %s\n", filesNameVert[i], SDL_GetError());
+                            }
+                            SDL_FreeSurface(imageSurface);
+                        }
+                    }
+                    if (NUMBER_PLAYERS > 4)
+                    {
+                        // Joueur 4 = violet
+                        char *filesNameViolet[] = {"./images/de1violet.png","./images/de2violet.png","./images/de3violet.png","./images/de4violet.png","./images/de5violet.png","./images/de6violet.png",};
+                        for (int i = 0; i < 6; i++)
+                        {
+                            SDL_Surface *imageSurface = IMG_Load(filesNameViolet[i]);
+                            if (!imageSurface)
+                            {
+                                printf("Impossible to load image %s ! SDL_image Error: %s\n", filesNameViolet[i], IMG_GetError());
+                                dicesPlayersImages[4][i] = NULL;
+                            }
+                            else
+                            {
+                                dicesPlayersImages[4][i] = SDL_CreateTextureFromSurface(renderer, imageSurface);
+                                if (!dicesPlayersImages[4][i])
+                                {
+                                    printf("Impossible to create texture from image %s ! SDL Error: %s\n", filesNameViolet[i], SDL_GetError());
+                                }
+                                SDL_FreeSurface(imageSurface);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+// Fonction d'intiialisation de la SDL
+void initSDL(SDL_Window **window, SDL_Renderer **renderer) 
+{
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) 
+    {
+        printf("Could not initialize SDL: %s\n", SDL_GetError());
+        exit(1);
+    }
+
+    SDL_DisplayMode DM;
+    SDL_GetCurrentDisplayMode(0, &DM);
+    
+    *window = SDL_CreateWindow("LasVegas", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, DM.w, DM.h, SDL_WINDOW_SHOWN);
+    if (*window == NULL) 
+    {
+        printf("Could not create window: %s\n", SDL_GetError());
+        SDL_Quit();
+        exit(1);
+    }
+
+    printf("Width : %d, Height : %d\n", DM.w, DM.h);
+
+    *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED);
+    if (*renderer == NULL) 
+    {
+        printf("Could not create renderer: %s\n", SDL_GetError());
+        SDL_DestroyWindow(*window);
+        SDL_Quit();
+        exit(1);
+    }
+}
