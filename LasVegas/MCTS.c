@@ -8,7 +8,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-// #include "LasVegas.h"
+#include "LasVegas.h"
 #include "LasVegas.c"
 #include "MCTSClement.h"
 
@@ -169,13 +169,13 @@ void removeDuplicates(int * array, int * length)
 
     bubbleTea(array,*length,0);
     for(int j=0 ; j<*length ; j++)
-        printf("%d ",array[j]);
+        // printf("%d ",array[j]);
     printf("\n");
 }
 
 GameState applyOneTurn(GameState game,int dice)
 { // Applique un seul tour, FAIRE UN THROWDICES AVANT
-
+    int group = 0;
     group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
     game.player[game.playerTurn].dicesLeft -= group;
     game.player[game.playerTurn].dicesChosen = dice-1;
@@ -350,45 +350,60 @@ Node_t * MCTS(GameState game, hashTable * hash, int interestPlayer,int N)
     return bestNode;
 }
 
-void playWithMe()
+void playWithMe(hashTable * hash, int N)
 {
     GameState game = initGame();
-    game.playerTurn = 1;
+    game.playerTurn = 0;
     game.round = 0;
     game.roundFinished = false;
-    game = throwDices(&game);
 
     Node_t * AIMOVE;
 
     while(game.round != 4)
     {
         game = initRound(game);
-        game = throwBanknotes(game);
+        game.playerTurn = 0;
+        game.round = 0;
         game.roundFinished = false;
-        gameDisplay(game);
-
         while(!game.roundFinished)
         {
+            game.roundFinished = false;
+            game = throwBanknotes(game);
             int dice = 100; int group = 0;
             if(game.player[game.playerTurn].dicesLeft)
             {
-                while(group == 0)
+                game = throwDices(&game);
+                gameDisplay(game);
+                if(game.playerTurn == 0) // CETTE VERMINE D'HUMAIN JOUE
                 {
-                    scanf("%d%*c",&dice);
-        
-                    group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
-                    if(group == 0)
-                        printf("\nNope ! quel groupe de dés choisis-tu ?");
+                    while(group == 0)
+                    {
+                        printf("Alors, quel groupe de dés choisis-tu ? ");
+                        scanf("%d%*c",&dice);
+            
+                        group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
+                        if(group == 0)
+                            printf("\nNope ! quel groupe de dés choisis-tu ?");
+                    }
+                }
+                else // MA GRANDE MAJESTE JOUE
+                {
+                    AIMOVE = MCTS(game,hash,game.playerTurn,N);
+                    dice = AIMOVE->currentGame.player[game.playerTurn].dicesChosen;
+                    printf("\nMoi, grand IA, j'ai choisi le dé : %d\n",dice);
                 }
                 game = applyOneTurn(game,dice);
             }
-
         }
     }
 }
 
 int main()
-{
+{   
+    hashTable * HASH = createHashTable();
+    int N = 1;
+    playWithMe(HASH,N);
+
     /* GameState game = initGame();
     game = initRound(game);
     game.playerTurn = 0;

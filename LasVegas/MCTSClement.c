@@ -335,7 +335,7 @@ Node_t * MCTS(GameState game, hashTable * hash, int interestPlayer,int N)
     int s;
     time_t timing = time(0);
 
-    while(difftime(time(0),timing) < 2)
+    while(difftime(time(0),timing) < 5)
     {
         bestNode = bestActualMove(moves);
         intermediate = bestNode->currentGame;
