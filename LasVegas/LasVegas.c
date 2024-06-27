@@ -232,7 +232,6 @@ GameState throwBanknotes(GameState game)
 
 GameState throwDices(GameState * game)
 {
-    srand(time(0));
     for (int i = 0 ;i < game->player[game->playerTurn].dicesLeft; i++)
     { 
         int value = rand()%6 +1;
