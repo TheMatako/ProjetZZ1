@@ -186,6 +186,7 @@ GameState applyOneTurn(GameState game,int dice)
     {
         game.roundFinished = true;
         game = distributeMoney(game);
+        game.round++;
         gameDisplay(game);
     }
     return game;
@@ -335,7 +336,7 @@ Node_t * MCTS(GameState game, hashTable * hash, int interestPlayer,int N)
     int s;
     time_t timing = time(0);
 
-    while(difftime(time(0),timing) < 2)
+    while(difftime(time(0),timing) < 5)
     {
         bestNode = bestActualMove(moves);
         intermediate = bestNode->currentGame;
@@ -363,7 +364,7 @@ void playWithMe(hashTable * hash, int N)
     {
         game = initRound(game);
         game.playerTurn = 0;
-        game.round = 0;
+        game.round = 1;
         game.roundFinished = false;
         while(!game.roundFinished)
         {
@@ -392,8 +393,8 @@ void playWithMe(hashTable * hash, int N)
                     dice = AIMOVE->currentGame.player[game.playerTurn].dicesChosen;
                     printf("\nMoi, grand IA, j'ai choisi le dé : %d\n",dice);
                 }
-                game = applyOneTurn(game,dice);
             }
+            game = applyOneTurn(game,dice);
         }
     }
 }
