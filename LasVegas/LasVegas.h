@@ -11,8 +11,7 @@
 #include <string.h>
 #include <time.h>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 #define NUMBER_PLAYERS 2
 #define NUMBER_DICES 8
@@ -94,6 +93,9 @@ GameState throwDices(GameState * game);
 GameState distributeMoney(GameState game);
 GameState distributeBiggestBanknote(GameState game, Casino casino);
 
+
+// Permet de choisir le groupe de dé à placer
+GameState choiceDice(GameState game, int diceChosen);
 // Affiche le jeu
 void gameDisplay(GameState game);
 

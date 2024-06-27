@@ -30,6 +30,39 @@ GameState initGame()
     return game;
 }
 
+GameState choiceDice(GameState game, int diceChosen)
+{
+    int group; int dice;
+    if (diceChosen == 0)
+    {
+        group = 0;
+
+        dice = 0;
+        printf("Alors, quel groupe de dés choisis-tu ? ");
+        while(group == 0)
+        {
+            scanf("%d%*c",&dice);
+            group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
+            if(group == 0)
+                printf("\nNope ! quel groupe de dés choisis-tu ?");
+        }
+        game.player[game.playerTurn].dicesLeft -= group;
+        game.player[game.playerTurn].dicesChosen = dice-1;
+        game.casino[dice-1].dicesPlaced[game.playerTurn] += group;
+    }
+    else
+    {
+        group = 0;
+        dice = diceChosen;
+        group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
+        game.player[game.playerTurn].dicesLeft -= group;
+        game.player[game.playerTurn].dicesChosen = dice-1;
+        game.casino[dice-1].dicesPlaced[game.playerTurn] += group;
+    }
+    return game;
+}
+
+
 Casino initCasino(int number)
 {
     int i; int j;
@@ -49,7 +82,13 @@ Casino initCasino(int number)
     casino.rectCasino[1] = 255+360*line;
     casino.rectCasino[2] = 400;
     casino.rectCasino[3] = 180;
-    printf("Casino n°%d en colonne : %d et ligne : %d\n", number, column, line);
+
+    int columnDice = ((number-1)/3);
+    int lineDice = (number-1)%3;
+    casino.rectDice[0] = 1440*columnDice;
+    casino.rectDice[1] = 255+240*lineDice;
+    casino.rectDice[2] = 240;
+    casino.rectDice[3] = 240;
     return casino;
 }
 
@@ -232,7 +271,6 @@ GameState throwBanknotes(GameState game)
 
 GameState throwDices(GameState * game)
 {
-    srand(time(0));
     for (int i = 0 ;i < game->player[game->playerTurn].dicesLeft; i++)
     { 
         int value = rand()%6 +1;
