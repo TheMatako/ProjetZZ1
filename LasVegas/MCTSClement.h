@@ -78,8 +78,13 @@ int compare(const void * a, const void * b);
 // Fonction qui supprime toutes les répétitions, agit directement sur le tableau
 void removeDuplicates(int * array, int * length);
 
-// Fonction qui applqiue tout simplement un seul tour
-GameState applyOneTurn(GameState game);
+// FAIRE UN THROWDICES AVANT les deux fonctions suivantes
+// Fonctions qui appliquent tout simplement un seul tour
+// Version dés choisis requis
+GameState applyOneTurn(GameState game,int dicesChosen);
+// Version Random
+GameState applyOneTurnRandom(GameState game);
+
 // Fonction qui simule une fin de partie à partir d'un état (attention à l'alternance des joueurs)
 int simulation(GameState game,int profit,int player);
 // Fonction qui liste les Noeuds possibles et les simule une seule fois, faire une throwDice() et l'appliquer au jeu AVANT
@@ -87,6 +92,6 @@ List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int i
 // Fonction qui renvoit le noeud ayant le plus grand intérêt dans une liste
 Node_t * bestActualMove(List_Node * list);
 // Fonction MCTS
-void MCTS(GameState game, hashTable * hash, int interestPlayer,int N);
+Node_t * MCTS(GameState game, hashTable * hash, int interestPlayer,int N);
 
 #endif

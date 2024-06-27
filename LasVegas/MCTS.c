@@ -10,15 +10,15 @@
 
 // #include "LasVegas.h"
 #include "LasVegas.c"
-#include "MCTS.h"
- 
+#include "MCTSClement.h"
+
 Node_t * newNode()
 {
     Node_t * newMove = malloc(sizeof(Node_t));
     if(newMove)
     {
         newMove->attendance = 0;
-        newMove->averageGain = newMove->potential = newMove->interest = 0;
+        newMove->sumGain = newMove->averageGain = newMove->potential = newMove->interest = 0;
         newMove->value = 0;
         newMove->next = NULL;
         return newMove;
@@ -47,12 +47,12 @@ void displayList(List_Node * List, hashTable * hash)
     Node_t * currentNode = List->head;
     while(currentNode)
     {
-        printf("| %d %d %d %d %d %d %p %p|->",currentNode->value,currentNode->attendance,
+        printf("| %d %d %d %d %d %d %d %p %p|->",currentNode->value,currentNode->attendance,currentNode->sumGain,
                 currentNode->averageGain,currentNode->potential,currentNode->interest,
-            currentNode->currentGame.player[1].dicesChosen,hash->tab[currentNode->value],currentNode->next);
+                currentNode->currentGame.player[1].dicesChosen,hash->tab[currentNode->value],currentNode->next);
         currentNode = currentNode->next;
     }
-    printf("FIN\n");
+    printf("FIN\n\n");
 }
 
 void freeList(List_Node * freeing)
@@ -97,7 +97,7 @@ int hashing(Node_t * hashed)
         s3+=hashed->currentGame.player[1].currentThrow[n]; // un peu dangereux de mettre juste 1
     s4 = hashed->currentGame.player[1].dicesLeft;
     s5 = hashed->currentGame.player[1].dicesChosen;
-    value = 13*s1 + 17*s2 + 19*s3 + 23*s4 + 29*s5;
+    value = 13*s1 + 17*s2 + 19*s3 + 23*s4 + 29*s5 ;
     return value;
 }
 
@@ -173,8 +173,25 @@ void removeDuplicates(int * array, int * length)
     printf("\n");
 }
 
+GameState applyOneTurn(GameState game,int dice)
+{ // Applique un seul tour, FAIRE UN THROWDICES AVANT
 
-GameState applyOneTurn(GameState game)
+    group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
+    game.player[game.playerTurn].dicesLeft -= group;
+    game.player[game.playerTurn].dicesChosen = dice-1;
+    game.casino[dice-1].dicesPlaced[game.playerTurn] += group;
+    game.turn++;
+    game.playerTurn = (game.playerTurn+1)%NUMBER_PLAYERS;
+    if(game.player[0].dicesLeft <= 0 && game.player[1].dicesLeft <= 0)
+    {
+        game.roundFinished = true;
+        game = distributeMoney(game);
+        gameDisplay(game);
+    }
+    return game;
+}
+
+GameState applyOneTurnRandom(GameState game)
 { // Applique un seul tour, FAIRE UN THROWDICES AVANT
     game = throwDices(&game);
     if(game.player[game.playerTurn].dicesLeft)
@@ -235,7 +252,7 @@ int simulation(GameState game,int profit,int player)
     return profit;
 }
 
-List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int interestPlayer)
+List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int interestPlayer, int N)
 {
     List_Node * list = newList(); // Contiendra tout les noeuds visités
     int s; // Sera la valeur de simulation
@@ -275,9 +292,11 @@ List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int i
 
                     node->currentGame = intermediate;
                     s = simulation(intermediate,0,interestPlayer);
+                    N++;
                     node->attendance++;
-                    node->averageGain = s/1;
-                    node->potential = 0;
+                    node->sumGain += s;
+                    node->averageGain = node->sumGain/node->attendance;
+                    node->potential = C*sqrt(log(N/node->attendance));
                     node->interest = node->averageGain + node->potential;
                     // printf("HASHING : %d\n",node->value);
                     hash = addToHashTable(hash,node);
@@ -295,23 +314,78 @@ List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int i
 Node_t * bestActualMove(List_Node * list)
 {
     Node_t * currentNode = list->head;
-    Node_t * bestNode; int bestGain = 0;
+    Node_t * bestNode; int bestInterest = 0;
     while(currentNode)
     {
-        if(currentNode->averageGain > bestGain)
+        if(currentNode->interest > bestInterest)
         {
             bestNode = currentNode;
-            bestGain = currentNode->averageGain;
+            bestInterest = currentNode->interest;
         }
         currentNode = currentNode->next;
     }
     return bestNode;
 }
 
-// void MCTS(GameState
-// {
-//     bestNode
-// }
+Node_t * MCTS(GameState game, hashTable * hash, int interestPlayer,int N)
+{ //  Mettre une COPIE du game en argument
+    List_Node * moves = listing_And_Simulating_Moves(game,hash,interestPlayer,N);
+    Node_t * bestNode;
+    GameState intermediate;
+    int s;
+    time_t timing = time(0);
+
+    while(difftime(time(0),timing) < 2)
+    {
+        bestNode = bestActualMove(moves);
+        intermediate = bestNode->currentGame;
+        s = simulation(intermediate,0,intermediate.playerTurn);
+        N++;
+        bestNode->attendance++;
+        bestNode->sumGain += s;
+        bestNode->averageGain = bestNode->sumGain/bestNode->attendance;
+        bestNode->potential = C*sqrt(log(N/bestNode->attendance));
+        bestNode->interest = bestNode->averageGain + bestNode->potential;
+    }
+    return bestNode;
+}
+
+void playWithMe()
+{
+    GameState game = initGame();
+    game.playerTurn = 1;
+    game.round = 0;
+    game.roundFinished = false;
+    game = throwDices(&game);
+
+    Node_t * AIMOVE;
+
+    while(game.round != 4)
+    {
+        game = initRound(game);
+        game = throwBanknotes(game);
+        game.roundFinished = false;
+        gameDisplay(game);
+
+        while(!game.roundFinished)
+        {
+            int dice = 100; int group = 0;
+            if(game.player[game.playerTurn].dicesLeft)
+            {
+                while(group == 0)
+                {
+                    scanf("%d%*c",&dice);
+        
+                    group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
+                    if(group == 0)
+                        printf("\nNope ! quel groupe de dés choisis-tu ?");
+                }
+                game = applyOneTurn(game,dice);
+            }
+
+        }
+    }
+}
 
 int main()
 {
@@ -364,33 +438,32 @@ int main()
     freeList(testList);
     freeHashTable(HASH);*/
 
-    hashTable * HASH = createHashTable();
+    // hashTable * HASH = createHashTable();
+    // int N = 1;
 
-    GameState game = initGame();
-    game = initRound(game);
-    game.playerTurn = 0;
-    game.round = 1;
-    game.roundFinished = false;
-    game = throwBanknotes(game);
-    game = throwDices(&game);
-    gameDisplay(game);
-    
-    game = applyOneTurn(game);
+    // GameState game = initGame();
+    // game = initRound(game);
+    // game.playerTurn = 0;
+    // game.round = 1;
+    // game.roundFinished = false;
+    // game = throwBanknotes(game);
+    // game = throwDices(&game);
+    // gameDisplay(game);
 
-    game = throwDices(&game);
-    gameDisplay(game);
+    // game = applyOneTurn(game);
 
-    List_Node * firstSimulation = listing_And_Simulating_Moves(game,HASH,game.playerTurn);
+    // game = throwDices(&game);
+    // gameDisplay(game);
 
-    printf("Coups Possibles pour le joueur %d : \n",game.playerTurn);
+    // List_Node * firstSimulation = listing_And_Simulating_Moves(game,HASH,game.playerTurn,N);
+    // printf("Coups Possibles pour le joueur %d : \n\n",game.playerTurn);
+    // displayList(firstSimulation,HASH);
 
-    displayList(firstSimulation,HASH);
+    // Node_t * bestNode = bestActualMove(firstSimulation);
 
-    Node_t * bestNode = bestActualMove(firstSimulation);
+    // printf("| %d %d %d %d %d %d %p %p|\n",bestNode->value,bestNode->attendance,
+    //     bestNode->averageGain,bestNode->potential,bestNode->interest,
+    // bestNode->currentGame.player[1].dicesChosen,HASH->tab[bestNode->value],bestNode->next);
 
-    printf("| %d %d %d %d %d %d %p %p|\n",bestNode->value,bestNode->attendance,
-        bestNode->averageGain,bestNode->potential,bestNode->interest,
-    bestNode->currentGame.player[1].dicesChosen,HASH->tab[bestNode->value],bestNode->next);
-
-    free(firstSimulation);
+    // free(firstSimulation);
 }

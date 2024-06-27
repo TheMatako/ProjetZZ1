@@ -29,7 +29,9 @@ typedef struct Node {
     
     int value; // la fameuse valeur de la fonction hachage, elle est UNIQUE
 
+    
     int attendance; // nombre de fois que le noeud a été visité (n)
+    int sumGain; // Somme des gains
     int averageGain; // Moyenne des simulations effectuées sur ce noeud (G)
     int potential; // Voir la formule, dépend de C
     int interest; // La valeur d'Intérêt, voir formule
@@ -76,13 +78,20 @@ int compare(const void * a, const void * b);
 // Fonction qui supprime toutes les répétitions, agit directement sur le tableau
 void removeDuplicates(int * array, int * length);
 
-// Fonction qui applqiue tout simplement un seul tour
-GameState applyOneTurn(GameState game);
+// FAIRE UN THROWDICES AVANT les deux fonctions suivantes
+// Fonctions qui appliquent tout simplement un seul tour
+// Version dés choisis requis
+GameState applyOneTurn(GameState game,int dicesChosen);
+// Version Random
+GameState applyOneTurnRandom(GameState game);
+
 // Fonction qui simule une fin de partie à partir d'un état (attention à l'alternance des joueurs)
 int simulation(GameState game,int profit,int player);
 // Fonction qui liste les Noeuds possibles et les simule une seule fois, faire une throwDice() et l'appliquer au jeu AVANT
-List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int player);
+List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int interestPlayer, int N);
+// Fonction qui renvoit le noeud ayant le plus grand intérêt dans une liste
+Node_t * bestActualMove(List_Node * list);
 // Fonction MCTS
-void MCTS();
+Node_t * MCTS(GameState game, hashTable * hash, int interestPlayer,int N);
 
 #endif
