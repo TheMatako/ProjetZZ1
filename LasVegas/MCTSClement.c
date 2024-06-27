@@ -10,15 +10,31 @@
 
 // #include "LasVegas.h"
 #include "LasVegas.c"
-#include "MCTS.h"
- 
+#include "MCTSClement.h"
+
+typedef struct Node {
+    GameState currentGame; // On aura besoin des placements des billets, des placements des dés des joueurs
+                           // des dés qu'il nous reste et de notre tir (les sommes)
+    
+    int value; // la fameuse valeur de la fonction hachage, elle est UNIQUE
+
+    
+    int attendance; // nombre de fois que le noeud a été visité (n)
+    int sumGain; // Somme des gains
+    int averageGain; // Moyenne des simulations effectuées sur ce noeud (G)
+    int potential; // Voir la formule, dépend de C
+    int interest; // La valeur d'Intérêt, voir formule
+
+    struct Node * next;
+} Node_t;
+
 Node_t * newNode()
 {
     Node_t * newMove = malloc(sizeof(Node_t));
     if(newMove)
     {
         newMove->attendance = 0;
-        newMove->averageGain = newMove->potential = newMove->interest = 0;
+        newMove->sumGain = newMove->averageGain = newMove->potential = newMove->interest = 0;
         newMove->value = 0;
         newMove->next = NULL;
         return newMove;
@@ -47,9 +63,9 @@ void displayList(List_Node * List, hashTable * hash)
     Node_t * currentNode = List->head;
     while(currentNode)
     {
-        printf("| %d %d %d %d %d %d %p %p|->",currentNode->value,currentNode->attendance,
+        printf("| %d %d %d %d %d %d %d %p %p|->",currentNode->value,currentNode->attendance,currentNode->sumGain,
                 currentNode->averageGain,currentNode->potential,currentNode->interest,
-            currentNode->currentGame.player[1].dicesChosen,hash->tab[currentNode->value],currentNode->next);
+                currentNode->currentGame.player[1].dicesChosen,hash->tab[currentNode->value],currentNode->next);
         currentNode = currentNode->next;
     }
     printf("FIN\n");
@@ -97,7 +113,7 @@ int hashing(Node_t * hashed)
         s3+=hashed->currentGame.player[1].currentThrow[n]; // un peu dangereux de mettre juste 1
     s4 = hashed->currentGame.player[1].dicesLeft;
     s5 = hashed->currentGame.player[1].dicesChosen;
-    value = 13*s1 + 17*s2 + 19*s3 + 23*s4 + 29*s5;
+    value = 13*s1 + 17*s2 + 19*s3 + 23*s4 + 29*s5 ;
     return value;
 }
 
@@ -234,7 +250,7 @@ int simulation(GameState game,int profit,int player)
     return profit;
 }
 
-List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int interestPlayer)
+List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int interestPlayer, int N)
 {
     List_Node * list = newList(); // Contiendra tout les noeuds visités
     int s; // Sera la valeur de simulation
@@ -274,9 +290,11 @@ List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int i
 
                     node->currentGame = intermediate;
                     s = simulation(intermediate,0,interestPlayer);
+                    N++;
                     node->attendance++;
-                    node->averageGain = s/1;
-                    node->potential = 0;
+                    node->sumGain += s;
+                    node->averageGain = node->sumGain/node->attendance;
+                    node->potential = C*sqrt(log(N/node->attendance));
                     node->interest = node->averageGain + node->potential;
                     // printf("HASHING : %d\n",node->value);
                     hash = addToHashTable(hash,node);
@@ -297,20 +315,36 @@ Node_t * bestActualMove(List_Node * list)
     Node_t * bestNode; int bestGain = 0;
     while(currentNode)
     {
-        if(currentNode->averageGain > bestGain)
+        if(currentNode->interest > bestInterest)
         {
             bestNode = currentNode;
-            bestGain = currentNode->averageGain;
+            bestInterest = currentNode->interest;
         }
         currentNode = currentNode->next;
     }
     return bestNode;
 }
 
-void MCTS(GameState game, hashTable * hash, int interestPlayer)
+void MCTS(GameState game, hashTable * hash, int interestPlayer,int N)
 { //  Mettre une COPIE du game en argument
-    List_Node * = listing_And_Simulating_Moves(game,hash,interestPlayer);
-    Node_t * bestNode = bestActualMove()
+    List_Node * moves = listing_And_Simulating_Moves(game,hash,interestPlayer);
+    Node_t bestNode;
+    game intermediate;
+    int s;
+    time_t time = time(0);
+
+    while(difftime(time(0),time))
+    {
+        bestNode = bestActualMove(moves);
+        intermediate = bestNode.currentGame;
+        s = simulation(intermediate,hash,intermediate.playerTurn);
+        N++;
+        bestNode.attendance++;
+        bestNode.sumGain += s;
+        bestNode.averageGain = bestNode.sumGain/bestNode.attendance;
+        bestNode.potential = C*sqrt(log(N/bestNode.attendance));
+        bestNode.interest = best.averageGain + bestNode.potential;
+    }
 }
 
 int main()
@@ -365,6 +399,7 @@ int main()
     freeHashTable(HASH);*/
 
     hashTable * HASH = createHashTable();
+    int N = 1;
 
     GameState game = initGame();
     game = initRound(game);
@@ -384,7 +419,7 @@ int main()
 
     printf("Coups Possibles pour le joueur %d : \n",game.playerTurn);
 
-    displayList(firstSimulation,HASH);
+    displayList(firstSimulation,HASH,N);
 
     Node_t * bestNode = bestActualMove(firstSimulation);
 
@@ -393,4 +428,7 @@ int main()
     bestNode->currentGame.player[1].dicesChosen,HASH->tab[bestNode->value],bestNode->next);
 
     free(firstSimulation);
+
+    time_t time = time(0);
+    printf("%d",difftime(time(0),time));
 }
