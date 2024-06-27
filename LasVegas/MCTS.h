@@ -40,7 +40,7 @@ typedef struct Node {
 // On stockera les noeud dans une table de hachage
 typedef struct List_Node {
     int length;
-	struct Node ** tab;
+	Node_t ** tab;
 } hashTable;
 
 // Si il y a collision, on fera une lise chaînée (normalement on en a pas besoin)
@@ -55,6 +55,8 @@ Node_t * newNode();
 List_Node * newList();
 // Fonction qui ajoute un noeud à une liste
 List_Node * addList(List_Node * List,Node_t * adding);
+// Fonction qui affiche une liste
+void displayList(List_Node * List);
 // Fonction qui libére une liste
 void freeList(List_Node * freeing);
 
@@ -63,13 +65,20 @@ hashTable * createHashTable();
 // LA FONCTION (!!) de hachage
 int hashing(Node_t * hashed);
 // Fonction qui ajoute un noeud à la table de hachage, fait appel à la fonction HASHING et gère les collisions
-void addToHashTable(hashTable * hTable, Node_t * added);
+hashTable * addToHashTable(hashTable * hTable, Node_t * added);
 // Fonction vérifie si un noeud est déjà dans la table de hachage
 bool isPresentNode(hashTable * hTable, Node_t * Node);
+// Fonction qui libére une table de hachage
+void freeHashTable(hashTable * hash);
 
-// Fonction qui liste les Noeuds possibles, FAIRE UN THROWDICE AVANT CHANGER DE PLAYERTURN
-List_Node * listing_Moves(GameState);
+// J'avoue je sais pas trop mais ça a l'air intéressant à comprendre
+int compare(const void * a, const void * b);
+// Fonction qui supprime toutes les répétitions, agit directement sur le tableau
+void removeDuplicates(int * array, int * length);
+
 // Fonction qui simule une fin de partie à partir d'un état (attention à l'alternance des joueurs)
 int simulation(GameState game,int profit,int player);
+// Fonction qui liste les Noeuds possibles et les simule une seule fois, faire une throwDice() et l'appliquer au jeu AVANT
+List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int player);
 
 #endif

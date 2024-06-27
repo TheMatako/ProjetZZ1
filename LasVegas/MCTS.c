@@ -18,7 +18,8 @@ Node_t * newNode()
     if(newMove)
     {
         newMove->attendance = 1;
-        newMove->attendance = newMove->averageGain = newMove->potential = newMove->interest = 0;
+        newMove->averageGain = newMove->potential = newMove->interest = 0;
+        newMove->value = 0;
         newMove->next = NULL;
         return newMove;
     }
@@ -46,37 +47,11 @@ void displayList(List_Node * List)
     Node_t * currentNode = List->head;
     while(currentNode)
     {
-        printf("| %d %d %d %d %d %p |->",currentNode->value,currentNode->attendance,
+        printf("| %d %d %d %d %d %p|->",currentNode->value,currentNode->attendance,
                 currentNode->averageGain,currentNode->potential,currentNode->interest,currentNode->next);
         currentNode = currentNode->next;
     }
     printf("FIN\n");
-}
-
-// Fonction de comparaison pour qsort
-int compare(const void* a, const void* b)
-{
-    return (*(int*)a - *(int*)b);
-}
-
-void removeDuplicates(int * array, int * length)
-{   
-    int MAX_VAL = 10000;
-    if (*length == 0)
-        return;
-    bool seen[MAX_VAL];
-    for (int i = 0; i < MAX_VAL; i++)
-        seen[i] = false;
-    int uniqueIndex = 0;
-    for (int i = 0; i < *length; i++)
-    {
-        if (!seen[array[i]])
-        {
-            seen[array[i]] = true;
-            array[uniqueIndex++] = array[i];
-        }
-    }
-    *length = uniqueIndex;
 }
 
 void freeList(List_Node * freeing)
@@ -125,11 +100,21 @@ int hashing(Node_t * hashed)
     return value;
 }
 
-void addToHashTable(hashTable * hTable, Node_t * added)
+hashTable * addToHashTable(hashTable * hTable, Node_t * added)
 {
     int value = hashing(added);
     if(!hTable->tab[value])
         hTable->tab[value] = added;
+    return hTable;
+}
+
+bool isPresentNode(hashTable * hTable, Node_t * Node)
+{
+    bool Ok = false;
+    int value = hashing(Node);
+    if(hTable->tab[value])
+        Ok = true;
+    return Ok;
 }
 
 void freeHashTable(hashTable * hash) 
@@ -154,13 +139,27 @@ void freeHashTable(hashTable * hash)
     }
 }
 
-bool isPresentNode(hashTable * hTable, Node_t * Node)
-{
-    bool Ok = false;
-    int value = hashing(Node);
-    if(hTable->tab[value])
-        Ok = true;
-    return Ok;
+int compare(const void* a, const void* b) {return (*(int*)a - *(int*)b);}
+    
+
+void removeDuplicates(int * array, int * length)
+{   
+    int MAX_VAL = 10000;
+    if (*length == 0)
+        return;
+    bool seen[MAX_VAL];
+    for (int i = 0; i < MAX_VAL; i++)
+        seen[i] = false;
+    int uniqueIndex = 0;
+    for (int i = 0; i < *length; i++)
+    {
+        if (!seen[array[i]])
+        {
+            seen[array[i]] = true;
+            array[uniqueIndex++] = array[i];
+        }
+    }
+    *length = uniqueIndex;
 }
 
 int simulation(GameState game,int profit,int player)
@@ -240,8 +239,8 @@ List_Node * listing_And_Simulating_Moves(GameState game, hashTable * hash, int p
                     node->averageGain = s/1;
                     node->potential = 0;
                     node->interest = node->averageGain + node->potential;
-                    node->value = hashing(node);
-                    addToHashTable(hash,node);
+                    node->value = hashing(node); printf("AXE : %d",node->value);
+                    hash = addToHashTable(hash,node); printf("AXED : %p",hash->tab[node->value]);
                     list = addList(list,node);
                 }
             }
@@ -299,8 +298,10 @@ int main()
     else
         printf("NON");
 
-    // freeList(testList);
-    // freeHashTable(HASH);
+    freeList(testList);
+    freeHashTable(HASH);
+
+    HASH = createHashTable();
 
     game = initGame();
     game = initRound(game);
@@ -313,4 +314,6 @@ int main()
     List_Node * firstSimulation = listing_And_Simulating_Moves(game,HASH,0);
 
     displayList(firstSimulation);
+
+    free(firstSimulation);
 }
