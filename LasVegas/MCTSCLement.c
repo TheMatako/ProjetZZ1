@@ -173,7 +173,6 @@ void removeDuplicates(int * array, int * length)
     printf("\n");
 }
 
-
 GameState applyOneTurn(GameState game)
 { // Applique un seul tour, FAIRE UN THROWDICES AVANT
     game = throwDices(&game);
@@ -308,10 +307,11 @@ Node_t * bestActualMove(List_Node * list)
     return bestNode;
 }
 
-// void MCTS(GameState
-// {
-//     bestNode
-// }
+void MCTS(GameState game, hashTable * hash, int interestPlayer)
+{ //  Mettre une COPIE du game en argument
+    List_Node * = listing_And_Simulating_Moves(game,hash,interestPlayer);
+    Node_t * bestNode = bestActualMove()
+}
 
 int main()
 {
