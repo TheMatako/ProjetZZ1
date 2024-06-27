@@ -27,8 +27,7 @@ void initSDL(SDL_Window **window, SDL_Renderer **renderer);
 void loadTextures(SDL_Renderer *renderer, SDL_Texture ***allImages);
 void loadTexturesDices(SDL_Renderer *renderer, SDL_Texture ***dicesImages);
 void loadDicesPlayersTextures(SDL_Renderer *renderer, SDL_Texture ***dicesPlayersImages);
-int mainSDL(GameState game);
-
+int mainSDL(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages, SDL_Texture **dicesImages, SDL_Texture ***dicesPlayersImages);
 
 int checkHitbox(GameState game);
 int repartizeDice(GameState game);

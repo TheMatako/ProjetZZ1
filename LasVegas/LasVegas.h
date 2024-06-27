@@ -12,8 +12,6 @@
 #include <time.h>
 
 #include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 
 #define NUMBER_PLAYERS 2
 #define NUMBER_DICES 8
