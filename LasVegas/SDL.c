@@ -3,9 +3,8 @@
 
 
 
-void drawText(SDL_Renderer *renderer, GameState game)
+void drawText(SDL_Renderer *renderer, GameState game, TTF_Font *font)
 {
-    TTF_Font *font = TTF_OpenFont("./font.ttf", 24);
     SDL_Color textColor = {255, 255, 255, 0};
     for (int i = 0; i < NUMBER_PLAYERS; i++)
     {
@@ -38,6 +37,7 @@ void drawText(SDL_Renderer *renderer, GameState game)
     SDL_Rect dstRect3 = {1400, 100, 250, 40};
     SDL_RenderCopy(renderer, texture3, NULL, &dstRect3);
     SDL_DestroyTexture(texture3);
+
 }
 
 
@@ -84,7 +84,7 @@ void drawDicesOverCasino(GameState game, SDL_Renderer *renderer, SDL_Texture **d
 
 
 // Fonctions de dessin
-void drawGame(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages, SDL_Texture **dicesImages, SDL_Texture ***dicesPlayersImages)
+void drawGame(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages, SDL_Texture **dicesImages, SDL_Texture ***dicesPlayersImages, TTF_Font *font)
 {
     drawBackground(game, renderer, allImages);
     drawLines(renderer);
@@ -96,7 +96,7 @@ void drawGame(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages, S
     {
         drawDicesOverCasino(game, renderer, dicesPlayersImages[i], i);
     }
-    drawText(renderer, game);
+    drawText(renderer, game, font);
 }
 
 

@@ -14,13 +14,15 @@
 
 int main()
 {
-    //mainWithSdlAndAi();
-    mainWithSdlWithoutAi();
+    srand(time(0));
+    mainWithSdlAndAi();
+    //mainWithSdlWithoutAi();
     //mainTerminalWithAI();
 }
 
 int mainWithSdlAndAi()
 {
+    
     IMG_Init(IMG_INIT_PNG);
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
@@ -37,6 +39,8 @@ int mainWithSdlAndAi()
     }
 
     TTF_Init();
+
+    TTF_Font *font = TTF_OpenFont("./font.ttf", 24);
     // Allocation de chaque ligne
     for (int i = 0; i < NUMBER_PLAYERS; i++) 
     {
@@ -145,7 +149,7 @@ int mainWithSdlAndAi()
             }
             
 
-            drawGame(game, renderer, allImages, dicesImages, dicesPlayersImages);
+            drawGame(game, renderer, allImages, dicesImages, dicesPlayersImages, font);
 
             SDL_RenderPresent(renderer);
             SDL_Delay(50); // Délai pour limiter la fréquence de mise à jour
@@ -196,6 +200,7 @@ int mainWithSdlAndAi()
 
 int mainWithSdlWithoutAi()
 {
+
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
     SDL_Texture **allImages = malloc(18 * sizeof(SDL_Texture *));
@@ -253,7 +258,8 @@ int mainWithSdlWithoutAi()
     loadTextures(renderer, &allImages);
     loadTexturesDices(renderer, &dicesImages);
     loadDicesPlayersTextures(renderer, dicesPlayersImages);
-
+    TTF_Init();
+    TTF_Font *font = TTF_OpenFont("./font.ttf", 24);
     GameState game = initGame();
     game.round = 0;
     game.playerTurn = 0;
@@ -300,6 +306,7 @@ int mainWithSdlWithoutAi()
                             diceChosen = checkHitbox(game);
                             if (diceChosen > 0)
                             {
+                                game = choiceDice(game, diceChosen);
                                 appliedTurn = 1;
                                 game = applyOneTurn(game,dice);
                                 break;
@@ -309,9 +316,9 @@ int mainWithSdlWithoutAi()
             }
 
 
-            drawGame(game, renderer, allImages, dicesImages, dicesPlayersImages);
+            drawGame(game, renderer, allImages, dicesImages, dicesPlayersImages, font);
             SDL_RenderPresent(renderer);
-            SDL_Delay(50); // Délai pour limiter la fréquence de mise à jour
+            SDL_Delay(100); // Délai pour limiter la fréquence de mise à jour
         }
     }
 
