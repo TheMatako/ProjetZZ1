@@ -43,6 +43,9 @@ void drawDicesOverCasino(GameState game, SDL_Renderer *renderer, SDL_Texture **d
     }
 }
 
+
+07715_CGTimes.ttf
+
 // Fonctions de dessin
 void drawGame(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages, SDL_Texture **dicesImages, SDL_Texture ***dicesPlayersImages)
 {
@@ -56,7 +59,30 @@ void drawGame(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages, S
     {
         drawDicesOverCasino(game, renderer, dicesPlayersImages[i], i);
     }
+    // Mettre à jour le texte
+
+    int playerTurn = game.player[game.PlayerTurn];
+    char moneyText[64];
+    sprintf(moneyText, "PlayerTurn %d: %dk", i + 1, game.player[PlayerTurn].totalMoney);
+    int x = 50;  // X position of the text
+    int y = 30 + playerTurn * 30;  // Y position of the text, adjusted per player
+    renderText(renderer, font, moneyText, textColor, x, y);
+
+    // Afficher le texte
+    SDL_Rect textRect = {100, 100, 0, 0};
+    SDL_QueryTexture(scoreTexture, NULL, NULL, &textRect.w, &textRect.h);
+    SDL_RenderCopy(renderer, scoreTexture, NULL, &textRect);
+
+    // Afficher à l'écran
+    SDL_RenderPresent(renderer);
+
+    // Nettoyer
+    SDL_DestroyTexture(scoreTexture);
+    score++; // Mettre à jour le score pour le démo, dans un vrai jeu cela serait contrôlé par la logique du jeu
 }
+
+
+
 
 void drawBackground(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages)
 {
@@ -659,6 +685,7 @@ void loadDicesPlayersTextures(SDL_Renderer *renderer, SDL_Texture ***dicesPlayer
 
 
 
+
 // Fonction d'intiialisation de la SDL
 void initSDL(SDL_Window **window, SDL_Renderer **renderer) 
 {
@@ -667,6 +694,20 @@ void initSDL(SDL_Window **window, SDL_Renderer **renderer)
         printf("Could not initialize SDL: %s\n", SDL_GetError());
         exit(1);
     }
+
+    if (TTF_Init() == -1) {
+        fprintf(stderr, "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+       
+        exit(1);
+    }
+
+    font = TTF_OpenFont("./resource/OldLondon.ttf", 24);
+    if (!font) {
+        fprintf(stderr, "Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+    
+        exit(1);
+    }
+
 
     SDL_DisplayMode DM;
     SDL_GetCurrentDisplayMode(0, &DM);
