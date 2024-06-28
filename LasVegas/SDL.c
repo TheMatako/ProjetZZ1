@@ -700,12 +700,6 @@ void initSDL(SDL_Window **window, SDL_Renderer **renderer)
         exit(1);
     }
 
-    font = TTF_OpenFont("./resource/OldLondon.ttf", 24);
-    if (!font) {
-        fprintf(stderr, "Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
-    
-        exit(1);
-    }
 
 
     SDL_DisplayMode DM;
@@ -729,4 +723,4 @@ void initSDL(SDL_Window **window, SDL_Renderer **renderer)
         SDL_Quit();
         exit(1);
     }
-}
+} 

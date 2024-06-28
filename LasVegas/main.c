@@ -27,10 +27,6 @@ int mainWithSdlAndAi()
     SDL_Texture **allImages = malloc(18 * sizeof(SDL_Texture *));
     SDL_Texture **dicesImages = malloc(16 * sizeof(SDL_Texture *));
 
-    if (!font) {
-        printf("Failed to load font: %s\n", TTF_GetError());
-        // handle error
-    }
     // Allocation du tableau de pointeurs vers les lignes
     SDL_Texture ***dicesPlayersImages = malloc(NUMBER_PLAYERS * sizeof(SDL_Texture **));
     if (!dicesPlayersImages) 
@@ -100,8 +96,6 @@ int mainWithSdlAndAi()
         int dice = 0;
         int diceChosen = 0;
         int appliedTurn = 1;
-        char moneyText1[20]='0';
-        char moneyText2[20]='0';
 
         
         while(!game.roundFinished && running == 1)
