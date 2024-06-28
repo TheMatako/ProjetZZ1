@@ -1,6 +1,25 @@
 #include "SDL.h"
+#include <SDL2/SDL_ttf.h>
 
 
+
+void drawText(SDL_Renderer *renderer, GameState game)
+{
+    TTF_Font *font = TTF_OpenFont("./font.ttf", 24);
+    SDL_Color textColor = {255, 255, 255, 0};
+    for (int i = 0; i < NUMBER_PLAYERS; i++)
+    {
+        char text[100];
+        snprintf(text, 100, "Money Joueur %d: %d0K", i, game.player[i].totalMoney);
+        SDL_Surface *surface;
+        surface = TTF_RenderText_Solid(font, text, textColor);
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+        SDL_Rect dstRect = {30, 30 + 60*i, 500, 50};
+        SDL_RenderCopy(renderer, texture, NULL, &dstRect);
+        SDL_DestroyTexture(texture);
+    }
+}
 
 
 
@@ -58,6 +77,7 @@ void drawGame(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages, S
     {
         drawDicesOverCasino(game, renderer, dicesPlayersImages[i], i);
     }
+    drawText(renderer, game);
 }
 
 

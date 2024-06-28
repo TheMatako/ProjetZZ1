@@ -317,13 +317,8 @@ GameState distributeBiggestBanknote(GameState game, Casino casino)
     }
 
     // Condition de terminaison pour éviter la récursion infinie
-    if (allBanknotesDistributed || allDicesUnplaced)
-    {
-        return game;
-    }
-
     int playerMaxed = max(casino.dicesPlaced, NUMBER_PLAYERS);
-    if (doublons(casino.dicesPlaced, NUMBER_PLAYERS, playerMaxed))
+    if (doublons(casino.dicesPlaced, NUMBER_PLAYERS, playerMaxed) || allBanknotesDistributed || allDicesUnplaced)
     {
         for (int i = 0; i < MAX_BILLETS_PER_CASINO; i++)
         {
@@ -348,7 +343,7 @@ GameState distributeBiggestBanknote(GameState game, Casino casino)
 
 void gameDisplay(GameState game)
 {   
-    printf("|| Round N° %d , Tour N° %d ||\n\n",game.round,game.turn);
+    printf("|| Round N° %d , Tour N° %d ||\n\n",game.round,game.turn/NUMBER_PLAYERS+1);
     printf("Joueur N° 0 : %d Dés Restants, %d0k Money\n",game.player[0].dicesLeft,game.player[0].totalMoney);
     printf("Joueur N° 1 : %d Dés Restants, %d0k Money\n\n",game.player[1].dicesLeft,game.player[1].totalMoney);
     printf("| Il s'agit du tour du joueur %d |\n\n",game.playerTurn);

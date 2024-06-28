@@ -22,6 +22,7 @@ void draw7Dices(SDL_Renderer *renderer, SDL_Texture **dicesPlayersImages, int po
 void draw8Dices(SDL_Renderer *renderer, SDL_Texture **dicesPlayersImages, int positionX, int positionY, int dice);
 void drawDicesOverCasino(GameState game, SDL_Renderer *renderer, SDL_Texture **dicesPlayersImages, int player);
 void drawBackground(GameState game, SDL_Renderer *renderer, SDL_Texture **allImages);
+void drawText(SDL_Renderer *renderer, GameState game);
 
 void initSDL(SDL_Window **window, SDL_Renderer **renderer);
 void loadTextures(SDL_Renderer *renderer, SDL_Texture ***allImages);

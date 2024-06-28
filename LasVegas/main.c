@@ -8,25 +8,24 @@
 #include "SDL.h"
 #include "LasVegas.h"
 #include "MCTS.h"
+#include <SDL2/SDL_ttf.h>
 
 
 
 int main()
 {
-
-    TTF_Init();
-    //mainWithSdlAndAi();
+    mainWithSdlAndAi();
     //mainWithSdlWithoutAi();
-    mainTerminalWithAI();
+    //mainTerminalWithAI();
 }
 
 int mainWithSdlAndAi()
 {
+    IMG_Init(IMG_INIT_PNG);
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
     SDL_Texture **allImages = malloc(18 * sizeof(SDL_Texture *));
     SDL_Texture **dicesImages = malloc(16 * sizeof(SDL_Texture *));
-    TTF_Font* font = TTF_OpenFont("07715_CGTimes.ttf", 24);  // Ensure the font path is correct
 
     if (!font) {
         printf("Failed to load font: %s\n", TTF_GetError());
@@ -41,7 +40,7 @@ int mainWithSdlAndAi()
         return 0;
     }
 
-    SDL_Color textColor = {255, 255, 255, 255};  // White color for the text
+    TTF_Init();
     // Allocation de chaque ligne
     for (int i = 0; i < NUMBER_PLAYERS; i++) 
     {
@@ -104,12 +103,6 @@ int mainWithSdlAndAi()
         char moneyText1[20]='0';
         char moneyText2[20]='0';
 
-
-        TTF_Font*font = TTF_OpenFont("./resource/OldLondon.ttf", 24);
-        if (!font) {
-        fprintf(stderr, "Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
-        exit(1);
-        }
         
         while(!game.roundFinished && running == 1)
         {
@@ -201,7 +194,8 @@ int mainWithSdlAndAi()
     free(allImages);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-    //TTF_CloseFont(font);
+    TTF_Quit();
+    IMG_Quit();
     SDL_Quit();
     return 0;
 }
@@ -384,7 +378,7 @@ int mainTerminalWithAI()
         {
             game.roundFinished = false;
             game = throwBanknotes(game);
-            int dice = 100; int group = 0;
+            int dice = -1; int group = 0;
             if(game.player[game.playerTurn].dicesLeft)
             {
                 game = throwDices(&game);
