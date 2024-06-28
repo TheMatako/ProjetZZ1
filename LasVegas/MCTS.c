@@ -176,16 +176,16 @@ GameState applyOneTurn(GameState game,int dice)
 
     int group = occurrences(game.player[game.playerTurn].currentThrow,game.player[game.playerTurn].dicesLeft,dice);
     game.player[game.playerTurn].dicesLeft -= group;
-    game.player[game.playerTurn].dicesChosen = dice-1;
+    game.player[game.playerTurn].dicesChosen = dice;
     game.casino[dice-1].dicesPlaced[game.playerTurn] += group;
     game.turn++;
-    game.playerTurn = (game.playerTurn+1)%NUMBER_PLAYERS;
     if(game.player[0].dicesLeft <= 0 && game.player[1].dicesLeft <= 0)
     {
         game.roundFinished = true;
         game = distributeMoney(game);
         gameDisplay(game);
     }
+    game.playerTurn = (game.playerTurn+1)%NUMBER_PLAYERS;
     return game;
 }
 

@@ -14,8 +14,8 @@
 
 int main()
 {
-    mainWithSdlAndAi();
-    //mainWithSdlWithoutAi();
+    //mainWithSdlAndAi();
+    mainWithSdlWithoutAi();
     //mainTerminalWithAI();
 }
 
@@ -100,6 +100,10 @@ int mainWithSdlAndAi()
         
         while(!game.roundFinished && running == 1)
         {
+            if (game.player[game.playerTurn].dicesLeft <= 0 && game.player[(game.playerTurn+1)%NUMBER_PLAYERS].dicesLeft > 0 )
+            {
+                game.playerTurn = (game.playerTurn+1)%NUMBER_PLAYERS;
+            }
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
             if (appliedTurn)
@@ -107,7 +111,7 @@ int mainWithSdlAndAi()
                 game = throwDices(&game);
                 appliedTurn = 0;
             }
-            gameDisplay(game);
+            //gameDisplay(game);
             SDL_Event event;
             while (SDL_PollEvent(&event)) 
             {
@@ -132,9 +136,8 @@ int mainWithSdlAndAi()
                             diceChosen = checkHitbox(game);
                             if (diceChosen > 0)
                             {
-                                game = choiceDice(game, diceChosen);
                                 appliedTurn = 1;
-                                game = applyOneTurn(game,dice);
+                                game = applyOneTurn(game,diceChosen);
                                 break;
                             }
                         }
@@ -144,15 +147,12 @@ int mainWithSdlAndAi()
 
             drawGame(game, renderer, allImages, dicesImages, dicesPlayersImages);
 
-            
-
-            printf("\n\n||||||||||||||||||||||||||||||||||||||||||||||\n\n\n");
             SDL_RenderPresent(renderer);
             SDL_Delay(50); // Délai pour limiter la fréquence de mise à jour
             if (game.playerTurn == 1 && game.player[1].dicesLeft > 0)
             {
-                AIMOVE = MCTS(game,hash,game.playerTurn,N);
-                dice = AIMOVE->currentGame.player[game.playerTurn].dicesChosen;
+                AIMOVE = MCTS(game,hash,1,N);
+                dice = AIMOVE->currentGame.player[1].dicesChosen;
                 appliedTurn = 1;
                 game = applyOneTurn(game,dice);
             }
@@ -275,7 +275,7 @@ int mainWithSdlWithoutAi()
                 game = throwDices(&game);
                 appliedTurn = 0;
             }
-            gameDisplay(game);
+            //gameDisplay(game);
             SDL_Event event;
             while (SDL_PollEvent(&event)) 
             {
@@ -300,7 +300,6 @@ int mainWithSdlWithoutAi()
                             diceChosen = checkHitbox(game);
                             if (diceChosen > 0)
                             {
-                                game = choiceDice(game, diceChosen);
                                 appliedTurn = 1;
                                 game = applyOneTurn(game,dice);
                                 break;
@@ -311,7 +310,6 @@ int mainWithSdlWithoutAi()
 
 
             drawGame(game, renderer, allImages, dicesImages, dicesPlayersImages);
-            printf("\n\n||||||||||||||||||||||||||||||||||||||||||||||\n\n\n");
             SDL_RenderPresent(renderer);
             SDL_Delay(50); // Délai pour limiter la fréquence de mise à jour
         }

@@ -15,10 +15,29 @@ void drawText(SDL_Renderer *renderer, GameState game)
         surface = TTF_RenderText_Solid(font, text, textColor);
         SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_FreeSurface(surface);
-        SDL_Rect dstRect = {30, 30 + 60*i, 500, 50};
+        SDL_Rect dstRect = {30, 30 + 60*i, 450, 40};
         SDL_RenderCopy(renderer, texture, NULL, &dstRect);
         SDL_DestroyTexture(texture);
     }
+    char text[100];
+    snprintf(text, 100, "Tour numero %d, au joueur %d de jouer", game.turn, game.playerTurn);
+    SDL_Surface *surface2;
+    surface2 = TTF_RenderText_Solid(font, text, textColor);
+    SDL_Texture *texture2 = SDL_CreateTextureFromSurface(renderer, surface2);
+    SDL_FreeSurface(surface2);
+    SDL_Rect dstRect2 = {1170, 30, 480, 40};
+    SDL_RenderCopy(renderer, texture2, NULL, &dstRect2);
+    SDL_DestroyTexture(texture2);
+
+    char text1[100];
+    snprintf(text1, 100, "Round numero %d", game.round);
+    SDL_Surface *surface3;
+    surface3 = TTF_RenderText_Solid(font, text1, textColor);
+    SDL_Texture *texture3 = SDL_CreateTextureFromSurface(renderer, surface3);
+    SDL_FreeSurface(surface3);
+    SDL_Rect dstRect3 = {1400, 100, 250, 40};
+    SDL_RenderCopy(renderer, texture3, NULL, &dstRect3);
+    SDL_DestroyTexture(texture3);
 }
 
 

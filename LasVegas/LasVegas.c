@@ -291,6 +291,7 @@ GameState distributeMoney(GameState game)
 
 GameState distributeBiggestBanknote(GameState game, Casino casino)
 {
+    printf("\nCasino n°%d :\n", casino.number);
     // On trie les billets du casino par ordre décroissant
     bubbleTea(casino.associatedValues, MAX_BILLETS_PER_CASINO, 1);
     
@@ -334,6 +335,8 @@ GameState distributeBiggestBanknote(GameState game, Casino casino)
     {
         int biggestBanknote = casino.associatedValues[0];
         casino.associatedValues[0] = 0;
+
+        printf("distribution du billet de %d0K au joueur %d\n", biggestBanknote, playerMaxed);
         game.player[playerMaxed].totalMoney += biggestBanknote;
         casino.dicesPlaced[playerMaxed] = 0;
         return distributeBiggestBanknote(game, casino);
