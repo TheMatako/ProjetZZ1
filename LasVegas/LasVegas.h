@@ -99,4 +99,9 @@ GameState choiceDice(GameState game, int diceChosen);
 // Affiche le jeu
 void gameDisplay(GameState game);
 
+
+
+int mainWithSdlAndAi();
+int mainWithSdlWithoutAi();
+int mainTerminalWithAI();
 #endif
